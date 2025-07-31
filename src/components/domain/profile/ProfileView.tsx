@@ -1,10 +1,15 @@
 'use client';
 
-import styled from 'styled-components';
 import { useAuthStore } from '@/store/authStore';
 import { Profile } from '@/types/profile';
-import Button from '@/components/common/Button';
+import EditBriefModal from './modals/EditBriefModal';
+import EditWorkExperienceModal from './modals/EditWorkExperienceModal';
+import EditProjectExperienceModal from './modals/EditProjectExperienceModal';
+import EditSkillsModal from './modals/EditSkillsModal';
+import EditEducationModal from './modals/EditEducationModal';
+import EditCertificationsModal from './modals/EditCertificationsModal';
 import Image from 'next/image';
+import styled from 'styled-components';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -89,12 +94,26 @@ const Section = styled.section`
   border-radius: 8px;
 `;
 
-const SectionTitle = styled.h2`
-  font-size: 22px;
-  font-weight: bold;
+const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.medium};
   padding-bottom: ${({ theme }) => theme.spacing.small};
   border-bottom: 2px solid ${({ theme }) => theme.colors.primary};
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 22px;
+  font-weight: bold;
+`;
+
+const EditIcon = styled.span`
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 const ContentText = styled.p`
@@ -145,15 +164,10 @@ interface Props {
 }
 
 export default function ProfileView({ profile }: Props) {
-  const { openProfileSetupModal } = useAuthStore();
+  const { openProfileSetupModal, openEditModal, closeEditModal, editingSection } = useAuthStore();
 
   return (
     <ViewContainer>
-      <Header>
-        <ProfileName>{profile.name}</ProfileName>
-        <Button onClick={openProfileSetupModal}>프로필 수정</Button>
-      </Header>
-
       <ProfileHeader>
         <ProfileImage>
           {/* 임시 이미지 또는 사용자 아바타 */}
@@ -170,12 +184,18 @@ export default function ProfileView({ profile }: Props) {
       <ContentGrid>
         <LeftColumn>
           <Section>
-            <SectionTitle>자기소개</SectionTitle>
+            <SectionHeader>
+              <SectionTitle>자기소개</SectionTitle>
+              <EditIcon onClick={() => openEditModal('brief')}>✏️</EditIcon>
+            </SectionHeader>
             <ContentText>{profile.brief}</ContentText>
           </Section>
 
           <Section>
-            <SectionTitle>경력</SectionTitle>
+            <SectionHeader>
+              <SectionTitle>경력</SectionTitle>
+              <EditIcon onClick={() => openEditModal('workExperience')}>✏️</EditIcon>
+            </SectionHeader>
             {profile.workExperience.map(exp => (
               <ExperienceItem key={exp.id}>
                 <ExperienceTitle>{exp.company} - {exp.position}</ExperienceTitle>
@@ -186,7 +206,10 @@ export default function ProfileView({ profile }: Props) {
           </Section>
 
           <Section>
-            <SectionTitle>프로젝트</SectionTitle>
+            <SectionHeader>
+              <SectionTitle>프로젝트</SectionTitle>
+              <EditIcon onClick={() => openEditModal('projectExperience')}>✏️</EditIcon>
+            </SectionHeader>
             {profile.projectExperience.map(proj => (
               <ExperienceItem key={proj.id}>
                 <ExperienceTitle>{proj.title}</ExperienceTitle>
@@ -199,7 +222,10 @@ export default function ProfileView({ profile }: Props) {
 
         <RightColumn>
           <Section>
-            <SectionTitle>기술 스택</SectionTitle>
+            <SectionHeader>
+              <SectionTitle>기술 스택</SectionTitle>
+              <EditIcon onClick={() => openEditModal('skills')}>✏️</EditIcon>
+            </SectionHeader>
             <SkillList>
               {profile.skills.map(skill => (
                 <SkillItem key={skill.id}>{skill.name}</SkillItem>
@@ -208,7 +234,10 @@ export default function ProfileView({ profile }: Props) {
           </Section>
 
           <Section>
-            <SectionTitle>학력</SectionTitle>
+            <SectionHeader>
+              <SectionTitle>학력</SectionTitle>
+              <EditIcon onClick={() => openEditModal('education')}>✏️</EditIcon>
+            </SectionHeader>
             {profile.education.map(edu => (
               <ExperienceItem key={edu.id}>
                 <ExperienceTitle>{edu.institution} - {edu.major}</ExperienceTitle>
@@ -219,7 +248,10 @@ export default function ProfileView({ profile }: Props) {
           </Section>
 
           <Section>
-            <SectionTitle>자격증</SectionTitle>
+            <SectionHeader>
+              <SectionTitle>자격증</SectionTitle>
+              <EditIcon onClick={() => openEditModal('certifications')}>✏️</EditIcon>
+            </SectionHeader>
             {profile.certifications.map(cert => (
               <ExperienceItem key={cert.id}>
                 <ExperienceTitle>{cert.name}</ExperienceTitle>
@@ -230,6 +262,78 @@ export default function ProfileView({ profile }: Props) {
           </Section>
         </RightColumn>
       </ContentGrid>
+
+      {editingSection === 'brief' && (
+        <EditBriefModal
+          profile={profile}
+          onSave={(updatedBrief) => {
+            // TODO: Save updated brief to backend
+            console.log('Updated brief:', updatedBrief);
+            closeEditModal();
+          }}
+          onClose={closeEditModal}
+        />
+      )}
+
+      {editingSection === 'workExperience' && (
+        <EditWorkExperienceModal
+          profile={profile}
+          onSave={(updatedWorkExperiences) => {
+            // TODO: Save updated work experiences to backend
+            console.log('Updated work experiences:', updatedWorkExperiences);
+            closeEditModal();
+          }}
+          onClose={closeEditModal}
+        />
+      )}
+
+      {editingSection === 'projectExperience' && (
+        <EditProjectExperienceModal
+          profile={profile}
+          onSave={(updatedProjectExperiences) => {
+            // TODO: Save updated project experiences to backend
+            console.log('Updated project experiences:', updatedProjectExperiences);
+            closeEditModal();
+          }}
+          onClose={closeEditModal}
+        />
+      )}
+
+      {editingSection === 'skills' && (
+        <EditSkillsModal
+          profile={profile}
+          onSave={(updatedSkills) => {
+            // TODO: Save updated skills to backend
+            console.log('Updated skills:', updatedSkills);
+            closeEditModal();
+          }}
+          onClose={closeEditModal}
+        />
+      )}
+
+      {editingSection === 'education' && (
+        <EditEducationModal
+          profile={profile}
+          onSave={(updatedEducation) => {
+            // TODO: Save updated education to backend
+            console.log('Updated education:', updatedEducation);
+            closeEditModal();
+          }}
+          onClose={closeEditModal}
+        />
+      )}
+
+      {editingSection === 'certifications' && (
+        <EditCertificationsModal
+          profile={profile}
+          onSave={(updatedCertifications) => {
+            // TODO: Save updated certifications to backend
+            console.log('Updated certifications:', updatedCertifications);
+            closeEditModal();
+          }}
+          onClose={closeEditModal}
+        />
+      )}
     </ViewContainer>
   );
 }

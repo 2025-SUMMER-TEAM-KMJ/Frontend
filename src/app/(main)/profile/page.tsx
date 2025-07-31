@@ -7,7 +7,7 @@ import { getProfile, updateProfile } from '@/lib/api/profile';
 import { Profile, ResumeFormData } from '@/types';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileView from '@/components/domain/profile/ProfileView';
-import ProfileSetupModal from '@/components/domain/profile/ProfileSetupModal';
+
 import Button from '@/components/common/Button';
 
 const ProfilePageContainer = styled.div`
@@ -22,10 +22,7 @@ const Loading = styled.p`
   padding: 50px;
 `;
 
-const EmptyProfileContainer = styled.div`
-  text-align: center;
-  padding: 80px 24px;
-`;
+
 
 function ProfilePageContent() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -67,19 +64,7 @@ function ProfilePageContent() {
 
   return (
     <ProfilePageContainer>
-      <ProfileSetupModal profile={profile} onSave={handleSaveProfile} />
-
-      {profile ? (
-        <ProfileView profile={profile} />
-      ) : (
-        <EmptyProfileContainer>
-          <h2>프로필이 아직 없어요!</h2>
-          <p>AI 추천과 자소서 생성을 위해 프로필을 만들어보세요.</p>
-          <Button onClick={openProfileSetupModal} style={{ marginTop: '24px' }}>
-            프로필 생성하기
-          </Button>
-        </EmptyProfileContainer>
-      )}
+      {profile && <ProfileView profile={profile} />}
     </ProfilePageContainer>
   );
 }

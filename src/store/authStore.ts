@@ -8,19 +8,25 @@ interface User {
 interface AuthState {
   isLoggedIn: boolean;
   user: User | null;
-  showProfileSetupModal: boolean; // New
+  showProfileSetupModal: boolean;
+  editingSection: string | null; // New: Tracks which section is being edited
   login: (user: User) => void;
   logout: () => void;
-  openProfileSetupModal: () => void; // New
-  closeProfileSetupModal: () => void; // New
+  openProfileSetupModal: () => void;
+  closeProfileSetupModal: () => void;
+  openEditModal: (section: string) => void; // New: Opens a specific section's edit modal
+  closeEditModal: () => void; // New: Closes the edit modal
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   user: null,
-  showProfileSetupModal: false, // New
+  showProfileSetupModal: false,
+  editingSection: null, // Initialize to null
   login: (user) => set({ isLoggedIn: true, user }),
   logout: () => set({ isLoggedIn: false, user: null }),
-  openProfileSetupModal: () => set({ showProfileSetupModal: true }), // New
-  closeProfileSetupModal: () => set({ showProfileSetupModal: false }), // New
+  openProfileSetupModal: () => set({ showProfileSetupModal: true }),
+  closeProfileSetupModal: () => set({ showProfileSetupModal: false }),
+  openEditModal: (section) => set({ editingSection: section }), // Set the section to be edited
+  closeEditModal: () => set({ editingSection: null }), // Clear the editing section
 }));
