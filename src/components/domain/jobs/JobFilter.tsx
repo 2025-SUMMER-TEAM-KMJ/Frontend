@@ -1,0 +1,84 @@
+'use client';
+
+import styled from 'styled-components';
+import { JobFilters, SortOption } from '@/types';
+import Dropdown from '@/components/common/Dropdown';
+
+const FilterContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xlarge};
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.medium};
+`;
+
+const FilterGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const SortGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const SortButton = styled.button<{ $isActive: boolean }>`
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: ${({ $isActive }) => ($isActive ? 'bold' : 'normal')};
+  color: ${({ $isActive, theme }) => ($isActive ? theme.colors.primary : theme.colors.textSecondary)};
+  cursor: pointer;
+  padding: 4px;
+`;
+
+interface JobFilterProps {
+  filters: JobFilters;
+  sort: SortOption;
+  onFilterChange: (name: keyof JobFilters, value: string) => void;
+  onSortChange: (value: SortOption) => void;
+}
+
+const locationOptions = [
+  { value: '전체', label: '지역 (전체)' },
+  { value: '서울', label: '서울' },
+  { value: '경기', label: '경기' },
+  { value: '제주', label: '제주' },
+];
+// Add more options for category and job
+const categoryOptions = [{ value: '전체', label: '직군 (전체)' }];
+const jobOptions = [{ value: '전체', label: '직무 (전체)' }];
+
+
+export default function JobFilter({ filters, sort, onFilterChange, onSortChange }: JobFilterProps) {
+  return (
+    <FilterContainer>
+      <FilterGroup>
+        <Dropdown
+          options={locationOptions}
+          value={filters.location}
+          onChange={(e) => onFilterChange('location', e.target.value)}
+        />
+        <Dropdown
+          options={categoryOptions}
+          value={filters.category}
+          onChange={(e) => onFilterChange('category', e.target.value)}
+        />
+        <Dropdown
+          options={jobOptions}
+          value={filters.job}
+          onChange={(e) => onFilterChange('job', e.target.value)}
+        />
+      </FilterGroup>
+      <SortGroup>
+        <SortButton $isActive={sort === 'recommend'} onClick={() => onSortChange('recommend')}>
+          추천순
+        </SortButton>
+        <SortButton $isActive={sort === 'latest'} onClick={() => onSortChange('latest')}>
+          최신순
+        </SortButton>
+      </SortGroup>
+    </FilterContainer>
+  );
+}
