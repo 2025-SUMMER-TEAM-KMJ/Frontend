@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import { BasicInfo } from '@/types/profile';
+import { ResumeFormData } from '@/types';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 
@@ -18,19 +18,21 @@ const ButtonWrapper = styled.div`
 `;
 
 interface Props {
-  defaultValues?: BasicInfo;
-  onNext: (data: BasicInfo) => void;
+  defaultValues?: Partial<ResumeFormData>;
+  onNext: (data: Partial<ResumeFormData>) => void;
 }
 
 export default function Step1_BasicInfo({ defaultValues, onNext }: Props) {
-  const { register, handleSubmit } = useForm<BasicInfo>({ defaultValues });
+  const { register, handleSubmit } = useForm<Partial<ResumeFormData>>({ defaultValues });
 
   return (
     <Form onSubmit={handleSubmit(onNext)}>
-      <Input {...register('name')} placeholder="이름" />
-      <Input {...register('email')} placeholder="이메일" type="email" />
-      <Input {...register('phone')} placeholder="연락처" />
-      <Input {...register('brief')} placeholder="한 줄 소개" />
+      <h3>기본 정보</h3>
+      <Input {...register('name', { required: true })} placeholder="이름" />
+      <Input {...register('age', { required: true, valueAsNumber: true })} placeholder="나이" type="number" />
+      <Input {...register('gender', { required: true })} placeholder="성별" />
+      <Input {...register('email', { required: true })} placeholder="이메일" type="email" />
+      <Input {...register('phone', { required: true })} placeholder="연락처" />
       <ButtonWrapper>
         <Button type="submit">다음</Button>
       </ButtonWrapper>

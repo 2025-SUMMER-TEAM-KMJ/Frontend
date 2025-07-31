@@ -3,9 +3,14 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { useAuthStore } from '@/store/authStore';
-import { Profile } from '@/types/profile';
+import { Profile, ResumeFormData } from '@/types';
 import Step1_BasicInfo from './steps/Step1_BasicInfo';
-// Import other steps here
+import Step2_EducationWork from './steps/Step2_EducationWork';
+import Step3_Experience from './steps/Step3_Experience';
+import Step4_Competencies from './steps/Step4_Competencies';
+import Step5_Certifications from './steps/Step5_Certifications';
+import Step6_PreferredPosition from './steps/Step6_PreferredPosition';
+import Step7_PersonalNarratives from './steps/Step7_PersonalNarratives';
 
 const ModalBackdrop = styled.div`
   position: fixed;
@@ -26,6 +31,8 @@ const ModalContent = styled.div`
   border-radius: 8px;
   width: 90%;
   max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
 `;
 
 const Title = styled.h2`
@@ -36,27 +43,29 @@ const Title = styled.h2`
 
 interface Props {
   profile: Profile | null;
-  onSave: (data: Profile) => Promise<void>;
+  onSave: (data: ResumeFormData) => Promise<void>;
 }
 
 export default function ProfileSetupModal({ profile, onSave }: Props) {
   const { showProfileSetupModal, closeProfileSetupModal } = useAuthStore();
   const [currentStep, setCurrentStep] = useState(1);
-  const [profileData, setProfileData] = useState<Partial<Profile>>(profile || {});
+  const [formData, setFormData] = useState<Partial<ResumeFormData>>({});
 
-  const handleNext = (stepData: any) => {
-    const updatedData = { ...profileData, ...stepData };
-    setProfileData(updatedData);
-    // For simplicity, we'll just have one step. In a real app, you'd increment.
-    // setCurrentStep(currentStep + 1);
-    
-    // Since we only have Step 1 for now, we'll just save.
-    handleSave(updatedData as Profile);
+  const handleNext = (data: Partial<ResumeFormData>) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+    setCurrentStep((prev) => prev + 1);
   };
 
-  const handleSave = async (finalData: Profile) => {
+  const handlePrev = () => {
+    setCurrentStep((prev) => prev - 1);
+  };
+
+  const handleSave = async (data: Partial<ResumeFormData>) => {
+    const finalData = { ...formData, ...data } as ResumeFormData;
     await onSave(finalData);
     closeProfileSetupModal();
+    setCurrentStep(1); // Reset to first step on close
+    setFormData({}); // Clear form data
   };
 
   if (!showProfileSetupModal) return null;
@@ -64,14 +73,18 @@ export default function ProfileSetupModal({ profile, onSave }: Props) {
   return (
     <ModalBackdrop onClick={closeProfileSetupModal}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Title>프로필 {profile ? '수정' : '생성'}</Title>
-        {currentStep === 1 && (
-          <Step1_BasicInfo
-            defaultValues={profile?.basicInfo}
-            onNext={(data) => handleNext({ basicInfo: data })}
-          />
-        )}
-        {/* {currentStep === 2 && <Step2_Skills onNext={...} />} */}
+        <Title>자소서 생성 ({currentStep}/7)</Title>
+        {
+          {
+            1: <Step1_BasicInfo defaultValues={formData} onNext={handleNext} />,
+            2: <Step2_EducationWork defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
+            3: <Step3_Experience defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
+            4: <Step4_Competencies defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
+            5: <Step5_Certifications defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
+            6: <Step6_PreferredPosition defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
+            7: <Step7_PersonalNarratives defaultValues={formData} onNext={handleSave} onPrev={handlePrev} />,
+          }[currentStep]
+        }
       </ModalContent>
     </ModalBackdrop>
   );

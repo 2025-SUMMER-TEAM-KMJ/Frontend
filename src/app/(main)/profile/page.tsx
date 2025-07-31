@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAuthStore } from '@/store/authStore';
 import { getProfile, updateProfile } from '@/lib/api/profile';
-import { Profile } from '@/types/profile';
+import { Profile, ResumeFormData } from '@/types';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileView from '@/components/domain/profile/ProfileView';
 import ProfileSetupModal from '@/components/domain/profile/ProfileSetupModal';
@@ -43,8 +43,25 @@ function ProfilePageContent() {
     fetchProfile();
   }, []);
 
-  const handleSaveProfile = async (data: Profile) => {
-    await updateProfile(data);
+  const handleSaveProfile = async (data: ResumeFormData) => {
+    const newProfile: Profile = {
+      basicInfo: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        brief: data.personalNarratives?.motivation || '', // Using motivation as brief for now
+      },
+      skills: data.competencies?.map(c => ({ id: c.id, name: c.name })) || [],
+      experience: data.experience?.map(e => ({
+        id: e.id,
+        company: '', // Not directly available in ProjectExperience
+        position: e.title,
+        startDate: e.startDate,
+        endDate: e.endDate,
+        description: e.description,
+      })) || [],
+    };
+    await updateProfile(newProfile);
     await fetchProfile(); // Re-fetch to show updated data
   };
 
