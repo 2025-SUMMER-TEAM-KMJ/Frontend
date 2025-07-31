@@ -16,6 +16,28 @@ const ViewContainer = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 `;
 
+const ContentGrid = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Left column wider than right */
+  gap: ${({ theme }) => theme.spacing.xlarge};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+`;
+
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xlarge};
+`;
+
+const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xlarge};
+`;
+
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -145,63 +167,69 @@ export default function ProfileView({ profile }: Props) {
         </ProfileInfo>
       </ProfileHeader>
 
-      <Section>
-        <SectionTitle>자기소개</SectionTitle>
-        <ContentText>{profile.brief}</ContentText>
-      </Section>
+      <ContentGrid>
+        <LeftColumn>
+          <Section>
+            <SectionTitle>자기소개</SectionTitle>
+            <ContentText>{profile.brief}</ContentText>
+          </Section>
 
-      <Section>
-        <SectionTitle>기술 스택</SectionTitle>
-        <SkillList>
-          {profile.skills.map(skill => (
-            <SkillItem key={skill.id}>{skill.name}</SkillItem>
-          ))}
-        </SkillList>
-      </Section>
+          <Section>
+            <SectionTitle>경력</SectionTitle>
+            {profile.workExperience.map(exp => (
+              <ExperienceItem key={exp.id}>
+                <ExperienceTitle>{exp.company} - {exp.position}</ExperienceTitle>
+                <ExperiencePeriod>{exp.startDate} ~ {exp.endDate}</ExperiencePeriod>
+                <ExperienceDescription>{exp.description}</ExperienceDescription>
+              </ExperienceItem>
+            ))}
+          </Section>
 
-      <Section>
-        <SectionTitle>경력</SectionTitle>
-        {profile.workExperience.map(exp => (
-          <ExperienceItem key={exp.id}>
-            <ExperienceTitle>{exp.company} - {exp.position}</ExperienceTitle>
-            <ExperiencePeriod>{exp.startDate} ~ {exp.endDate}</ExperiencePeriod>
-            <ExperienceDescription>{exp.description}</ExperienceDescription>
-          </ExperienceItem>
-        ))}
-      </Section>
+          <Section>
+            <SectionTitle>프로젝트</SectionTitle>
+            {profile.projectExperience.map(proj => (
+              <ExperienceItem key={proj.id}>
+                <ExperienceTitle>{proj.title}</ExperienceTitle>
+                <ExperiencePeriod>{proj.startDate} ~ {proj.endDate}</ExperiencePeriod>
+                <ExperienceDescription>{proj.description}</ExperienceDescription>
+              </ExperienceItem>
+            ))}
+          </Section>
+        </LeftColumn>
 
-      <Section>
-        <SectionTitle>프로젝트</SectionTitle>
-        {profile.projectExperience.map(proj => (
-          <ExperienceItem key={proj.id}>
-            <ExperienceTitle>{proj.title}</ExperienceTitle>
-            <ExperiencePeriod>{proj.startDate} ~ {proj.endDate}</ExperiencePeriod>
-            <ExperienceDescription>{proj.description}</ExperienceDescription>
-          </ExperienceItem>
-        ))}
-      </Section>
+        <RightColumn>
+          <Section>
+            <SectionTitle>기술 스택</SectionTitle>
+            <SkillList>
+              {profile.skills.map(skill => (
+                <SkillItem key={skill.id}>{skill.name}</SkillItem>
+              ))}
+            </SkillList>
+          </Section>
 
-      <Section>
-        <SectionTitle>학력</SectionTitle>
-        {profile.education.map(edu => (
-          <ExperienceItem key={edu.id}>
-            <ExperienceTitle>{edu.institution} - {edu.major}</ExperienceTitle>
-            <ExperiencePeriod>{edu.startDate} ~ {edu.endDate}</ExperiencePeriod>
-            <ExperienceDescription>{edu.description}</ExperienceDescription>
-          </ExperienceItem>
-        ))}
-      </Section>
+          <Section>
+            <SectionTitle>학력</SectionTitle>
+            {profile.education.map(edu => (
+              <ExperienceItem key={edu.id}>
+                <ExperienceTitle>{edu.institution} - {edu.major}</ExperienceTitle>
+                <ExperiencePeriod>{edu.startDate} ~ {edu.endDate}</ExperiencePeriod>
+                <ExperienceDescription>{edu.description}</ExperienceDescription>
+              </ExperienceItem>
+            ))}
+          </Section>
 
-      <Section>
-        <SectionTitle>자격증</SectionTitle>
-        {profile.certifications.map(cert => (
-          <ExperienceItem key={cert.id}>
-            <ExperienceTitle>{cert.name}</ExperienceTitle>
-            <ExperiencePeriod>{cert.issueDate}</ExperiencePeriod>
-            <ExperienceDescription>{cert.issuer}</ExperienceDescription>
-          </ExperienceItem>
-        ))}
-      </Section>
+          <Section>
+            <SectionTitle>자격증</SectionTitle>
+            {profile.certifications.map(cert => (
+              <ExperienceItem key={cert.id}>
+                <ExperienceTitle>{cert.name}</ExperienceTitle>
+                <ExperiencePeriod>{cert.issueDate}</ExperiencePeriod>
+                <ExperienceDescription>{cert.issuer}</ExperienceDescription>
+              </ExperienceItem>
+            ))}
+          </Section>
+        </RightColumn>
+      </ContentGrid>
     </ViewContainer>
   );
 }
