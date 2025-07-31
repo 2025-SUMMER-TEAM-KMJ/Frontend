@@ -8,13 +8,19 @@ interface LoginCredentials {
 
 interface UserData {
   name: string;
+  age: number;
+  gender: string;
   email: string;
+  phone: string;
 }
 
 // Mock user database
 const MOCK_USER: UserData = {
   name: '김개발',
+  age: 30,
+  gender: '남',
   email: 'dev@careergo.com',
+  phone: '010-1234-5678',
 };
 
 export const loginUser = (credentials: LoginCredentials): Promise<UserData> => {
@@ -38,7 +44,10 @@ export const signupUser = (userData: UserData): Promise<UserData> => {
             // In a real app, you'd save the user and get back the created user data.
             resolve({
                 name: userData.name,
+                age: userData.age,
+                gender: userData.gender,
                 email: userData.email,
+                phone: userData.phone,
             });
         }, 1000);
     });

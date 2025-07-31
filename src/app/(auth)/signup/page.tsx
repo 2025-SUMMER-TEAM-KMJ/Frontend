@@ -43,7 +43,10 @@ const SubLink = styled(Link)`
 
 type Inputs = {
   name: string;
+  age: number;
+  gender: string;
   email: string;
+  phone: string;
   password?: string;
 };
 
@@ -58,7 +61,13 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const newUser = await signupUser({ name: data.name, email: data.email });
+      const newUser = await signupUser({
+        name: data.name,
+        age: data.age,
+        gender: data.gender,
+        email: data.email,
+        phone: data.phone,
+      });
       // In a real app, you might want to auto-login the user after signup
       login(newUser); 
       router.push('/'); // Redirect to home (or profile setup)
@@ -78,11 +87,31 @@ export default function SignupPage() {
         {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
 
         <Input
+          {...register('age', { required: '나이는 필수입니다.', valueAsNumber: true })}
+          placeholder="나이"
+          type="number"
+        />
+        {errors.age && <ErrorMessage>{errors.age.message}</ErrorMessage>}
+
+        <Input
+          {...register('gender', { required: '성별은 필수입니다.' })}
+          placeholder="성별"
+        />
+        {errors.gender && <ErrorMessage>{errors.gender.message}</ErrorMessage>}
+
+        <Input
           {...register('email', { required: '이메일은 필수입니다.' })}
           placeholder="이메일"
           type="email"
         />
         {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+
+        <Input
+          {...register('phone', { required: '연락처는 필수입니다.' })}
+          placeholder="연락처"
+          type="tel"
+        />
+        {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
 
         <Input
           {...register('password', { required: '비밀번호는 필수입니다.', minLength: { value: 8, message: '8자 이상 입력해주세요.' } })}

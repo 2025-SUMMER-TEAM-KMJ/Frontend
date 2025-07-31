@@ -40,6 +40,8 @@ const NavLink = styled(Link)`
   }
 `;
 
+
+
 const AuthWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -52,16 +54,34 @@ const UserName = styled.span`
 
 export default function Header() {
   const { isLoggedIn, user, logout } = useAuth();
-  // ...
+
   return (
     <HeaderWrapper>
-      {/* ... */}
+      <Link href="/">
+        <Image src="/images/logo.svg" alt="careergo 로고" width={100} height={32} />
+      </Link>
       <Nav>
         <NavLink href="/jobs">채용공고</NavLink>
         {isLoggedIn && <NavLink href="/resumes">자소서 관리</NavLink>}
         {isLoggedIn && <NavLink href="/profile">프로필</NavLink>}
       </Nav>
-      {/* ... */}
+      <AuthWrapper>
+        {isLoggedIn ? (
+          <>
+            <UserName>{user?.name}님</UserName>
+            <Button onClick={logout}>로그아웃</Button>
+          </>
+        ) : (
+          <>
+            <Link href="/login">
+              <Button>로그인</Button>
+            </Link>
+            <Link href="/signup">
+              <Button>회원가입</Button>
+            </Link>
+          </>
+        )}
+      </AuthWrapper>
     </HeaderWrapper>
   );
 }
