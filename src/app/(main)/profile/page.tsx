@@ -45,21 +45,17 @@ function ProfilePageContent() {
 
   const handleSaveProfile = async (data: ResumeFormData) => {
     const newProfile: Profile = {
-      basicInfo: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        brief: data.personalNarratives?.motivation || '', // Using motivation as brief for now
-      },
+      name: data.name,
+      age: data.age,
+      gender: data.gender,
+      email: data.email,
+      phone: data.phone,
+      brief: data.personalNarratives?.motivation || '',
       skills: data.competencies?.map(c => ({ id: c.id, name: c.name })) || [],
-      experience: data.experience?.map(e => ({
-        id: e.id,
-        company: '', // Not directly available in ProjectExperience
-        position: e.title,
-        startDate: e.startDate,
-        endDate: e.endDate,
-        description: e.description,
-      })) || [],
+      education: data.education || [],
+      workExperience: data.workExperience || [],
+      projectExperience: data.experience || [],
+      certifications: data.certifications || [],
     };
     await updateProfile(newProfile);
     await fetchProfile(); // Re-fetch to show updated data

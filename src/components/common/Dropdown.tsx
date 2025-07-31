@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import styled from 'styled-components';
 
 const Select = styled.select`
@@ -20,9 +21,9 @@ interface DropdownProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: { value: string; label: string }[];
 }
 
-export default function Dropdown({ options, ...props }: DropdownProps) {
+const Dropdown = React.forwardRef<HTMLSelectElement, DropdownProps>(({ options, ...props }, ref) => {
   return (
-    <Select {...props}>
+    <Select ref={ref} {...props}>
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
@@ -30,4 +31,8 @@ export default function Dropdown({ options, ...props }: DropdownProps) {
       ))}
     </Select>
   );
-}
+});
+
+Dropdown.displayName = 'Dropdown';
+
+export default Dropdown;

@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { signupUser } from '@/lib/api/auth';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import Dropdown from '@/components/common/Dropdown';
 
 // (LoginPage와 유사한 스타일 컴포넌트들 재사용)
 const Title = styled.h1`
@@ -41,36 +42,46 @@ const SubLink = styled(Link)`
   }
 `;
 
-type Inputs = {
+type Step1Inputs = {
+  email: string;
+  password?: string;
+};
+
+type Step2Inputs = {
   name: string;
   age: number;
   gender: string;
-  email: string;
   phone: string;
-  password?: string;
 };
 
 export default function SignupPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<Step1Inputs & Step2Inputs>>({});
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const { register, handleSubmit, formState: { errors, isSubmitting }, trigger } = useForm<Step1Inputs | Step2Inputs>();
+
+  const onNextStep1: SubmitHandler<Step1Inputs> = async (data) => {
+    const isValid = await trigger(['email', 'password']);
+    if (isValid) {
+      setFormData((prev) => ({ ...prev, ...data }));
+      setStep(2);
+    }
+  };
+
+  const onFinalSubmit: SubmitHandler<Step2Inputs> = async (data) => {
+    const finalData = { ...formData, ...data } as Step1Inputs & Step2Inputs;
     try {
       const newUser = await signupUser({
-        name: data.name,
-        age: data.age,
-        gender: data.gender,
-        email: data.email,
-        phone: data.phone,
+        name: finalData.name,
+        age: finalData.age,
+        gender: finalData.gender,
+        email: finalData.email,
+        phone: finalData.phone,
       });
-      // In a real app, you might want to auto-login the user after signup
-      login(newUser); 
-      router.push('/'); // Redirect to home (or profile setup)
+      login(newUser);
+      router.push('/');
     } catch (error) {
       // Handle signup errors if any
     }
@@ -79,51 +90,61 @@ export default function SignupPage() {
   return (
     <>
       <Title>회원가입</Title>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Input
-          {...register('name', { required: '이름은 필수입니다.' })}
-          placeholder="이름"
-        />
-        {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+      {step === 1 && (
+        <Form onSubmit={handleSubmit(onNextStep1)}>
+          <Input
+            {...register('email', { required: '이메일은 필수입니다.' })}
+            placeholder="이메일"
+            type="email"
+          />
+          {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
 
-        <Input
-          {...register('age', { required: '나이는 필수입니다.', valueAsNumber: true })}
-          placeholder="나이"
-          type="number"
-        />
-        {errors.age && <ErrorMessage>{errors.age.message}</ErrorMessage>}
+          <Input
+            {...register('password', { required: '비밀번호는 필수입니다.', minLength: { value: 8, message: '8자 이상 입력해주세요.' } })}
+            placeholder="비밀번호"
+            type="password"
+          />
+          {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
 
-        <Input
-          {...register('gender', { required: '성별은 필수입니다.' })}
-          placeholder="성별"
-        />
-        {errors.gender && <ErrorMessage>{errors.gender.message}</ErrorMessage>}
+          <Button type="submit" disabled={isSubmitting}>
+            다음
+          </Button>
+        </Form>
+      )}
 
-        <Input
-          {...register('email', { required: '이메일은 필수입니다.' })}
-          placeholder="이메일"
-          type="email"
-        />
-        {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+      {step === 2 && (
+        <Form onSubmit={handleSubmit(onFinalSubmit)}>
+          <Input
+            {...register('name', { required: '이름은 필수입니다.' })}
+            placeholder="이름"
+          />
+          {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
 
-        <Input
-          {...register('phone', { required: '연락처는 필수입니다.' })}
-          placeholder="연락처"
-          type="tel"
-        />
-        {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
+          <Input
+            {...register('age', { required: '나이는 필수입니다.', valueAsNumber: true })}
+            placeholder="나이"
+            type="number"
+          />
+          {errors.age && <ErrorMessage>{errors.age.message}</ErrorMessage>}
 
-        <Input
-          {...register('password', { required: '비밀번호는 필수입니다.', minLength: { value: 8, message: '8자 이상 입력해주세요.' } })}
-          placeholder="비밀번호"
-          type="password"
-        />
-        {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
+          <Dropdown
+            {...register('gender', { required: '성별은 필수입니다.' })}
+            options={[{ value: '', label: '성별 선택' }, { value: '남', label: '남' }, { value: '여', label: '여' }]}
+          />
+          {errors.gender && <ErrorMessage>{errors.gender.message}</ErrorMessage>}
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? '가입 중...' : '회원가입'}
-        </Button>
-      </Form>
+          <Input
+            {...register('phone', { required: '연락처는 필수입니다.' })}
+            placeholder="연락처"
+            type="tel"
+          />
+          {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
+
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? '가입 중...' : '회원가입'}
+          </Button>
+        </Form>
+      )}
       <SubLink href="/login">이미 계정이 있으신가요? 로그인</SubLink>
     </>
   );
