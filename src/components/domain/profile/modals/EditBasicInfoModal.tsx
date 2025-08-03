@@ -1,133 +1,96 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
+import { useForm } from 'react-hook-form';
 import { Profile } from '@/types/profile';
+import Modal from '@/components/common/Modal';
+import Input from '@/components/common/Input';
+import Button from '@/components/common/Button';
 
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
+interface EditBasicInfoFormData {
+  name: string;
+  age: number;
+  gender: string;
+  email: string;
+  phone: string;
+}
 
-const ModalContent = styled.div`
-  background-color: white;
-  padding: ${({ theme }) => theme.spacing.xlarge};
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
+interface Props {
+  profile: Profile;
+  onSave: (data: EditBasicInfoFormData) => void;
+  onClose: () => void;
+}
+
+const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.medium};
-`;
-
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.small};
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
-`;
-
-const Label = styled.label`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: ${({ theme }) => theme.spacing.small};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 4px;
-  font-size: 16px;
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.small};
+  margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
-const Button = styled.button`
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
+const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
+  const { register, handleSubmit, formState: { errors } } = useForm<EditBasicInfoFormData>({
+    defaultValues: {
+      name: profile.name,
+      age: profile.age,
+      gender: profile.gender,
+      email: profile.email,
+      phone: profile.phone,
+    },
+  });
 
-  &.primary {
-    background-color: ${({ theme }) => theme.colors.primary};
-    color: white;
-  }
-
-  &.secondary {
-    background-color: ${({ theme }) => theme.colors.lightGray};
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
-`;
-
-interface Props {
-  profile: Profile;
-  onSave: (updatedProfile: Partial<Profile>) => void;
-  onClose: () => void;
-}
-
-export default function EditBasicInfoModal({ profile, onSave, onClose }: Props) {
-  const [name, setName] = useState(profile.name);
-  const [email, setEmail] = useState(profile.email);
-  const [phone, setPhone] = useState(profile.phone);
-  const [urls, setUrls] = useState(profile.urls?.join('\n') || '');
-
-  useEffect(() => {
-    setName(profile.name);
-    setEmail(profile.email);
-    setPhone(profile.phone);
-    setUrls(profile.urls?.join('\n') || '');
-  }, [profile]);
-
-  const handleSave = () => {
-    onSave({ name, email, phone, urls: urls.split('\n').filter(url => url.trim() !== '') });
+  const onSubmit = (data: EditBasicInfoFormData) => {
+    onSave(data);
   };
 
   return (
-    <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Title>기본 정보 수정</Title>
-        <InputGroup>
-          <Label htmlFor="name">이름</Label>
-          <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
-        </InputGroup>
-        <InputGroup>
-          <Label htmlFor="email">이메일</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </InputGroup>
-        <InputGroup>
-          <Label htmlFor="phone">전화번호</Label>
-          <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        </InputGroup>
-        <InputGroup>
-          <Label htmlFor="urls">관련 링크 (한 줄에 하나씩)</Label>
-          <textarea id="urls" value={urls} onChange={(e) => setUrls(e.target.value)} rows={3} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
-        </InputGroup>
+    <Modal onClose={onClose} title="기본 정보 수정">
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          label="이름"
+          {...register('name', { required: '이름은 필수입니다.' })}
+          error={errors.name?.message}
+        />
+        <Input
+          label="나이"
+          type="number"
+          {...register('age', { required: '나이는 필수입니다.', valueAsNumber: true })}
+          error={errors.age?.message}
+        />
+        <Input
+          label="성별"
+          {...register('gender', { required: '성별은 필수입니다.' })}
+          error={errors.gender?.message}
+        />
+        <Input
+          label="이메일"
+          type="email"
+          {...register('email', { required: '이메일은 필수입니다.' })}
+          error={errors.email?.message}
+        />
+        <Input
+          label="전화번호"
+          {...register('phone', { required: '전화번호는 필수입니다.' })}
+          error={errors.phone?.message}
+        />
         <ButtonContainer>
-          <Button className="secondary" onClick={onClose}>취소</Button>
-          <Button className="primary" onClick={handleSave}>저장</Button>
+          <Button type="button" onClick={onClose} variant="secondary">
+            취소
+          </Button>
+          <Button type="submit">
+            저장
+          </Button>
         </ButtonContainer>
-      </ModalContent>
-    </ModalBackdrop>
+      </Form>
+    </Modal>
   );
-}
+};
+
+export default EditBasicInfoModal;

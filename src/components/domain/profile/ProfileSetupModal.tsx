@@ -44,10 +44,11 @@ const Title = styled.h2`
 interface Props {
   profile: Profile | null;
   onSave: (data: ResumeFormData) => Promise<void>;
+  onClose: () => void;
 }
 
-export default function ProfileSetupModal({ profile, onSave }: Props) {
-  const { showProfileSetupModal, closeProfileSetupModal } = useAuthStore();
+export default function ProfileSetupModal({ profile, onSave, onClose }: Props) {
+  const { showProfileSetupModal } = useAuthStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<ResumeFormData>>({});
 
@@ -63,7 +64,7 @@ export default function ProfileSetupModal({ profile, onSave }: Props) {
   const handleSave = async (data: Partial<ResumeFormData>) => {
     const finalData = { ...formData, ...data } as ResumeFormData;
     await onSave(finalData);
-    closeProfileSetupModal();
+    onClose();
     setCurrentStep(1); // Reset to first step on close
     setFormData({}); // Clear form data
   };
@@ -71,7 +72,7 @@ export default function ProfileSetupModal({ profile, onSave }: Props) {
   if (!showProfileSetupModal) return null;
 
   return (
-    <ModalBackdrop onClick={closeProfileSetupModal}>
+    <ModalBackdrop onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <Title>자소서 생성 ({currentStep}/7)</Title>
         {

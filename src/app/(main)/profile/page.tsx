@@ -7,6 +7,8 @@ import { getProfile, updateProfile } from '@/lib/api/profile';
 import { Profile, ResumeFormData } from '@/types';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileView from '@/components/domain/profile/ProfileView';
+import ProfileSetupModal from '@/components/domain/profile/ProfileSetupModal';
+import EditBasicInfoModal from '@/components/domain/profile/modals/EditBasicInfoModal';
 
 import Button from '@/components/common/Button';
 
@@ -27,7 +29,7 @@ const Loading = styled.p`
 function ProfilePageContent() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { openProfileSetupModal } = useAuthStore();
+  const { showProfileSetupModal, closeProfileSetupModal, showBasicInfoModal, closeBasicInfoModal } = useAuthStore();
 
   const fetchProfile = async () => {
     setIsLoading(true);
@@ -56,6 +58,22 @@ function ProfilePageContent() {
     };
     await updateProfile(newProfile);
     await fetchProfile(); // Re-fetch to show updated data
+    closeProfileSetupModal(); // Close modal after saving
+  };
+
+  const handleSaveBasicInfo = async (data: { name: string; age: number; gender: string; email: string; phone: string; }) => {
+    if (!profile) return;
+    const newProfile: Profile = {
+      ...profile,
+      name: data.name,
+      age: data.age,
+      gender: data.gender,
+      email: data.email,
+      phone: data.phone,
+    };
+    await updateProfile(newProfile);
+    await fetchProfile(); // Re-fetch to show updated data
+    closeBasicInfoModal(); // Close modal after saving
   };
 
   if (isLoading) {
@@ -65,6 +83,20 @@ function ProfilePageContent() {
   return (
     <ProfilePageContainer>
       {profile && <ProfileView profile={profile} />}
+      {showProfileSetupModal && profile && (
+        <ProfileSetupModal
+          profile={profile}
+          onSave={handleSaveProfile}
+          onClose={closeProfileSetupModal}
+        />
+      )}
+      {showBasicInfoModal && profile && (
+        <EditBasicInfoModal
+          profile={profile}
+          onSave={handleSaveBasicInfo}
+          onClose={closeBasicInfoModal}
+        />
+      )}
     </ProfilePageContainer>
   );
 }
