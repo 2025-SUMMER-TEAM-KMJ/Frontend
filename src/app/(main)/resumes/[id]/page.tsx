@@ -3,46 +3,56 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Resume } from '@/types';
-import { getResumeById, updateResumeQnA } from '@/lib/api/resumes';
+import { getResumeById, updateResumeQnA, addResumeQnA, deleteResumeQnA } from '@/lib/api/resumes';
 import AuthGuard from '@/components/auth/AuthGuard';
-import QnAItem from '@/components/domain/resumes/QnAItem';
-import Button from '@/components/common/Button';
+import ApplicationInfoCard from '@/components/domain/resumes/analysis/ApplicationInfoCard';
+import CompetencyAnalysis from '@/components/domain/resumes/analysis/CompetencyAnalysis';
+import ResumeQnA from '@/components/domain/resumes/analysis/ResumeQnA';
+import ProfileSkills from '@/components/domain/resumes/analysis/ProfileSkills';
 
-const DetailPageContainer = styled.div`
+const AnalysisPageContainer = styled.div`
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.large};
 `;
 
-const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xlarge};
+const Loading = styled.p`
+  text-align: center;
+  padding: 50px;
+`;
+
+const ResumeHeader = styled.header`
+  margin-bottom: ${({ theme }) => theme.spacing.large};
 `;
 
 const Title = styled.h1`
   font-size: 32px;
   font-weight: 800;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
 `;
 
 const Subtitle = styled.p`
   font-size: 16px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-top: ${({ theme }) => theme.spacing.small};
 `;
 
-const SnapshotInfo = styled.div` // 임시 컴포넌트
-  background-color: ${({ theme }) => theme.colors.lightGray};
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: ${({ theme }) => theme.spacing.large};
-`;
+const mockProfileSkills = [
+  '3년차 프론트엔드 개발자입니다. 사용자 경험 개선에 관심이 많습니다.',
+  'React 기술을 보유하고 있습니다.',
+  'TypeScript 기술을 보유하고 있습니다.',
+  'Next.js 기술을 보유하고 있습니다.',
+  'CareerGo에서 프론트엔드 개발자로 근무하며 AI 기반 채용 서비스 개발 경험을 쌓았습니다.'
+];
 
 interface Props {
   params: { id: string };
 }
 
-function ResumeDetailPageContent({ params }: Props) {
+function ResumeAnalysisPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
 
   useEffect(() => {
@@ -51,36 +61,52 @@ function ResumeDetailPageContent({ params }: Props) {
     });
   }, [params.id]);
 
-  const handleSaveQnA = async (qnaId: string, newAnswer: string) => {
+  const handleUpdateQnA = async (qnaId: string, question: string, answer: string) => {
     if (!resume) return;
-    const updatedResume = await updateResumeQnA(resume.id, qnaId, newAnswer);
-    setResume(updatedResume); // Update state to reflect change
+    const updatedResume = await updateResumeQnA(resume.id, qnaId, question, answer);
+    setResume(updatedResume);
   };
 
-  if (!resume) return <p>Loading...</p>;
+  const handleAddQnA = async () => {
+    if (!resume) return;
+    const updatedResume = await addResumeQnA(resume.id);
+    setResume(updatedResume);
+  };
+
+  const handleDeleteQnA = async (qnaId: string) => {
+    if (!resume) return;
+    const updatedResume = await deleteResumeQnA(resume.id, qnaId);
+    setResume(updatedResume);
+  };
+
+  if (!resume) return <Loading>자기소개서 정보를 불러오는 중...</Loading>;
 
   return (
-    <DetailPageContainer>
-      <Header>
+    <AnalysisPageContainer>
+      <ResumeHeader>
         <Title>{resume.title}</Title>
-        <Subtitle>최종 수정: {resume.updatedAt}</Subtitle>
-      </Header>
+        <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
+      </ResumeHeader>
 
-      <SnapshotInfo>
-        이 자소서는 <strong>{resume.snapshot?.basicInfo?.name || '알 수 없음'}</strong>님의 프로필 (스냅샷)을 기반으로 작성되었습니다.
-      </SnapshotInfo>
+      {resume.basedOn === 'job' ? (
+        <>
+          <ApplicationInfoCard resume={resume} />
+          <CompetencyAnalysis />
+        </>
+      ) : (
+        <ProfileSkills skills={mockProfileSkills} />
+      )}
 
-      <div>
-        {resume.qnas.map(qna => (
-          <QnAItem key={qna.id} item={qna} onSave={handleSaveQnA} />
-        ))}
-      </div>
-
-      <Button style={{ marginTop: '24px' }}>AI로 전체 자소서 재생성</Button>
-    </DetailPageContainer>
+      <ResumeQnA 
+        qnas={resume.qnas} 
+        onUpdate={handleUpdateQnA}
+        onAdd={handleAddQnA}
+        onDelete={handleDeleteQnA}
+      />
+    </AnalysisPageContainer>
   );
 }
 
-export default function ResumeDetailPage({ params }: Props) {
-  return <AuthGuard><ResumeDetailPageContent params={params} /></AuthGuard>;
+export default function ResumeAnalysisPage({ params }: Props) {
+  return <AuthGuard><ResumeAnalysisPageContent params={params} /></AuthGuard>;
 }

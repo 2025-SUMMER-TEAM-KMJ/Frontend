@@ -1,4 +1,4 @@
-import { Resume, Profile, Job } from '@/types';
+import { Resume, Profile, Job, QnA } from '@/types';
 import { getProfile } from './profile'; // 현재 프로필을 가져오기 위함
 
 let MOCK_RESUMES: Resume[] = [
@@ -53,7 +53,8 @@ export const createProfileBasedResume = async (): Promise<Resume> => {
         basedOn: 'profile',
         snapshot: JSON.parse(JSON.stringify(currentProfile)), // Deep copy for snapshot
         qnas: [
-            { id: 'q-new-1', question: 'AI가 생성한 새로운 질문입니다.', answer: 'AI가 생성한 새로운 답변입니다.' },
+            { id: 'q-new-1', question: '성장 과정을 들려주세요.', answer: '' },
+            { id: 'q-new-2', question: '지원자님의 강점과 약점은 무엇인가요?', answer: '' },
         ],
     };
     MOCK_RESUMES.unshift(newResume);
@@ -79,7 +80,7 @@ export const createJobBasedResume = async (job: Job): Promise<Resume> => {
     return newResume;
 };
 
-export const updateResumeQnA = (resumeId: string, qnaId: string, newAnswer: string): Promise<Resume> => {
+export const updateResumeQnA = (resumeId: string, qnaId: string, newQuestion: string, newAnswer: string): Promise<Resume> => {
     return new Promise((resolve, reject) => {
         const resumeIndex = MOCK_RESUMES.findIndex(r => r.id === resumeId);
         if (resumeIndex === -1) return reject(new Error('Resume not found'));
@@ -87,9 +88,44 @@ export const updateResumeQnA = (resumeId: string, qnaId: string, newAnswer: stri
         const qnaIndex = MOCK_RESUMES[resumeIndex].qnas.findIndex(q => q.id === qnaId);
         if (qnaIndex === -1) return reject(new Error('QnA not found'));
 
-        MOCK_RESUMES[resumeIndex].qnas[qnaIndex].answer = newAnswer;
+        MOCK_RESUMES[resumeIndex].qnas[qnaIndex] = { ...MOCK_RESUMES[resumeIndex].qnas[qnaIndex], question: newQuestion, answer: newAnswer };
         MOCK_RESUMES[resumeIndex].updatedAt = new Date().toISOString().split('T')[0];
         
+        resolve(MOCK_RESUMES[resumeIndex]);
+    });
+};
+
+export const addResumeQnA = (resumeId: string): Promise<Resume> => {
+    return new Promise((resolve, reject) => {
+        const resumeIndex = MOCK_RESUMES.findIndex(r => r.id === resumeId);
+        if (resumeIndex === -1) return reject(new Error('Resume not found'));
+
+        const newQnA: QnA = {
+            id: `qna-${Date.now()}`,
+            question: '새로운 질문을 입력하세요.',
+            answer: '새로운 답변을 입력하세요.',
+        };
+
+        const updatedResume = {
+            ...MOCK_RESUMES[resumeIndex],
+            qnas: [...MOCK_RESUMES[resumeIndex].qnas, newQnA],
+            updatedAt: new Date().toISOString().split('T')[0],
+        };
+
+        MOCK_RESUMES[resumeIndex] = updatedResume;
+
+        resolve(updatedResume);
+    });
+};
+
+export const deleteResumeQnA = (resumeId: string, qnaId: string): Promise<Resume> => {
+    return new Promise((resolve, reject) => {
+        const resumeIndex = MOCK_RESUMES.findIndex(r => r.id === resumeId);
+        if (resumeIndex === -1) return reject(new Error('Resume not found'));
+
+        MOCK_RESUMES[resumeIndex].qnas = MOCK_RESUMES[resumeIndex].qnas.filter(q => q.id !== qnaId);
+        MOCK_RESUMES[resumeIndex].updatedAt = new Date().toISOString().split('T')[0];
+
         resolve(MOCK_RESUMES[resumeIndex]);
     });
 };
