@@ -14,7 +14,8 @@ const ALL_JOBS: Job[] = [
 export const getJobs = (
   filters: JobFilters,
   sort: SortOption,
-  isLoggedIn: boolean
+  isLoggedIn: boolean,
+  searchTerm?: string
 ): Promise<Job[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -23,6 +24,15 @@ export const getJobs = (
       // Filtering logic (simple for now)
       if (filters.location && filters.location !== '전체') {
         filteredJobs = filteredJobs.filter(job => job.location === filters.location);
+      }
+
+      if (searchTerm) {
+        const lowercasedTerm = searchTerm.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => 
+          job.title.toLowerCase().includes(lowercasedTerm) ||
+          job.company.toLowerCase().includes(lowercasedTerm) ||
+          job.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm))
+        );
       }
       // Add more filters for category and job here...
 

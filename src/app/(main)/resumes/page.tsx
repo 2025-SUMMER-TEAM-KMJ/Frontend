@@ -55,7 +55,7 @@ function ResumesPageContent() {
   const handleCreateResume = async () => {
     try {
       const newResume = await createProfileBasedResume();
-      router.push(`/resumes/${newResume.id}`);
+      router.push(`/resumes/profile-based/${newResume.id}`);
     } catch (error) {
       alert(error instanceof Error ? error.message : '자소서 생성 실패');
     }

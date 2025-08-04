@@ -38,13 +38,14 @@ function JobsPageContent() {
     job: '전체',
   });
   const [sort, setSort] = useState<SortOption>('latest');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchJobs = useCallback(async () => {
     setIsLoading(true);
-    const data = await getJobs(filters, sort, isLoggedIn);
+    const data = await getJobs(filters, sort, isLoggedIn, searchTerm);
     setJobs(data);
     setIsLoading(false);
-  }, [filters, sort, isLoggedIn]);
+  }, [filters, sort, isLoggedIn, searchTerm]);
 
   useEffect(() => {
     fetchJobs();
@@ -58,6 +59,10 @@ function JobsPageContent() {
     setSort(value);
   };
 
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
   return (
     <JobsPageContainer>
       <Title>채용 공고</Title>
@@ -67,6 +72,7 @@ function JobsPageContent() {
         sort={sort}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
+        onSearch={handleSearch}
       />
 
       {isLoading ? (

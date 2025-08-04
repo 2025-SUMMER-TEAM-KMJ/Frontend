@@ -60,7 +60,7 @@ export default function JobPostCard({ job }: JobPostCardProps) {
     e.stopPropagation();
     try {
       const newResume = await createJobBasedResume(job);
-      router.push(`/resumes/${newResume.id}`);
+      router.push(`/resumes/job-based/${newResume.id}`);
     } catch (error) {
       alert(error instanceof Error ? error.message : '자소서 생성 실패');
     }

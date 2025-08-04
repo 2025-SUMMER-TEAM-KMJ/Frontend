@@ -1,22 +1,61 @@
 'use client';
 
-import styled from 'styled-components';
-import Input from '@/components/common/Input';
+import React from 'react';
 import Button from '@/components/common/Button';
+// import Input from '@/components/common/Input'; // Input 임포트 제거
+import styled from 'styled-components';
 
 const SearchBarWrapper = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.small};
   width: 100%;
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
 `;
 
-export default function SearchBar() {
+const StyledInputWrapper = styled.div`
+  flex-grow: 1;
+  flex-basis: 0;
+`;
+
+// Input.tsx의 스타일을 직접 가져와 StyledInput으로 정의
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  font-size: 16px;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+interface SearchBarProps {
+  onSearch?: (term: string) => void;
+}
+
+export default function SearchBar({ onSearch }: SearchBarProps) {
+  const [term, setTerm] = React.useState('');
+
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch(term);
+    }
+  };
+
   return (
     <SearchBarWrapper>
-      <Input placeholder="직무, 기업, 키워드로 검색하세요" />
-      <Button>검색</Button>
+      <StyledInputWrapper>
+        <StyledInput 
+          placeholder="직무, 기업, 키워드로 검색하세요" 
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+        />
+      </StyledInputWrapper>
+      <Button onClick={handleSearch}>검색</Button>
     </SearchBarWrapper>
   );
 }

@@ -5,6 +5,7 @@ export interface Job {
   location: string;
   experience: string;
   tags: string[];
+  jobGroup?: string; // jobGroup 추가
 }
 
 export interface JobFilters {

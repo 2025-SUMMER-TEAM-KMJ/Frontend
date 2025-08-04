@@ -3,6 +3,7 @@
 import styled from 'styled-components';
 import { JobFilters, SortOption } from '@/types';
 import Dropdown from '@/components/common/Dropdown';
+import SearchBar from '@/components/domain/main/SearchBar';
 
 const FilterContainer = styled.div`
   display: flex;
@@ -16,6 +17,7 @@ const FilterContainer = styled.div`
 const FilterGroup = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.small};
+  flex-grow: 1;
 `;
 
 const SortGroup = styled.div`
@@ -38,6 +40,7 @@ interface JobFilterProps {
   sort: SortOption;
   onFilterChange: (name: keyof JobFilters, value: string) => void;
   onSortChange: (value: SortOption) => void;
+  onSearch: (term: string) => void;
 }
 
 const locationOptions = [
@@ -51,10 +54,11 @@ const categoryOptions = [{ value: '전체', label: '직군 (전체)' }];
 const jobOptions = [{ value: '전체', label: '직무 (전체)' }];
 
 
-export default function JobFilter({ filters, sort, onFilterChange, onSortChange }: JobFilterProps) {
+export default function JobFilter({ filters, sort, onFilterChange, onSortChange, onSearch }: JobFilterProps) {
   return (
     <FilterContainer>
       <FilterGroup>
+        <SearchBar onSearch={onSearch} />
         <Dropdown
           options={locationOptions}
           value={filters.location}

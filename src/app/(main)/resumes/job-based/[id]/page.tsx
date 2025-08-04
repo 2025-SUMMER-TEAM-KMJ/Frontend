@@ -5,10 +5,9 @@ import styled from 'styled-components';
 import { Resume } from '@/types';
 import { getResumeById, updateResumeQnA, addResumeQnA, deleteResumeQnA } from '@/lib/api/resumes';
 import AuthGuard from '@/components/auth/AuthGuard';
-import ApplicationInfoCard from '@/components/domain/resumes/analysis/ApplicationInfoCard';
+import JobPostingInfoCard from '@/components/domain/resumes/analysis/JobPostingInfoCard';
 import CompetencyAnalysis from '@/components/domain/resumes/analysis/CompetencyAnalysis';
 import ResumeQnA from '@/components/domain/resumes/analysis/ResumeQnA';
-import ProfileSkills from '@/components/domain/resumes/analysis/ProfileSkills';
 
 const AnalysisPageContainer = styled.div`
   width: 100%;
@@ -39,14 +38,6 @@ const Subtitle = styled.p`
   font-size: 16px;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
-
-const mockProfileSkills = [
-  '3년차 프론트엔드 개발자입니다. 사용자 경험 개선에 관심이 많습니다.',
-  'React 기술을 보유하고 있습니다.',
-  'TypeScript 기술을 보유하고 있습니다.',
-  'Next.js 기술을 보유하고 있습니다.',
-  'CareerGo에서 프론트엔드 개발자로 근무하며 AI 기반 채용 서비스 개발 경험을 쌓았습니다.'
-];
 
 interface Props {
   params: { id: string };
@@ -88,14 +79,8 @@ function ResumeAnalysisPageContent({ params }: Props) {
         <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
       </ResumeHeader>
 
-      {resume.basedOn === 'job' ? (
-        <>
-          <ApplicationInfoCard resume={resume} />
-          <CompetencyAnalysis />
-        </>
-      ) : (
-        <ProfileSkills skills={mockProfileSkills} />
-      )}
+      <JobPostingInfoCard resume={resume} />
+      <CompetencyAnalysis />
 
       <ResumeQnA 
         qnas={resume.qnas} 
@@ -110,3 +95,4 @@ function ResumeAnalysisPageContent({ params }: Props) {
 export default function ResumeAnalysisPage({ params }: Props) {
   return <AuthGuard><ResumeAnalysisPageContent params={params} /></AuthGuard>;
 }
+

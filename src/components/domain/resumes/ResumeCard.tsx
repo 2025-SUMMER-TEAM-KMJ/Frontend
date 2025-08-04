@@ -31,8 +31,12 @@ interface Props {
 }
 
 export default function ResumeCard({ resume }: Props) {
+  const resumePath = resume.basedOn === 'job' 
+    ? `/resumes/job-based/${resume.id}` 
+    : `/resumes/profile-based/${resume.id}`;
+
   return (
-    <Link href={`/resumes/${resume.id}`}>
+    <Link href={resumePath}>
       <CardWrapper>
         <Title>{resume.title}</Title>
         <SubInfo>최종 수정: {resume.updatedAt}</SubInfo>

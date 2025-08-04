@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { useAuthStore } from '@/store/authStore';
 import { getProfile, updateProfile } from '@/lib/api/profile';
-import { Profile, ResumeFormData } from '@/types';
+import { createProfileBasedResume } from '@/lib/api/resumes';
+import { Profile, ResumeFormData, Resume } from '@/types';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileView from '@/components/domain/profile/ProfileView';
 import ProfileSetupModal from '@/components/domain/profile/ProfileSetupModal';
@@ -30,6 +32,7 @@ function ProfilePageContent() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { showProfileSetupModal, closeProfileSetupModal, showBasicInfoModal, closeBasicInfoModal } = useAuthStore();
+  const router = useRouter();
 
   const fetchProfile = async () => {
     setIsLoading(true);
@@ -42,7 +45,7 @@ function ProfilePageContent() {
     fetchProfile();
   }, []);
 
-  const handleSaveProfile = async (data: ResumeFormData) => {
+  const handleSaveProfile = async (data: ResumeFormData): Promise<Resume> => {
     const newProfile: Profile = {
       name: data.name,
       age: data.age,
@@ -57,8 +60,11 @@ function ProfilePageContent() {
       certifications: data.certifications || [],
     };
     await updateProfile(newProfile);
+    const newResume = await createProfileBasedResume(); // 프로필 기반 자소서 생성
     await fetchProfile(); // Re-fetch to show updated data
     closeProfileSetupModal(); // Close modal after saving
+    router.push(`/resumes/profile-based/${newResume.id}`); // 리다이렉트
+    return newResume;
   };
 
   const handleSaveBasicInfo = async (data: { name: string; age: number; gender: string; email: string; phone: string; }) => {
