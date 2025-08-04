@@ -83,7 +83,7 @@ export default function SignupPage() {
         phone: finalData.phone,
       });
       login(newUser);
-      router.push('/');
+            router.push('/signup/additional-info');
     } catch (error) {
       // Handle signup errors if any
     }

@@ -7,12 +7,31 @@ import Button from '@/components/common/Button';
 
 const ItemWrapper = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.large};
+  position: relative; /* For positioning the edit button */
+`;
+
+const QuestionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
 `;
 
 const Question = styled.h3`
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const EditButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 const AnswerTextarea = styled.textarea`
@@ -34,9 +53,10 @@ const ButtonWrapper = styled.div`
 interface Props {
   item: QnA;
   onSave: (qnaId: string, newAnswer: string) => void;
+  onEdit: (qna: QnA) => void; // New prop for edit button
 }
 
-export default function QnAItem({ item, onSave }: Props) {
+export default function QnAItem({ item, onSave, onEdit }: Props) {
   const [answer, setAnswer] = useState(item.answer);
   const [isDirty, setIsDirty] = useState(false);
 
@@ -52,7 +72,10 @@ export default function QnAItem({ item, onSave }: Props) {
 
   return (
     <ItemWrapper>
-      <Question>{item.question}</Question>
+      <QuestionHeader>
+        <Question>{item.question}</Question>
+        <EditButton onClick={() => onEdit(item)}>✏️</EditButton>
+      </QuestionHeader>
       <AnswerTextarea value={answer} onChange={handleChange} />
       {isDirty && (
         <ButtonWrapper>

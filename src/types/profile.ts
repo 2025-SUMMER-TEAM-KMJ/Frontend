@@ -36,6 +36,13 @@ export interface Certification {
   issuer: string;
 }
 
+export interface MyStory {
+  id: string;
+  title: string;
+  content: string;
+  tag: '자기소개' | '일화' | '기타';
+}
+
 export interface Profile {
   name: string;
   age: number;
@@ -48,4 +55,5 @@ export interface Profile {
   workExperience: WorkExperience[];
   projectExperience: ProjectExperience[];
   certifications: Certification[];
+  myStories?: MyStory[];
 }

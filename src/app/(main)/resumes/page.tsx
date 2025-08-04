@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { Resume, Job } from '@/types';
-import { getResumes, createProfileBasedResume } from '@/lib/api/resumes';
-import { getInterestedJobs } from '@/lib/api/jobs';
+import { getResumes, createProfileBasedResume, createJobBasedResume } from '@/lib/api/resumes';
+import { getInterestedJobs, addInterestedJob, removeInterestedJob } from '@/lib/api/jobs';
 import AuthGuard from '@/components/auth/AuthGuard';
 import Button from '@/components/common/Button';
 import ResumeCard from '@/components/domain/resumes/ResumeCard';
@@ -60,10 +60,24 @@ function ResumesPageContent() {
     getInterestedJobs().then(setInterestedJobs);
   }, []);
 
-  const handleCreateResume = async () => {
+  const handleCreateProfileResume = async () => {
     try {
       const newResume = await createProfileBasedResume();
       router.push(`/resumes/profile-based/${newResume.id}`);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '자소서 생성 실패');
+    }
+  };
+
+  const handleToggleInterest = async (job: Job) => {
+    await removeInterestedJob(job.id);
+    setInterestedJobs(prevJobs => prevJobs.filter(j => j.id !== job.id));
+  };
+
+  const handleCreateResume = async (job: Job) => {
+    try {
+      const newResume = await createJobBasedResume(job);
+      router.push(`/resumes/job-based/${newResume.id}`);
     } catch (error) {
       alert(error instanceof Error ? error.message : '자소서 생성 실패');
     }
@@ -73,7 +87,7 @@ function ResumesPageContent() {
     <ResumesPageContainer>
       <Header>
         <Title>자소서 관리</Title>
-        <Button onClick={handleCreateResume}>+ 새 프로필 기반 자소서 작성</Button>
+        <Button onClick={handleCreateProfileResume}>+ 새 프로필 기반 자소서 작성</Button>
       </Header>
 
       <Section>
@@ -88,7 +102,12 @@ function ResumesPageContent() {
         <ItemGrid>
           {interestedJobs.map(job => (
             <div key={job.id} onClick={() => setSelectedJob(job)} style={{ cursor: 'pointer' }}>
-              <JobPostCard job={job} />
+              <JobPostCard 
+                job={job} 
+                isInterested={true} // 관심 공고 목록에 있으므로 항상 true
+                onToggleInterest={handleToggleInterest}
+                onCreateResume={handleCreateResume}
+              />
             </div>
           ))}
         </ItemGrid>

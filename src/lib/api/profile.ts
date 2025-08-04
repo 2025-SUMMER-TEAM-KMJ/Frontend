@@ -32,6 +32,11 @@ let MOCK_PROFILE: Profile | null = {
     { id: '1', name: '정보처리기사', issueDate: '2018.05', issuer: '' },
     { id: '2', name: 'SQLD', issueDate: '2019.11', issuer: '' },
   ],
+  myStories: [
+    { id: 'story1', title: '나의 성장 과정', content: '어릴 적부터 새로운 것을 배우는 데 큰 흥미를 느꼈습니다...', tag: '자기소개' },
+    { id: 'story2', title: '가장 큰 성과를 냈던 프로젝트', content: 'XYZ 소프트 재직 시절, 레거시 코드를 리팩토링하여...', tag: '일화' },
+    { id: 'story3', title: '나의 직업 가치관', content: '사용자에게 실질적인 가치를 제공하는 제품을 만드는 것이 중요하다고 생각합니다...', tag: '기타' },
+  ],
 };
 
 export const getProfile = (): Promise<Profile | null> => {
@@ -50,5 +55,40 @@ export const updateProfile = (newProfileData: Profile): Promise<Profile> => {
       console.log('Profile updated!', MOCK_PROFILE);
       resolve(MOCK_PROFILE);
     }, 500);
+  });
+};
+
+export const updateMyStoryTag = (storyId: string, newTag: '자기소개' | '일화' | '기타'): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (MOCK_PROFILE && MOCK_PROFILE.myStories) {
+        const storyIndex = MOCK_PROFILE.myStories.findIndex(s => s.id === storyId);
+        if (storyIndex > -1) {
+          MOCK_PROFILE.myStories[storyIndex].tag = newTag;
+          console.log(`Story ${storyId} tag updated to ${newTag}`);
+          resolve();
+        } else {
+          reject(new Error('Story not found'));
+        }
+      } else {
+        reject(new Error('Profile or stories not found'));
+      }
+    }, 200);
+  });
+};
+
+export const addMyStory = (story: MyStory): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (!MOCK_PROFILE) {
+        return reject(new Error('Profile not found. Please sign up first.'));
+      }
+      if (!MOCK_PROFILE.myStories) {
+        MOCK_PROFILE.myStories = [];
+      }
+      MOCK_PROFILE.myStories.push(story);
+      console.log('My Story added to profile', story);
+      resolve();
+    }, 200);
   });
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { Job } from '@/types/job';
 import JobPostCard from './JobPostCard';
 
 const ListWrapper = styled.div`
@@ -9,17 +10,24 @@ const ListWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing.large};
 `;
 
-import { Job } from '@/types/job';
-
 interface JobPostListProps {
   jobs: Job[];
+  interestedJobIds: Set<number>;
+  onToggleInterest: (job: Job) => void;
+  onCreateResume: (job: Job) => void;
 }
 
-export default function JobPostList({ jobs }: JobPostListProps) {
+export default function JobPostList({ jobs, interestedJobIds, onToggleInterest, onCreateResume }: JobPostListProps) {
   return (
     <ListWrapper>
       {jobs.map((job) => (
-        <JobPostCard key={job.id} job={job} />
+        <JobPostCard 
+          key={job.id} 
+          job={job} 
+          isInterested={interestedJobIds.has(job.id)}
+          onToggleInterest={onToggleInterest}
+          onCreateResume={onCreateResume}
+        />
       ))}
     </ListWrapper>
   );

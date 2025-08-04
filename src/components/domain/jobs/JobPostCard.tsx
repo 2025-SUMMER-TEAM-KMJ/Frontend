@@ -1,24 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { Job } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
-import { createJobBasedResume } from '@/lib/api/resumes';
 import Tag from '@/components/common/Tag';
-import Button from '@/components/common/Button';
 
 const CardWrapper = styled.div`
   padding: ${({ theme }) => theme.spacing.large};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   transition: box-shadow 0.2s ease-in-out;
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 `;
+
+const ContentWrapper = styled.div``;
 
 const Company = styled.h3`
   font-size: 18px;
@@ -34,51 +31,72 @@ const InfoWrapper = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.medium};
   color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const TagWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.small};
   margin-top: ${({ theme }) => theme.spacing.medium};
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
+  justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.small};
-  margin-top: ${({ theme }) => theme.spacing.medium};
+  margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
-const SmallButton = styled(Button)`
-  padding: 6px 12px;
-  font-size: 12px;
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 interface JobPostCardProps {
   job: Job;
+  isInterested: boolean;
+  onToggleInterest: (job: Job) => void;
+  onCreateResume: (job: Job) => void;
 }
 
-export default function JobPostCard({ job }: JobPostCardProps) {
-  const { isLoggedIn } = useAuth();
-  const router = useRouter();
-
-  const handleCreateResume = async (e: React.MouseEvent) => {
+export default function JobPostCard({ job, isInterested, onToggleInterest, onCreateResume }: JobPostCardProps) {
+  const handleCreateClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      const newResume = await createJobBasedResume(job);
-      router.push(`/resumes/job-based/${newResume.id}`);
-    } catch (error) {
-      alert(error instanceof Error ? error.message : '자소서 생성 실패');
-    }
+    onCreateResume(job);
+  };
+
+  const handleInterestClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleInterest(job);
   };
 
   return (
     <CardWrapper>
-      {/* ... */}
-      {isLoggedIn && (
-        <ButtonGroup>
-          <SmallButton onClick={handleCreateResume}>
-            이 공고로 자소서 생성
-          </SmallButton>
-          <SmallButton onClick={(e) => { e.stopPropagation(); alert('관심 공고 등록!'); }}>
-            관심 등록
-          </SmallButton>
-        </ButtonGroup>
-      )}
+      <ContentWrapper>
+        <Company>{job.company}</Company>
+        <Title>{job.title}</Title>
+        <InfoWrapper>
+          <span>{job.location}</span>
+          <span>{job.experience}</span>
+        </InfoWrapper>
+        <TagWrapper>
+          {job.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
+        </TagWrapper>
+      </ContentWrapper>
+      <ButtonGroup>
+        <IconButton onClick={handleCreateClick} title="이 공고로 자소서 생성">📝</IconButton>
+        <IconButton onClick={handleInterestClick} title="관심 공고 등록/해제">
+          {isInterested ? '★' : '☆'}
+        </IconButton>
+      </ButtonGroup>
     </CardWrapper>
   );
 }

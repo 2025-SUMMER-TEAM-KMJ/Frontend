@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { Job, Resume } from '@/types';
-import { getResumes } from '@/lib/api/resumes';
+import { getResumes, createJobBasedResume } from '@/lib/api/resumes';
 import ResumeCard from './ResumeCard';
+import Button from '@/components/common/Button';
 
 const ModalBackdrop = styled.div`
   position: fixed;
@@ -49,20 +51,27 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
-const ResumeList = styled.div`
+const ContentContainer = styled.div`
   flex-grow: 1;
   overflow-y: auto;
+`;
+
+const ResumeList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: ${({ theme }) => theme.spacing.large};
 `;
 
-const Loading = styled.p`
-  text-align: center;
+const EmptyContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: ${({ theme }) => theme.spacing.large};
 `;
 
 const EmptyMessage = styled.p`
-  text-align: center;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
@@ -74,6 +83,7 @@ interface Props {
 export default function InterestedJobResumesModal({ job, onClose }: Props) {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchResumes = async () => {
@@ -85,6 +95,16 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
     fetchResumes();
   }, [job.id]);
 
+  const handleCreateResume = async () => {
+    try {
+      const newResume = await createJobBasedResume(job);
+      router.push(`/resumes/job-based/${newResume.id}`);
+      onClose(); // 모달 닫기
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '자소서 생성 실패');
+    }
+  };
+
   return (
     <ModalBackdrop onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
@@ -92,18 +112,24 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
           <Title>"{job.title}" 기반 자소서 목록</Title>
           <CloseButton onClick={onClose}>×</CloseButton>
         </ModalHeader>
-        <ResumeList>
+        <ContentContainer>
           {isLoading ? (
-            <Loading>로딩 중...</Loading>
+            <p>로딩 중...</p>
           ) : resumes.length > 0 ? (
-            resumes.map(resume => (
-              <ResumeCard key={resume.id} resume={resume} />
-            ))
+            <ResumeList>
+              {resumes.map(resume => (
+                <ResumeCard key={resume.id} resume={resume} />
+              ))}
+            </ResumeList>
           ) : (
-            <EmptyMessage>해당 공고로 작성된 자소서가 없습니다.</EmptyMessage>
+            <EmptyContainer>
+              <EmptyMessage>해당 공고로 작성된 자소서가 없습니다.</EmptyMessage>
+              <Button onClick={handleCreateResume}>이 공고로 자소서 생성하기</Button>
+            </EmptyContainer>
           )}
-        </ResumeList>
+        </ContentContainer>
       </ModalContent>
     </ModalBackdrop>
   );
 }
+

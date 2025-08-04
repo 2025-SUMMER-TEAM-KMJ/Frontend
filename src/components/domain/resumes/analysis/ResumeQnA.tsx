@@ -23,11 +23,12 @@ interface Props {
   onUpdate: (qnaId: string, question: string, answer: string) => void;
   onAdd: () => void;
   onDelete: (qnaId: string) => void;
+  onEdit: (qna: QnA) => void; // New prop
 }
 
 const TextIcon = () => <span>📝</span>;
 
-export default function ResumeQnA({ qnas, onUpdate, onAdd, onDelete }: Props) {
+export default function ResumeQnA({ qnas, onUpdate, onAdd, onDelete, onEdit }: Props) {
   return (
     <QnAContainer>
       <SectionTitle>
@@ -40,6 +41,7 @@ export default function ResumeQnA({ qnas, onUpdate, onAdd, onDelete }: Props) {
           item={qna} 
           onUpdate={onUpdate} 
           onDelete={onDelete} 
+          onEdit={onEdit} // Pass onEdit to QnAItem
         />
       ))}
     </QnAContainer>

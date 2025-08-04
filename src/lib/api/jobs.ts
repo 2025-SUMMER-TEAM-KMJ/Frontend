@@ -51,7 +51,7 @@ export const getJobs = (
 };
 
 // 임시 관심 공고 데이터
-const INTERESTED_JOBS: Job[] = [
+let INTERESTED_JOBS: Job[] = [
   { id: 2, company: '카카오', title: '백엔드 개발자 (Java)', location: '제주', experience: '경력 3년+', tags: ['Java', 'Spring'] },
   { id: 3, company: '쿠팡', title: 'iOS 개발자', location: '서울', experience: '경력 5년+', tags: ['Swift', 'iOS'] },
 ];
@@ -61,5 +61,25 @@ export const getInterestedJobs = (): Promise<Job[]> => {
     setTimeout(() => {
       resolve(INTERESTED_JOBS);
     }, 300);
+  });
+};
+
+export const addInterestedJob = (job: Job): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      if (!INTERESTED_JOBS.some(j => j.id === job.id)) {
+        INTERESTED_JOBS.push(job);
+      }
+      resolve();
+    }, 200);
+  });
+};
+
+export const removeInterestedJob = (jobId: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      INTERESTED_JOBS = INTERESTED_JOBS.filter(j => j.id !== jobId);
+      resolve();
+    }, 200);
   });
 };

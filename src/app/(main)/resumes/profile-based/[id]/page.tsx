@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Resume } from '@/types';
+import { Resume, QnA } from '@/types';
 import { getResumeById, updateResumeQnA, addResumeQnA, deleteResumeQnA } from '@/lib/api/resumes';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileSkills from '@/components/domain/resumes/analysis/ProfileSkills';
 import ResumeQnA from '@/components/domain/resumes/analysis/ResumeQnA';
+import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal';
 
 const AnalysisPageContainer = styled.div`
   width: 100%;
@@ -52,6 +53,7 @@ interface Props {
 
 function ResumeAnalysisPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
+  const [editingQnA, setEditingQnA] = useState<QnA | null>(null);
 
   useEffect(() => {
     getResumeById(params.id).then(data => {
@@ -77,6 +79,17 @@ function ResumeAnalysisPageContent({ params }: Props) {
     setResume(updatedResume);
   };
 
+  const handleEditQnA = (qna: QnA) => {
+    setEditingQnA(qna);
+  };
+
+  const handleSaveEditedQnA = async (qnaId: string, newQuestion: string, newAnswer: string) => {
+    if (!resume) return;
+    const updatedResume = await updateResumeQnA(resume.id, qnaId, newQuestion, newAnswer);
+    setResume(updatedResume);
+    setEditingQnA(null); // Close modal
+  };
+
   if (!resume) return <Loading>자기소개서 정보를 불러오는 중...</Loading>;
 
   return (
@@ -93,7 +106,17 @@ function ResumeAnalysisPageContent({ params }: Props) {
         onUpdate={handleUpdateQnA}
         onAdd={handleAddQnA}
         onDelete={handleDeleteQnA}
+        onEdit={handleEditQnA}
       />
+
+      {editingQnA && (
+        <EditQnADualModal
+          qna={editingQnA}
+          resumeId={resume.id}
+          onSave={handleSaveEditedQnA}
+          onClose={() => setEditingQnA(null)}
+        />
+      )}
     </AnalysisPageContainer>
   );
 }
