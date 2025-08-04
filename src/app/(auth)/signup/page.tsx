@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, FieldErrors } from 'react-hook-form';
 import { useAuth } from '@/hooks/useAuth';
 import { signupUser } from '@/lib/api/auth';
 import Input from '@/components/common/Input';
@@ -62,16 +62,18 @@ export default function SignupPage() {
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, trigger } = useForm<Step1Inputs | Step2Inputs>();
 
-  const onNextStep1: SubmitHandler<Step1Inputs> = async (data) => {
+  const onNextStep1: SubmitHandler<Step1Inputs | Step2Inputs> = async (data) => {
+    const step1Data = data as Step1Inputs;
     const isValid = await trigger(['email', 'password']);
     if (isValid) {
-      setFormData((prev) => ({ ...prev, ...data }));
+      setFormData((prev) => ({ ...prev, ...step1Data }));
       setStep(2);
     }
   };
 
-  const onFinalSubmit: SubmitHandler<Step2Inputs> = async (data) => {
-    const finalData = { ...formData, ...data } as Step1Inputs & Step2Inputs;
+  const onFinalSubmit: SubmitHandler<Step1Inputs | Step2Inputs> = async (data) => {
+    const step2Data = data as Step2Inputs;
+    const finalData = { ...formData, ...step2Data } as Step1Inputs & Step2Inputs;
     try {
       const newUser = await signupUser({
         name: finalData.name,
@@ -97,14 +99,14 @@ export default function SignupPage() {
             placeholder="이메일"
             type="email"
           />
-          {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+          {(errors as FieldErrors<Step1Inputs>).email && <ErrorMessage>{(errors as FieldErrors<Step1Inputs>).email!.message}</ErrorMessage>}
 
           <Input
             {...register('password', { required: '비밀번호는 필수입니다.', minLength: { value: 8, message: '8자 이상 입력해주세요.' } })}
             placeholder="비밀번호"
             type="password"
           />
-          {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
+          {(errors as FieldErrors<Step1Inputs>).password && <ErrorMessage>{(errors as FieldErrors<Step1Inputs>).password!.message}</ErrorMessage>}
 
           <Button type="submit" disabled={isSubmitting}>
             다음
@@ -118,27 +120,27 @@ export default function SignupPage() {
             {...register('name', { required: '이름은 필수입니다.' })}
             placeholder="이름"
           />
-          {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+          {(errors as FieldErrors<Step2Inputs>).name && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).name!.message}</ErrorMessage>}
 
           <Input
             {...register('age', { required: '나이는 필수입니다.', valueAsNumber: true })}
             placeholder="나이"
             type="number"
           />
-          {errors.age && <ErrorMessage>{errors.age.message}</ErrorMessage>}
+          {(errors as FieldErrors<Step2Inputs>).age && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).age!.message}</ErrorMessage>}
 
           <Dropdown
             {...register('gender', { required: '성별은 필수입니다.' })}
             options={[{ value: '', label: '성별 선택' }, { value: '남', label: '남' }, { value: '여', label: '여' }]}
           />
-          {errors.gender && <ErrorMessage>{errors.gender.message}</ErrorMessage>}
+          {(errors as FieldErrors<Step2Inputs>).gender && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).gender!.message}</ErrorMessage>}
 
           <Input
             {...register('phone', { required: '연락처는 필수입니다.' })}
             placeholder="연락처"
             type="tel"
           />
-          {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
+          {(errors as FieldErrors<Step2Inputs>).phone && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).phone!.message}</ErrorMessage>}
 
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? '가입 중...' : '회원가입'}

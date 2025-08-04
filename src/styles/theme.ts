@@ -7,6 +7,7 @@ export const theme = {
     textSecondary: '#666666',
     border: '#eaeaea',
     lightGray: '#f5f5f5',
+    error: '#ff4d4f',
   },
   fonts: {
     main: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',

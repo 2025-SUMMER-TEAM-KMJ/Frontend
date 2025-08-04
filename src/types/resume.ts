@@ -1,4 +1,4 @@
-import { Job, Profile } from '.';
+import { Job, Profile, JobPosting, Certification } from '.';
 
 export interface QnA {
   id: string;
@@ -13,7 +13,7 @@ export interface Resume {
   snapshot: Profile; // 생성 시점의 프로필 스냅샷
   qnas: QnA[];
   basedOn?: 'profile' | 'job';
-  jobInfo?: Pick<Job, 'id' | 'company' | 'title'>; // 공고 기반일 경우
+  jobInfo?: JobPosting; // 공고 기반일 경우
 }
 
 // New types for multi-step resume creation
@@ -48,12 +48,13 @@ export interface Competency {
   name: string;
 }
 
-export interface Certification {
-  id: string;
-  name: string;
-  issueDate: string;
-  issuer: string;
-}
+// Certification 인터페이스는 profile.ts에만 정의됩니다.
+// export interface Certification {
+//   id: string;
+//   name: string;
+//   issueDate: string;
+//   issuer: string;
+// }
 
 export interface PreferredPosition {
   id: string;
@@ -77,7 +78,7 @@ export interface ResumeFormData {
   workExperience: WorkExperience[];
   experience: ProjectExperience[];
   competencies: Competency[];
-  certifications: Certification[];
+  certifications: Certification[]; // profile.ts에서 import
   preferredPosition: PreferredPosition[];
   personalNarratives: PersonalNarratives;
 }

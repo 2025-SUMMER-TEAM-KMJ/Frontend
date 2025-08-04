@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { Resume } from '@/types';
+import { Resume, JobPosting } from '@/types'; // JobPosting import 추가
 
 const CardContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
@@ -42,17 +42,31 @@ interface Props {
 // Mock Icon
 const DocumentIcon = () => <span>📄</span>;
 
+// Mock Job Posting Data
+const mockJobPosting: JobPosting = {
+  _id: { $oid: "test" },
+  metadata: { source: "test", sourceUrl: "test", crawledAt: "test" },
+  company: { name: "test", logo_img: null, address: { country: "test", location: "test", district: "test", full_location: "test" }, features: [], avgSalary: 0, avgEntrySalary: null },
+  detail: { position: { jobGroup: "test", job: [] }, intro: "test", main_tasks: "test", requirements: "test", preferred_points: "test", benefits: "test", hire_rounds: "test" },
+  externalUrl: "test",
+  skill_tags: [],
+  sourceData: "test",
+  status: "test",
+  title_images: []
+};
+
 export default function ApplicationInfoCard({ resume }: Props) {
-  if (!resume.jobInfo) return null;
+  // resume.jobInfo 대신 mockJobPosting 사용
+  const jobInfo: JobPosting = mockJobPosting;
 
   return (
     <CardContainer>
-      <SectionTitle><DocumentIcon /> 지원 정보</SectionTitle>
+      <SectionTitle><DocumentIcon /> 공고 정보</SectionTitle>
       <InfoGrid>
-        <InfoItem><strong>공고명:</strong> {resume.jobInfo.title}</InfoItem>
-        <InfoItem><strong>기업명:</strong> {resume.jobInfo.company}</InfoItem>
-        <InfoItem><strong>직무:</strong> 데이터 분석</InfoItem> {/* Mock Data */}
-        <InfoItem><strong>제출일:</strong> {new Date(resume.updatedAt).toLocaleDateString()}</InfoItem>
+        <InfoItem><strong>공고명:</strong> {jobInfo.detail.position.job[0]}</InfoItem>
+        <InfoItem><strong>기업명:</strong> {jobInfo.company.name}</InfoItem>
+        <InfoItem><strong>직무:</strong> {jobInfo.detail.position.jobGroup}</InfoItem>
+        <InfoItem><strong>제출일:</strong> {new Date(jobInfo.metadata.crawledAt).toLocaleDateString()}</InfoItem>
       </InfoGrid>
     </CardContainer>
   );

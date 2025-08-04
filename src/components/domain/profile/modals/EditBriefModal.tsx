@@ -66,7 +66,7 @@ const Button = styled.button`
 
   &.secondary {
     background-color: ${({ theme }) => theme.colors.lightGray};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: ${({ theme }) => theme.colors.text};
   }
 `;
 

@@ -39,15 +39,15 @@ const Answer = styled.p`
 `;
 
 export default function QnAModal() {
-  const { isQnAModalOpen, currentQnA, closeQnAModal } = useAuthStore();
+  const { showQnAModal, selectedQnA, closeQnAModal } = useAuthStore();
 
-  if (!isQnAModalOpen || !currentQnA) return null;
+  if (!showQnAModal || !selectedQnA) return null;
 
   return (
     <ModalBackdrop onClick={closeQnAModal}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Question>{currentQnA.question}</Question>
-        <Answer>{currentQnA.answer}</Answer>
+        <Question>{selectedQnA.question}</Question>
+        <Answer>{selectedQnA.answer}</Answer>
       </ModalContent>
     </ModalBackdrop>
   );

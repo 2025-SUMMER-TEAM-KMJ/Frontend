@@ -9,13 +9,7 @@ const ListWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing.large};
 `;
 
-interface Job {
-  id: number;
-  company: string;
-  title: string;
-  location: string;
-  experience: string;
-}
+import { Job } from '@/types/job';
 
 interface JobPostListProps {
   jobs: Job[];

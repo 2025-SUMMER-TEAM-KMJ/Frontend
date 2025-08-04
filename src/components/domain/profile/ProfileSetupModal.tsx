@@ -77,13 +77,13 @@ export default function ProfileSetupModal({ profile, onSave, onClose }: Props) {
         <Title>자소서 생성 ({currentStep}/7)</Title>
         {
           {
-            1: <Step1_BasicInfo defaultValues={formData} onNext={handleNext} />,
-            2: <Step2_EducationWork defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
-            3: <Step3_Experience defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
-            4: <Step4_Competencies defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
-            5: <Step5_Certifications defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
-            6: <Step6_PreferredPosition defaultValues={formData} onNext={handleNext} onPrev={handlePrev} />,
-            7: <Step7_PersonalNarratives defaultValues={formData} onNext={handleSave} onPrev={handlePrev} />,
+            1: <Step1_BasicInfo defaultValues={{ name: formData.name || '', age: formData.age || 0, gender: formData.gender || '', email: formData.email || '', phone: formData.phone || '' }} onNext={handleNext} />,
+            2: <Step2_EducationWork defaultValues={{ education: formData.education || [], workExperience: formData.workExperience || [] }} onNext={handleNext} onPrev={handlePrev} />,
+            3: <Step3_Experience defaultValues={{ experience: formData.experience || [] }} onNext={handleNext} onPrev={handlePrev} />,
+            4: <Step4_Competencies defaultValues={{ competencies: formData.competencies || [] }} onNext={handleNext} onPrev={handlePrev} />,
+            5: <Step5_Certifications defaultValues={{ certifications: formData.certifications || [] }} onNext={handleNext} onPrev={handlePrev} />,
+            6: <Step6_PreferredPosition defaultValues={{ preferredPosition: formData.preferredPosition || [] }} onNext={handleNext} onPrev={handlePrev} />,
+            7: <Step7_PersonalNarratives defaultValues={{ strengths: formData.personalNarratives?.strengths || '', values: formData.personalNarratives?.values || '', motivation: formData.personalNarratives?.motivation || '' }} onNext={handleSave} onPrev={handlePrev} />,
           }[currentStep]
         }
       </ModalContent>
