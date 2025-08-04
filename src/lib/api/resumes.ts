@@ -78,9 +78,16 @@ let MOCK_RESUMES: Resume[] = [
   },
 ];
 
-export const getResumes = (): Promise<Resume[]> => {
+export const getResumes = (jobId?: string): Promise<Resume[]> => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(MOCK_RESUMES), 500);
+    setTimeout(() => {
+      if (jobId) {
+        const filtered = MOCK_RESUMES.filter(r => r.jobInfo?._id?.$oid === jobId);
+        resolve(filtered);
+      } else {
+        resolve(MOCK_RESUMES);
+      }
+    }, 500);
   });
 };
 

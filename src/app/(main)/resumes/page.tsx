@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
-import { Resume } from '@/types';
+import { Resume, Job } from '@/types';
 import { getResumes, createProfileBasedResume } from '@/lib/api/resumes';
+import { getInterestedJobs } from '@/lib/api/jobs';
 import AuthGuard from '@/components/auth/AuthGuard';
 import Button from '@/components/common/Button';
 import ResumeCard from '@/components/domain/resumes/ResumeCard';
+import JobPostCard from '@/components/domain/jobs/JobPostCard';
+import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 
 const ResumesPageContainer = styled.div`
   width: 100%;
@@ -38,18 +41,23 @@ const SectionTitle = styled.h2`
   margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
-const ResumeGrid = styled.div`
+const ItemGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: ${({ theme }) => theme.spacing.large};
 `;
 
 function ResumesPageContent() {
-  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [profileResumes, setProfileResumes] = useState<Resume[]>([]);
+  const [interestedJobs, setInterestedJobs] = useState<Job[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    getResumes().then(setResumes);
+    getResumes().then(allResumes => {
+      setProfileResumes(allResumes.filter(r => r.basedOn === 'profile'));
+    });
+    getInterestedJobs().then(setInterestedJobs);
   }, []);
 
   const handleCreateResume = async () => {
@@ -61,9 +69,6 @@ function ResumesPageContent() {
     }
   };
 
-  const profileBasedResumes = resumes.filter(r => r.basedOn === 'profile');
-  const jobBasedResumes = resumes.filter(r => r.basedOn === 'job');
-
   return (
     <ResumesPageContainer>
       <Header>
@@ -73,17 +78,28 @@ function ResumesPageContent() {
 
       <Section>
         <SectionTitle>프로필 기반 자기소개서</SectionTitle>
-        <ResumeGrid>
-          {profileBasedResumes.map(r => <ResumeCard key={r.id} resume={r} />)}
-        </ResumeGrid>
+        <ItemGrid>
+          {profileResumes.map(r => <ResumeCard key={r.id} resume={r} />)}
+        </ItemGrid>
       </Section>
 
       <Section>
-        <SectionTitle>공고 기반 자기소개서</SectionTitle>
-        <ResumeGrid>
-          {jobBasedResumes.map(r => <ResumeCard key={r.id} resume={r} />)}
-        </ResumeGrid>
+        <SectionTitle>관심 공고</SectionTitle>
+        <ItemGrid>
+          {interestedJobs.map(job => (
+            <div key={job.id} onClick={() => setSelectedJob(job)} style={{ cursor: 'pointer' }}>
+              <JobPostCard job={job} />
+            </div>
+          ))}
+        </ItemGrid>
       </Section>
+
+      {selectedJob && (
+        <InterestedJobResumesModal 
+          job={selectedJob} 
+          onClose={() => setSelectedJob(null)} 
+        />
+      )}
     </ResumesPageContainer>
   );
 }
