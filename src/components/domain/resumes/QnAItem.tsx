@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import styled from 'styled-components';
 import { QnA } from '@/types';
-import Button from '@/components/common/Button';
+import styled from 'styled-components';
 
 const ItemWrapper = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.large};
@@ -20,6 +18,9 @@ const QuestionHeader = styled.div`
 const Question = styled.h3`
   font-size: 18px;
   font-weight: bold;
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0; /* Allow text to shrink */
 `;
 
 const EditButton = styled.button`
@@ -28,6 +29,7 @@ const EditButton = styled.button`
   font-size: 18px;
   cursor: pointer;
   color: ${({ theme }) => theme.colors.textSecondary};
+  flex-shrink: 0; /* Prevent button from shrinking */
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
@@ -50,38 +52,28 @@ const ButtonWrapper = styled.div`
   margin-top: ${({ theme }) => theme.spacing.small};
 `;
 
+const ActionButtons = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
 interface Props {
   item: QnA;
-  onSave: (qnaId: string, newAnswer: string) => void;
-  onEdit: (qna: QnA) => void; // New prop for edit button
+  onEdit: (qna: QnA) => void;
+  onDelete: (qnaId: string) => void;
 }
 
-export default function QnAItem({ item, onSave, onEdit }: Props) {
-  const [answer, setAnswer] = useState(item.answer);
-  const [isDirty, setIsDirty] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setAnswer(e.target.value);
-    setIsDirty(true);
-  };
-
-  const handleSave = () => {
-    onSave(item.id, answer);
-    setIsDirty(false);
-  };
-
+export default function QnAItem({ item, onEdit, onDelete }: Props) {
   return (
     <ItemWrapper>
       <QuestionHeader>
         <Question>{item.question}</Question>
-        <EditButton onClick={() => onEdit(item)}>✏️</EditButton>
+        <ActionButtons>
+          <EditButton onClick={() => onEdit(item)}>✏️</EditButton>
+          <EditButton onClick={() => onDelete(item.id)}>🗑️</EditButton>
+        </ActionButtons>
       </QuestionHeader>
-      <AnswerTextarea value={answer} onChange={handleChange} />
-      {isDirty && (
-        <ButtonWrapper>
-          <Button onClick={handleSave}>저장</Button>
-        </ButtonWrapper>
-      )}
+      <AnswerTextarea value={item.answer} readOnly />
     </ItemWrapper>
   );
 }

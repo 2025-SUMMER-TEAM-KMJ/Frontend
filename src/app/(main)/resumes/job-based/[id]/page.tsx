@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Resume } from '@/types';
-import { getResumeById, updateResumeQnA, addResumeQnA, deleteResumeQnA } from '@/lib/api/resumes';
 import AuthGuard from '@/components/auth/AuthGuard';
-import JobPostingInfoCard from '@/components/domain/resumes/analysis/JobPostingInfoCard';
-import CompetencyAnalysis from '@/components/domain/resumes/analysis/CompetencyAnalysis';
-import ResumeQnA from '@/components/domain/resumes/analysis/ResumeQnA';
+import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
+import JobPostingInfoCard from '@/components/domain/resumes/JobPostingInfoCard';
+import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
+import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
+import { Resume } from '@/types';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 const AnalysisPageContainer = styled.div`
   width: 100%;

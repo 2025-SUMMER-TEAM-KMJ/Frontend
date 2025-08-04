@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Resume, QnA } from '@/types';
-import { getResumeById, updateResumeQnA, addResumeQnA, deleteResumeQnA } from '@/lib/api/resumes';
 import AuthGuard from '@/components/auth/AuthGuard';
-import ProfileSkills from '@/components/domain/resumes/analysis/ProfileSkills';
-import ResumeQnA from '@/components/domain/resumes/analysis/ResumeQnA';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal';
+import ProfileSkills from '@/components/domain/resumes/ProfileSkills';
+import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
+import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
+import { QnA, Resume } from '@/types';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 const AnalysisPageContainer = styled.div`
   width: 100%;
@@ -103,7 +103,6 @@ function ResumeAnalysisPageContent({ params }: Props) {
 
       <ResumeQnA 
         qnas={resume.qnas} 
-        onUpdate={handleUpdateQnA}
         onAdd={handleAddQnA}
         onDelete={handleDeleteQnA}
         onEdit={handleEditQnA}

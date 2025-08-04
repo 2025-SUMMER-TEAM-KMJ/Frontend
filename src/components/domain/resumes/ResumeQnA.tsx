@@ -20,7 +20,6 @@ const SectionTitle = styled.h2`
 
 interface Props {
   qnas: QnA[];
-  onUpdate: (qnaId: string, question: string, answer: string) => void;
   onAdd: () => void;
   onDelete: (qnaId: string) => void;
   onEdit: (qna: QnA) => void; // New prop
@@ -28,7 +27,7 @@ interface Props {
 
 const TextIcon = () => <span>📝</span>;
 
-export default function ResumeQnA({ qnas, onUpdate, onAdd, onDelete, onEdit }: Props) {
+export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit }: Props) {
   return (
     <QnAContainer>
       <SectionTitle>
@@ -39,7 +38,6 @@ export default function ResumeQnA({ qnas, onUpdate, onAdd, onDelete, onEdit }: P
         <QnAItem 
           key={qna.id} 
           item={qna} 
-          onUpdate={onUpdate} 
           onDelete={onDelete} 
           onEdit={onEdit} // Pass onEdit to QnAItem
         />

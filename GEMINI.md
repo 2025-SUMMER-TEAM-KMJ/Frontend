@@ -11,7 +11,7 @@
     - 자기소개서 관리 (프로필/공고 기반 생성, 수정)
 - **기술 스택:**
     - **프레임워크:** Next.js (App Router)
-    - **스타일링:** styled-components
+    - **스타일링:** styled-components (커스텀 UI 컴포넌트 개발)
     - **상태 관리:** Zustand
     - **폼 관리:** React Hook Form
     - **언어:** TypeScript
@@ -28,7 +28,11 @@
 - **`src/store`**: Zustand를 사용한 전역 상태 관리
 - **`src/types`**: TypeScript 타입 정의
 
-## 3. 실행 및 테스트
+## 3. API 호출
+
+- **`src/lib/api`**: 백엔드 API와의 통신을 위한 Mock API 함수들이 정의되어 있습니다. 실제 API 연동 시 해당 파일들을 수정하거나 교체하여 사용합니다.
+
+## 4. 실행 및 테스트
 
 - **의존성 설치:** `npm install`
 - **개발 서버 실행:** `npm run dev`
