@@ -7,7 +7,7 @@ const ItemWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
-  padding: ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.small};
   margin-bottom: ${({ theme }) => theme.spacing.large};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative; /* For positioning the edit button */
@@ -17,6 +17,7 @@ const QuestionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 ${({ theme }) => theme.spacing.small};
   margin-bottom: ${({ theme }) => theme.spacing.small};
 `;
 
@@ -44,7 +45,7 @@ const EditButton = styled.button`
 const AnswerContent = styled.div`
   width: 100%;
   min-height: 120px;
-  padding: 12px;
+  padding: 0 ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.small};
   border: none;
   border-radius: 8px;
   font-size: 16px;

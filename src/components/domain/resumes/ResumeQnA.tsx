@@ -1,11 +1,9 @@
 'use client';
 
-import styled from 'styled-components';
-import { QnA } from '@/types';
 import Button from '@/components/common/Button';
+import { QnA } from '@/types';
+import styled from 'styled-components';
 import QnAItem from './QnAItem';
-
-import { FaRegEdit } from 'react-icons/fa';
 
 const QnAContainer = styled.div`
   /* ... */
@@ -15,9 +13,12 @@ const SectionTitle = styled.h2`
   font-size: 20px;
   font-weight: bold;
   margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ButtonContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
 interface Props {
@@ -27,15 +28,9 @@ interface Props {
   onEdit: (qna: QnA) => void; // New prop
 }
 
-const TextIcon = () => <FaRegEdit />;
-
 export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit }: Props) {
   return (
     <QnAContainer>
-      <SectionTitle>
-        <span><TextIcon /> 제출한 자기소개서</span>
-        <Button onClick={onAdd}>+ 질문/답변 추가</Button>
-      </SectionTitle>
       {qnas.map(qna => (
         <QnAItem 
           key={qna.id} 
@@ -44,6 +39,9 @@ export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit }: Props) {
           onEdit={onEdit} // Pass onEdit to QnAItem
         />
       ))}
+      <ButtonContainer>
+        <Button onClick={onAdd}>+ 질문/답변 추가</Button>
+      </ButtonContainer>
     </QnAContainer>
   );
 }

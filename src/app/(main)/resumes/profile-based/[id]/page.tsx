@@ -1,15 +1,15 @@
 'use client';
 
 import AuthGuard from '@/components/auth/AuthGuard';
+import Tag from '@/components/common/Tag';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal';
-import ProfileSkills from '@/components/domain/resumes/ProfileSkills';
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
 import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
 import { QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const AnalysisPageContainer = styled.div`
+const ResumeDetailPageContainer = styled.div`
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
@@ -18,6 +18,8 @@ const AnalysisPageContainer = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.large};
 `;
+
+
 
 const Loading = styled.p`
   text-align: center;
@@ -39,19 +41,37 @@ const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const mockProfileSkills = [
-  '3년차 프론트엔드 개발자입니다. 사용자 경험 개선에 관심이 많습니다.',
-  'React 기술을 보유하고 있습니다.',
-  'TypeScript 기술을 보유하고 있습니다.',
-  'Next.js 기술을 보유하고 있습니다.',
-  'CareerGo에서 프론트엔드 개발자로 근무하며 AI 기반 채용 서비스 개발 경험을 쌓았습니다.'
-];
+const SectionTitle = styled.h2`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ContentText = styled.p`
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+`;
+
+const TagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const Card = styled.div`
+  background-color: white;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  padding: ${({ theme }) => theme.spacing.large};
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+`;
 
 interface Props {
   params: { id: string };
 }
 
-function ResumeAnalysisPageContent({ params }: Props) {
+function ProfileBasedResumeDetailPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
   const [editingQnA, setEditingQnA] = useState<QnA | null>(null);
 
@@ -93,20 +113,35 @@ function ResumeAnalysisPageContent({ params }: Props) {
   if (!resume) return <Loading>자기소개서 정보를 불러오는 중...</Loading>;
 
   return (
-    <AnalysisPageContainer>
+    <ResumeDetailPageContainer>
       <ResumeHeader>
         <Title>{resume.title}</Title>
         <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
       </ResumeHeader>
 
-      <ProfileSkills skills={mockProfileSkills} />
+      <Card>
+        <SectionTitle>나의 역량</SectionTitle>
+        <TagContainer>
+          {resume.snapshot.skills.map(skill => (
+            <Tag key={skill.id}>{skill.name}</Tag>
+          ))}
+        </TagContainer>
+      </Card>
 
-      <ResumeQnA 
-        qnas={resume.qnas} 
-        onAdd={handleAddQnA}
-        onDelete={handleDeleteQnA}
-        onEdit={handleEditQnA}
-      />
+      <Card>
+        <SectionTitle>자기소개</SectionTitle>
+        <ContentText>{resume.snapshot.brief}</ContentText>
+      </Card>
+
+      <Card>
+        <SectionTitle>자기소개서 질문과 답변</SectionTitle>
+        <ResumeQnA 
+          qnas={resume.qnas} 
+          onAdd={handleAddQnA}
+          onDelete={handleDeleteQnA}
+          onEdit={handleEditQnA}
+        />
+      </Card>
 
       {editingQnA && (
         <EditQnADualModal
@@ -116,10 +151,10 @@ function ResumeAnalysisPageContent({ params }: Props) {
           onClose={() => setEditingQnA(null)}
         />
       )}
-    </AnalysisPageContainer>
+    </ResumeDetailPageContainer>
   );
 }
 
-export default function ResumeAnalysisPage({ params }: Props) {
-  return <AuthGuard><ResumeAnalysisPageContent params={params} /></AuthGuard>;
+export default function ProfileBasedResumeDetailPage({ params }: Props) {
+  return <AuthGuard><ProfileBasedResumeDetailPageContent params={params} /></AuthGuard>;
 }

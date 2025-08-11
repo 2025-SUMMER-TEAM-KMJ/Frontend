@@ -41,10 +41,23 @@ const SectionTitle = styled.h2`
   margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
+const SectionHeaderWithButton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
 const ItemGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: ${({ theme }) => theme.spacing.large};
+`;
+
+const Separator = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  margin: ${({ theme }) => theme.spacing.xlarge} 0;
 `;
 
 function ResumesPageContent() {
@@ -80,17 +93,21 @@ function ResumesPageContent() {
 
   return (
     <ResumesPageContainer>
-      <Header>
+            <Header>
         <Title>자소서 관리</Title>
-        <Button onClick={handleCreateProfileResume}>+ 새 프로필 기반 자소서 작성</Button>
       </Header>
 
       <Section>
-        <SectionTitle>프로필 기반 자기소개서</SectionTitle>
+        <SectionHeaderWithButton>
+          <SectionTitle>프로필 기반 자기소개서</SectionTitle>
+          <Button onClick={handleCreateProfileResume}>+ 새 프로필 기반 자소서 작성</Button>
+        </SectionHeaderWithButton>
         <ItemGrid>
           {profileResumes.map(r => <ResumeCard key={r.id} resume={r} />)}
         </ItemGrid>
       </Section>
+
+      <Separator />
 
       <Section>
         <SectionTitle>관심 공고</SectionTitle>
