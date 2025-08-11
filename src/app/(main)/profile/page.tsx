@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/authStore';
 import { getProfile, updateProfile } from '@/lib/api/profile';
 import { createProfileBasedResume } from '@/lib/api/resumes';
@@ -13,7 +14,7 @@ import ProfileSetupModal from '@/components/domain/profile/ProfileSetupModal';
 import EditBasicInfoModal from '@/components/domain/profile/modals/EditBasicInfoModal';
 import Button from '@/components/common/Button';
 
-const ProfilePageContainer = styled.div`
+const ProfilePageContainer = styled(motion.div)`
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
@@ -84,7 +85,11 @@ function ProfilePageContent() {
   }
 
   return (
-    <ProfilePageContainer>
+    <ProfilePageContainer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ ease: 'easeOut', duration: 0.5 }}
+    >
       {profile && <ProfileView profile={profile} />}
       {showProfileSetupModal && profile && (
         <ProfileSetupModal
