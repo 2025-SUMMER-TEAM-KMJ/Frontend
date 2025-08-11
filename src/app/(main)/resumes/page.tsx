@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
-import { Resume, Job } from '@/types';
-import { getResumes, createProfileBasedResume, createJobBasedResume } from '@/lib/api/resumes';
-import { getInterestedJobs, removeInterestedJob } from '@/lib/api/jobs';
 import AuthGuard from '@/components/auth/AuthGuard';
 import Button from '@/components/common/Button';
-import ResumeCard from '@/components/domain/resumes/ResumeCard';
 import JobPostCard from '@/components/domain/jobs/JobPostCard';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
+import ResumeCard from '@/components/domain/resumes/ResumeCard';
+import { getInterestedJobs, removeInterestedJob } from '@/lib/api/jobs';
+import { createProfileBasedResume, getResumes } from '@/lib/api/resumes';
+import { Job, Resume } from '@/types';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
-const ResumesPageContainer = styled.div`
+const ResumesPageContainer = styled(motion.div)`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -31,7 +32,7 @@ const Title = styled.h1`
   font-weight: 800;
 `;
 
-const Section = styled.section`
+const Section = styled(motion.section)`
   margin-bottom: ${({ theme }) => theme.spacing.xlarge};
 `;
 
@@ -92,12 +93,20 @@ function ResumesPageContent() {
   };
 
   return (
-    <ResumesPageContainer>
+    <ResumesPageContainer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
+    >
             <Header>
         <Title>자소서 관리</Title>
       </Header>
 
-      <Section>
+      <Section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
         <SectionHeaderWithButton>
           <SectionTitle>프로필 기반 자기소개서</SectionTitle>
           <Button onClick={handleCreateProfileResume}>+ 새 프로필 기반 자소서 작성</Button>
@@ -109,7 +118,11 @@ function ResumesPageContent() {
 
       <Separator />
 
-      <Section>
+      <Section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
+      >
         <SectionTitle>관심 공고</SectionTitle>
         <ItemGrid>
           {interestedJobs.map(job => (

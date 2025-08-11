@@ -56,7 +56,7 @@ let MOCK_RESUMES: Resume[] = [
   // 두 번째 객체는 구조가 올바르므로 그대로 유지
   {
     id: 'resume-2',
-    title: '기본 프로필 기반 자소서',
+    title: '나의 첫 프로필 자소서 (예시)',
     updatedAt: '2023-10-25',
     basedOn: 'profile',
     snapshot: {
