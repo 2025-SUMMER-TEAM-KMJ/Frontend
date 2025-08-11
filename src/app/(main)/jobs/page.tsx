@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useAuth } from '@/hooks/useAuth';
 import { getJobs, getInterestedJobs, addInterestedJob, removeInterestedJob } from '@/lib/api/jobs';
 import { createJobBasedResume } from '@/lib/api/resumes';
+import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { Job, JobFilters, SortOption } from '@/types';
 import AuthGuard from '@/components/auth/AuthGuard';
 import JobFilter from '@/components/domain/jobs/JobFilter';
@@ -39,6 +40,7 @@ function JobsPageContent() {
   const [sort, setSort] = useState<SortOption>('latest');
   const [searchTerm, setSearchTerm] = useState('');
   const [interestedJobIds, setInterestedJobIds] = useState<Set<number>>(new Set());
+  const [selectedJobForModal, setSelectedJobForModal] = useState<Job | null>(null);
 
   const fetchInitialData = useCallback(async () => {
     setIsLoading(true);
@@ -75,15 +77,17 @@ function JobsPageContent() {
   };
 
   const handleCreateResume = async (job: Job) => {
-    if (!interestedJobIds.has(job.id)) {
+    if (interestedJobIds.has(job.id)) {
+      setSelectedJobForModal(job);
+    } else {
       await addInterestedJob(job);
       setInterestedJobIds(prev => new Set(prev).add(job.id));
-    }
-    try {
-      const newResume = await createJobBasedResume(job);
-      router.push(`/resumes/job-based/${newResume.id}`);
-    } catch (error) {
-      alert(error instanceof Error ? error.message : '자소서 생성 실패');
+      try {
+        const newResume = await createJobBasedResume(job);
+        router.push(`/resumes/job-based/${newResume.id}`);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '자소서 생성 실패');
+      }
     }
   };
 
@@ -111,6 +115,13 @@ function JobsPageContent() {
           />
           <Pagination />
         </>
+      )}
+
+      {selectedJobForModal && (
+        <InterestedJobResumesModal
+          job={selectedJobForModal}
+          onClose={() => setSelectedJobForModal(null)}
+        />
       )}
     </JobsPageContainer>
   );

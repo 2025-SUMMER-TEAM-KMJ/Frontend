@@ -74,13 +74,8 @@ function ResumesPageContent() {
     setInterestedJobs(prevJobs => prevJobs.filter(j => j.id !== job.id));
   };
 
-  const handleCreateResume = async (job: Job) => {
-    try {
-      const newResume = await createJobBasedResume(job);
-      router.push(`/resumes/job-based/${newResume.id}`);
-    } catch (error) {
-      alert(error instanceof Error ? error.message : '자소서 생성 실패');
-    }
+  const handleCreateResume = (job: Job) => {
+    setSelectedJob(job);
   };
 
   return (
