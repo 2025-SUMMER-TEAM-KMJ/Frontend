@@ -3,6 +3,7 @@
 import styled from 'styled-components';
 import { Job } from '@/types';
 import { useState, useEffect } from 'react';
+import { FaRegEdit, FaStar, FaRegStar } from 'react-icons/fa';
 import Tag from '@/components/common/Tag';
 
 const CardWrapper = styled.div`
@@ -163,9 +164,9 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
           
         </ContentWrapper>
         <ButtonGroup>
-          <IconButton onClick={handleCreateClick} title="이 공고로 자소서 생성">📝</IconButton>
+          <IconButton onClick={handleCreateClick} title="이 공고로 자소서 생성"><FaRegEdit /></IconButton>
           <IconButton onClick={handleInterestClick} title="관심 공고 등록/해제">
-            {isInterested ? '★' : '☆'}
+            {isInterested ? <FaStar /> : <FaRegStar />}
           </IconButton>
         </ButtonGroup>
       </TextAndButtonContainer>

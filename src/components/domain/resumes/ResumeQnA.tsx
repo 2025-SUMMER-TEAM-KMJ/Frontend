@@ -5,6 +5,8 @@ import { QnA } from '@/types';
 import Button from '@/components/common/Button';
 import QnAItem from './QnAItem';
 
+import { FaRegEdit } from 'react-icons/fa';
+
 const QnAContainer = styled.div`
   /* ... */
 `;
@@ -25,7 +27,7 @@ interface Props {
   onEdit: (qna: QnA) => void; // New prop
 }
 
-const TextIcon = () => <span>📝</span>;
+const TextIcon = () => <FaRegEdit />;
 
 export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit }: Props) {
   return (
