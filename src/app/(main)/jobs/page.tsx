@@ -8,7 +8,6 @@ import { getJobs, getInterestedJobs, addInterestedJob, removeInterestedJob } fro
 import { createJobBasedResume } from '@/lib/api/resumes';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { Job, JobFilters, SortOption } from '@/types';
-import AuthGuard from '@/components/auth/AuthGuard';
 import JobFilter from '@/components/domain/jobs/JobFilter';
 import JobPostList from '@/components/domain/jobs/JobPostList';
 import Pagination from '@/components/domain/jobs/Pagination';
@@ -62,9 +61,20 @@ function JobsPageContent() {
   };
 
   const handleSortChange = (value: SortOption) => setSort(value);
-  const handleSearch = (term: string) => setSearchTerm(term);
+  const handleSearch = (term: string) => {
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
+    setSearchTerm(term);
+  };
 
   const handleToggleInterest = async (job: Job) => {
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
+
     const newInterestedIds = new Set(interestedJobIds);
     if (interestedJobIds.has(job.id)) {
       await removeInterestedJob(job.id);
@@ -129,8 +139,6 @@ function JobsPageContent() {
 
 export default function JobsPage() {
   return (
-    <AuthGuard>
-      <JobsPageContent />
-    </AuthGuard>
+    <JobsPageContent />
   );
 }

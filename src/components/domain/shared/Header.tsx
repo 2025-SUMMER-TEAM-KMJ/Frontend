@@ -4,6 +4,7 @@ import Button from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
 const HeaderWrapper = styled.header`
@@ -52,6 +53,25 @@ const UserName = styled.span`
   font-weight: bold;
 `;
 
+const AuthNavLink: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // Prevent default Link navigation
+      router.push('/login');
+    }
+    // If logged in, Link will handle navigation normally
+  };
+
+  return (
+    <NavLink href={href} onClick={handleClick}>
+      {children}
+    </NavLink>
+  );
+};
+
 export default function Header() {
   const { isLoggedIn, user, logout } = useAuth();
 
@@ -62,8 +82,8 @@ export default function Header() {
       </Link>
       <Nav>
         <NavLink href="/jobs">채용공고</NavLink>
-        {isLoggedIn && <NavLink href="/profile">프로필</NavLink>}
-        {isLoggedIn && <NavLink href="/resumes">자소서 관리</NavLink>}
+        <AuthNavLink href="/profile">프로필</AuthNavLink>
+        <AuthNavLink href="/resumes">자소서 관리</AuthNavLink>
       </Nav>
       <AuthWrapper>
         {isLoggedIn ? (
