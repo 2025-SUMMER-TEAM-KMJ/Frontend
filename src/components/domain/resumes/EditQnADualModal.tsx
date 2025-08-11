@@ -1,34 +1,10 @@
 'use client';
 
 import Button from '@/components/common/Button';
+import Modal from '@/components/common/Modal';
 import { QnA } from '@/types';
 import { useState } from 'react';
 import styled from 'styled-components';
-
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: ${({ theme }) => theme.spacing.large};
-  border-radius: 8px;
-  width: 90%;
-  max-width: 1200px;
-  height: 80vh;
-  display: flex;
-    gap: ${({ theme }) => theme.spacing.large};
-`;
 
 const LeftModalContent = styled.div`
   flex: 1;
@@ -159,50 +135,45 @@ export default function EditQnADualModal({ qna, resumeId, onSave, onClose }: Pro
   };
 
   return (
-    <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        {/* Left Modal Content: Q&A Editor */}
-        <LeftModalContent>
-          <SectionTitle>Q&A 수정</SectionTitle>
-          <StyledInput
-            placeholder="질문을 입력하세요."
-            value={editedQuestion}
-            onChange={(e) => setEditedQuestion(e.target.value)}
-          />
-          <StyledTextArea
-            value={editedAnswer}
-            onChange={(e) => setEditedAnswer(e.target.value)}
-            placeholder="답변을 입력하세요."
-          />
-          <Button onClick={handleSave}>저장</Button>
-        </LeftModalContent>
+    <Modal onClose={onClose} title="Q&A 수정">
+      {/* Left Modal Content: Q&A Editor */}
+      <LeftModalContent>
+        <SectionTitle>Q&A 수정</SectionTitle>
+        <StyledInput
+          placeholder="질문을 입력하세요."
+          value={editedQuestion}
+          onChange={(e) => setEditedQuestion(e.target.value)}
+        />
+        <StyledTextArea
+          value={editedAnswer}
+          onChange={(e) => setEditedAnswer(e.target.value)}
+          placeholder="답변을 입력하세요."
+        />
+        <Button onClick={handleSave}>저장</Button>
+      </LeftModalContent>
 
-        {/* Right Modal Content: AI Chatbot */}
-        <RightModalContent>
-          <SectionTitle>AI 챗봇</SectionTitle>
-          <ChatContainer>
-            <ChatHistory>
-              {chatHistory.map((msg, index) => (
-                <ChatMessage key={index} $isUser={msg.type === 'user'}>
-                  <span>{msg.message}</span>
-                </ChatMessage>
-              ))}
-            </ChatHistory>
-            <ChatInputContainer>
-              <ChatInput
-                placeholder="AI에게 질문하거나 답변 개선을 요청하세요."
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleChatSubmit()}
-              />
-              <Button onClick={handleChatSubmit}>전송</Button>
-            </ChatInputContainer>
-          </ChatContainer>
-          
+      {/* Right Modal Content: AI Chatbot */}
+      <RightModalContent>
+        <SectionTitle>AI 챗봇</SectionTitle>
+        <ChatContainer>
+          <ChatHistory>
+            {chatHistory.map((msg, index) => (
+              <ChatMessage key={index} $isUser={msg.type === 'user'}>
+                <span>{msg.message}</span>
+              </ChatMessage>
+            ))}
+          </ChatHistory>
+          <ChatInputContainer>
+            <ChatInput
+              placeholder="AI에게 질문하거나 답변 개선을 요청하세요."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleChatSubmit()}
+            />
+            <Button onClick={handleChatSubmit}>전송</Button>
+          </ChatInputContainer>
+        </ChatContainer>
         </RightModalContent>
-
-        
-      </ModalContent>
-    </ModalBackdrop>
+    </Modal>
   );
 }

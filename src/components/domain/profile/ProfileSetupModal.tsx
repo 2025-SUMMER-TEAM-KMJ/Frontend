@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import styled from 'styled-components';
+import Modal from '@/components/common/Modal';
 import { useAuthStore } from '@/store/authStore';
-import { Profile, ResumeFormData } from '@/types';
+import { ResumeFormData } from '@/types';
+import { useState } from 'react';
 import Step1_BasicInfo from './steps/Step1_BasicInfo';
 import Step2_EducationWork from './steps/Step2_EducationWork';
 import Step3_Experience from './steps/Step3_Experience';
@@ -11,41 +11,6 @@ import Step4_Competencies from './steps/Step4_Competencies';
 import Step5_Certifications from './steps/Step5_Certifications';
 import Step6_PreferredPosition from './steps/Step6_PreferredPosition';
 import Step7_PersonalNarratives from './steps/Step7_PersonalNarratives';
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: ${({ theme }) => theme.spacing.xlarge};
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-`;
-
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: ${({ theme }) => theme.spacing.large};
-`;
-
-interface Props {
-  profile: Profile | null;
-  onSave: (data: ResumeFormData) => Promise<void>;
-  onClose: () => void;
-}
 
 export default function ProfileSetupModal({ profile, onSave, onClose }: Props) {
   const { showProfileSetupModal } = useAuthStore();
@@ -72,21 +37,18 @@ export default function ProfileSetupModal({ profile, onSave, onClose }: Props) {
   if (!showProfileSetupModal) return null;
 
   return (
-    <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Title>자소서 생성 ({currentStep}/7)</Title>
+    <Modal onClose={onClose} title={`자소서 생성 (${currentStep}/7)`}>
+      {
         {
-          {
-            1: <Step1_BasicInfo defaultValues={{ name: formData.name || '', age: formData.age || 0, gender: formData.gender || '', email: formData.email || '', phone: formData.phone || '' }} onNext={handleNext} />,
-            2: <Step2_EducationWork defaultValues={{ education: formData.education || [], workExperience: formData.workExperience || [] }} onNext={handleNext} onPrev={handlePrev} />,
-            3: <Step3_Experience defaultValues={{ experience: formData.experience || [] }} onNext={handleNext} onPrev={handlePrev} />,
-            4: <Step4_Competencies defaultValues={{ competencies: formData.competencies || [] }} onNext={handleNext} onPrev={handlePrev} />,
-            5: <Step5_Certifications defaultValues={{ certifications: formData.certifications || [] }} onNext={handleNext} onPrev={handlePrev} />,
-            6: <Step6_PreferredPosition defaultValues={{ preferredPosition: formData.preferredPosition || [] }} onNext={handleNext} onPrev={handlePrev} />,
-            7: <Step7_PersonalNarratives defaultValues={{ strengths: formData.personalNarratives?.strengths || '', values: formData.personalNarratives?.values || '', motivation: formData.personalNarratives?.motivation || '' }} onNext={handleSave} onPrev={handlePrev} />,
-          }[currentStep]
-        }
-      </ModalContent>
-    </ModalBackdrop>
+          1: <Step1_BasicInfo defaultValues={{ name: formData.name || '', age: formData.age || 0, gender: formData.gender || '', email: formData.email || '', phone: formData.phone || '' }} onNext={handleNext} />,
+          2: <Step2_EducationWork defaultValues={{ education: formData.education || [], workExperience: formData.workExperience || [] }} onNext={handleNext} onPrev={handlePrev} />,
+          3: <Step3_Experience defaultValues={{ experience: formData.experience || [] }} onNext={handleNext} onPrev={handlePrev} />,
+          4: <Step4_Competencies defaultValues={{ competencies: formData.competencies || [] }} onNext={handleNext} onPrev={handlePrev} />,
+          5: <Step5_Certifications defaultValues={{ certifications: formData.certifications || [] }} onNext={handleNext} onPrev={handlePrev} />,
+          6: <Step6_PreferredPosition defaultValues={{ preferredPosition: formData.preferredPosition || [] }} onNext={handleNext} onPrev={handlePrev} />,
+          7: <Step7_PersonalNarratives defaultValues={{ strengths: formData.personalNarratives?.strengths || '', values: formData.personalNarratives?.values || '', motivation: formData.personalNarratives?.motivation || '' }} onNext={handleSave} onPrev={handlePrev} />,
+        }[currentStep]
+      }
+    </Modal>
   );
 }

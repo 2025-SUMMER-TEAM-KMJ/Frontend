@@ -1,33 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import Modal from '@/components/common/Modal';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Profile } from '@/types/profile';
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: 0;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px; 
-  height: 70vh; 
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; 
-`;
 
 const Header = styled.div`
   padding: ${({ theme }) => theme.spacing.large};
@@ -85,12 +60,6 @@ const RemovePromptButton = styled.button`
   line-height: 1;
 `;
 
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
-`;
-
 const TextArea = styled.textarea`
   width: 100%;
   min-height: 150px;
@@ -99,12 +68,6 @@ const TextArea = styled.textarea`
   border-radius: 4px;
   font-size: 16px;
   resize: vertical;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: ${({ theme }) => theme.spacing.small};
 `;
 
 const Button = styled.button`
@@ -124,12 +87,6 @@ const Button = styled.button`
     color: ${({ theme }) => theme.colors.text};
   }
 `;
-
-interface Props {
-  profile: Profile;
-  onSave: (brief: string) => void;
-  onClose: () => void;
-}
 
 export default function EditBriefModal({ profile, onSave, onClose }: Props) {
   const [brief, setBrief] = useState(profile.brief);
@@ -169,40 +126,35 @@ export default function EditBriefModal({ profile, onSave, onClose }: Props) {
   };
 
   return (
-    <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Header>
-          <Title>자기소개 수정</Title>
-        </Header>
-        <ScrollableContent>
-          <TextArea
-            value={brief}
-            onChange={(e) => setBrief(e.target.value)}
-            placeholder="자기소개를 입력하거나, AI에게 생성을 요청해보세요."
-          />
-          {usedPrompts.length > 0 && (
-            <UsedPromptContainer>
-              {usedPrompts.map((p, index) => (
-                <PromptTag key={index}>
-                  <span>{p}</span>
-                  <RemovePromptButton onClick={() => handleRemoveUsedPrompt(p)}>×</RemovePromptButton>
-                </PromptTag>
-              ))}
-            </UsedPromptContainer>
-          )}
-        </ScrollableContent>
-        <FixedFooter>
-          <PromptInput
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="추가할 프롬프트를 입력하세요 (예: 성실함을 강조)"
-            onKeyDown={(e) => e.key === 'Enter' && handleAddPrompt()}
-          />
-          <Button className="secondary" onClick={handleAddPrompt}>추가</Button>
-          <Button className="secondary" onClick={handleGenerate}>생성</Button>
-          <Button className="primary" onClick={handleSave}>저장</Button>
-        </FixedFooter>
-      </ModalContent>
-    </ModalBackdrop>
+    <Modal onClose={onClose} title="자기소개 수정">
+      <ScrollableContent>
+        <TextArea
+          value={brief}
+          onChange={(e) => setBrief(e.target.value)}
+          placeholder="자기소개를 입력하거나, AI에게 생성을 요청해보세요."
+        />
+        {usedPrompts.length > 0 && (
+          <UsedPromptContainer>
+            {usedPrompts.map((p, index) => (
+              <PromptTag key={index}>
+                <span>{p}</span>
+                <RemovePromptButton onClick={() => handleRemoveUsedPrompt(p)}>×</RemovePromptButton>
+              </PromptTag>
+            ))}
+          </UsedPromptContainer>
+        )}
+      </ScrollableContent>
+      <FixedFooter>
+        <PromptInput
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="추가할 프롬프트를 입력하세요 (예: 성실함을 강조)"
+          onKeyDown={(e) => e.key === 'Enter' && handleAddPrompt()}
+        />
+        <Button className="secondary" onClick={handleAddPrompt}>추가</Button>
+        <Button className="secondary" onClick={handleGenerate}>생성</Button>
+        <Button className="primary" onClick={handleSave}>저장</Button>
+      </FixedFooter>
+    </Modal>
   );
 }

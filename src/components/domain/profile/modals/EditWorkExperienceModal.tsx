@@ -3,32 +3,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Profile, WorkExperience } from '@/types/profile';
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: ${({ theme }) => theme.spacing.xlarge};
-  border-radius: 8px;
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.medium};
-`;
+import Modal from '@/components/common/Modal';
 
 const Title = styled.h2`
   font-size: 24px;
@@ -93,12 +68,6 @@ const Button = styled.button`
   }
 `;
 
-interface Props {
-  profile: Profile;
-  onSave: (workExperiences: WorkExperience[]) => void;
-  onClose: () => void;
-}
-
 export default function EditWorkExperienceModal({ profile, onSave, onClose }: Props) {
   const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(profile.workExperience);
 
@@ -125,49 +94,46 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
   };
 
   return (
-    <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Title>경력 수정</Title>
-        {workExperiences.map((exp, index) => (
-          <ExperienceItemContainer key={exp.id}>
-            <Input
-              type="text"
-              placeholder="회사명"
-              value={exp.company}
-              onChange={(e) => handleInputChange(index, 'company', e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="직책"
-              value={exp.position}
-              onChange={(e) => handleInputChange(index, 'position', e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="시작일 (YYYY-MM)"
-              value={exp.startDate}
-              onChange={(e) => handleInputChange(index, 'startDate', e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="종료일 (YYYY-MM) 또는 '현재'"
-              value={exp.endDate}
-              onChange={(e) => handleInputChange(index, 'endDate', e.target.value)}
-            />
-            <TextArea
-              placeholder="주요 업무 및 성과"
-              value={exp.description}
-              onChange={(e) => handleInputChange(index, 'description', e.target.value)}
-            />
-            <Button className="danger" onClick={() => handleDeleteExperience(exp.id)}>삭제</Button>
-          </ExperienceItemContainer>
-        ))}
-        <Button className="secondary" onClick={handleAddExperience}>경력 추가</Button>
-        <ButtonContainer>
-          <Button className="secondary" onClick={onClose}>취소</Button>
-          <Button className="primary" onClick={handleSave}>저장</Button>
-        </ButtonContainer>
-      </ModalContent>
-    </ModalBackdrop>
+    <Modal onClose={onClose} title="경력 수정">
+      {workExperiences.map((exp, index) => (
+        <ExperienceItemContainer key={exp.id}>
+          <Input
+            type="text"
+            placeholder="회사명"
+            value={exp.company}
+            onChange={(e) => handleInputChange(index, 'company', e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="직책"
+            value={exp.position}
+            onChange={(e) => handleInputChange(index, 'position', e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="시작일 (YYYY-MM)"
+            value={exp.startDate}
+            onChange={(e) => handleInputChange(index, 'startDate', e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="종료일 (YYYY-MM) 또는 '현재'"
+            value={exp.endDate}
+            onChange={(e) => handleInputChange(index, 'endDate', e.target.value)}
+          />
+          <TextArea
+            placeholder="주요 업무 및 성과"
+            value={exp.description}
+            onChange={(e) => handleInputChange(index, 'description', e.target.value)}
+          />
+          <Button className="danger" onClick={() => handleDeleteExperience(exp.id)}>삭제</Button>
+        </ExperienceItemContainer>
+      ))}
+      <Button className="secondary" onClick={handleAddExperience}>경력 추가</Button>
+      <ButtonContainer>
+        <Button className="secondary" onClick={onClose}>취소</Button>
+        <Button className="primary" onClick={handleSave}>저장</Button>
+      </ButtonContainer>
+    </Modal>
   );
 }

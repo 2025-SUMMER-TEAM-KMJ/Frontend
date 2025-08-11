@@ -3,32 +3,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Profile, Skill } from '@/types/profile';
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: ${({ theme }) => theme.spacing.xlarge};
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.medium};
-`;
+import Modal from '@/components/common/Modal';
 
 const Title = styled.h2`
   font-size: 24px;
@@ -101,12 +76,6 @@ const Button = styled.button`
   }
 `;
 
-interface Props {
-  profile: Profile;
-  onSave: (skills: Skill[]) => void;
-  onClose: () => void;
-}
-
 export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
   const [skills, setSkills] = useState<Skill[]>(profile.skills);
   const [newSkill, setNewSkill] = useState('');
@@ -131,36 +100,33 @@ export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
   };
 
   return (
-    <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <Title>기술 스택 수정</Title>
-        <SkillInputContainer>
-          <Input
-            type="text"
-            placeholder="새 기술 추가"
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleAddSkill();
-              }
-            }}
-          />
-          <Button className="primary" onClick={handleAddSkill}>추가</Button>
-        </SkillInputContainer>
-        <SkillListContainer>
-          {skills.map(skill => (
-            <SkillTag key={skill.id}>
-              {skill.name}
-              <RemoveButton onClick={() => handleRemoveSkill(skill.id)}>x</RemoveButton>
-            </SkillTag>
-          ))}
-        </SkillListContainer>
-        <ButtonContainer>
-          <Button className="secondary" onClick={onClose}>취소</Button>
-          <Button className="primary" onClick={handleSave}>저장</Button>
-        </ButtonContainer>
-      </ModalContent>
-    </ModalBackdrop>
+    <Modal onClose={onClose} title="기술 스택 수정">
+      <SkillInputContainer>
+        <Input
+          type="text"
+          placeholder="새 기술 추가"
+          value={newSkill}
+          onChange={(e) => setNewSkill(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleAddSkill();
+            }
+          }}
+        />
+        <Button className="primary" onClick={handleAddSkill}>추가</Button>
+      </SkillInputContainer>
+      <SkillListContainer>
+        {skills.map(skill => (
+          <SkillTag key={skill.id}>
+            {skill.name}
+            <RemoveButton onClick={() => handleRemoveSkill(skill.id)}>x</RemoveButton>
+          </SkillTag>
+        ))}
+      </SkillListContainer>
+      <ButtonContainer>
+        <Button className="secondary" onClick={onClose}>취소</Button>
+        <Button className="primary" onClick={handleSave}>저장</Button>
+      </ButtonContainer>
+    </Modal>
   );
 }

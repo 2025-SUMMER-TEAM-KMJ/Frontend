@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -7,6 +8,9 @@ interface ModalProps {
   children: ReactNode;
   onClose: () => void;
   title?: string;
+  top?: string;
+  left?: string;
+  transform?: string;
 }
 
 const ModalOverlay = styled.div`
@@ -22,7 +26,7 @@ const ModalOverlay = styled.div`
   z-index: 1000;
 `;
 
-const ModalContent = styled.div`
+const ModalContent = styled(motion.div)`
   background: white;
   padding: 20px;
   border-radius: 8px;
@@ -60,10 +64,15 @@ const CloseButton = styled.button`
   }
 `;
 
-const Modal: React.FC<ModalProps> = ({ children, onClose, title }) => {
+const Modal: React.FC<ModalProps> = ({ children, onClose, title, top, left, transform }) => {
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
+    <ModalOverlay onClick={onClose} style={{ top, left, transform }}>
+      <ModalContent
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
         <ModalHeader>
           {title && <ModalTitle>{title}</ModalTitle>}
           <CloseButton onClick={onClose}>&times;</CloseButton>
