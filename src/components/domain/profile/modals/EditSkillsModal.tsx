@@ -56,6 +56,7 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.small};
+  margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
 const Button = styled.button`

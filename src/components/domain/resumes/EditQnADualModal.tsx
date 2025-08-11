@@ -42,12 +42,13 @@ const StyledInput = styled.input`
 
 const StyledTextArea = styled.textarea`
   width: 100%;
-  min-height: 100px;
+  min-height: 100px; /* Keep min-height for initial size */
   padding: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: none; /* Removed border */
   border-radius: 4px;
   font-size: 16px;
-  resize: vertical;
+  font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */
+  resize: none; /* Prevent resizing */
   flex-grow: 1;
 `;
 
