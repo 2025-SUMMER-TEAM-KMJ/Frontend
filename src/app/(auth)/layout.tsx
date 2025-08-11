@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 const AuthContainer = styled.div`
   display: flex;
@@ -10,7 +11,7 @@ const AuthContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.lightGray};
 `;
 
-const AuthCard = styled.div`
+const AuthCard = styled(motion.div)`
   width: 100%;
   max-width: 400px;
   padding: ${({ theme }) => theme.spacing.xlarge};
@@ -26,7 +27,13 @@ export default function AuthLayout({
 }) {
   return (
     <AuthContainer>
-      <AuthCard>{children}</AuthCard>
+      <AuthCard
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ ease: 'easeOut', duration: 0.3 }}
+      >
+        {children}
+      </AuthCard>
     </AuthContainer>
   );
 }
