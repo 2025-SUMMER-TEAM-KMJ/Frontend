@@ -236,7 +236,7 @@ export default function ProfileView({ profile }: Props) {
       </ProfileHeader>
       <ToggleContainer>
         <ToggleButton active={viewMode === 'resume'} onClick={() => setViewMode('resume')}>이력서</ToggleButton>
-        <ToggleButton active={viewMode === 'card'} onClick={() => setViewMode('card')}>본인 소개 카드</ToggleButton>
+        <ToggleButton active={viewMode === 'card'} onClick={() => setViewMode('card')}>나의 이야기</ToggleButton>
       </ToggleContainer>
 
       <ContentGrid>

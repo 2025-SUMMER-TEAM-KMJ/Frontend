@@ -1,7 +1,7 @@
 'use client';
 
-import styled from 'styled-components';
 import { useAuthStore } from '@/store/authStore';
+import styled from 'styled-components';
 
 type ProfileViewMode = 'resume' | 'cards';
 
@@ -43,7 +43,7 @@ export default function ViewModeToggle() {
         $isActive={profileViewMode === 'cards'} 
         onClick={() => setProfileViewMode('cards')}
       >
-        본인 소개 카드
+        나의 이야기
       </ToggleButton>
     </ToggleContainer>
   );

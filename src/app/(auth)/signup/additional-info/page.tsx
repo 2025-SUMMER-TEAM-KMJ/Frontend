@@ -5,25 +5,32 @@ import { addMyStory } from '@/lib/api/profile';
 import { MyStory } from '@/types/profile';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { FaAngleDoubleRight } from 'react-icons/fa';
 import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
   padding: 40px 24px;
 `;
 
 const ContentWrapper = styled.div`
-  width: 100%;
-  max-width: 650px;
+  width: 50vw;
+  height: 80vh;
   text-align: center;
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   padding: ${({ theme }) => theme.spacing.xlarge};
   margin: 0 auto;
+  position: relative; /* Added for absolute positioning of skip button */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute space vertically */
 `;
 
 const Title = styled.h1`
@@ -43,6 +50,7 @@ const Form = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.large};
   text-align: left;
+  flex-grow: 1;
 `;
 
 const QuestionLabel = styled.label`
@@ -53,12 +61,12 @@ const QuestionLabel = styled.label`
 
 const StyledTextarea = styled.textarea`
   width: 100%;
-  min-height: 120px;
   padding: 12px;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   font-size: 16px;
   resize: vertical;
+  flex-grow: 1;
 `;
 
 const ButtonContainer = styled.div`
@@ -66,6 +74,21 @@ const ButtonContainer = styled.div`
   justify-content: center;
   gap: ${({ theme }) => theme.spacing.medium};
   margin-top: ${({ theme }) => theme.spacing.xlarge};
+`;
+
+const SkipButton = styled.button`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.medium};
+  right: ${({ theme }) => theme.spacing.medium};
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 const questionsData: { id: string; question: string; tag: MyStory['tag']; }[] = [
@@ -119,13 +142,13 @@ export default function AdditionalInfoPage() {
         <Title>🎉 회원가입이 완료되었습니다! 🎉</Title>
         <Subtitle>프로필을 더욱 풍성하게 만들기 위해 몇 가지 질문에 답변해주세요.</Subtitle>
         <Form>
-          <div>
+          <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             <QuestionLabel>{currentQuestion.question}</QuestionLabel>
             <StyledTextarea value={answer} onChange={(e) => setAnswer(e.target.value)} />
           </div>
         </Form>
+        <SkipButton onClick={handleSkip} title="건너뛰기"><FaAngleDoubleRight /></SkipButton>
         <ButtonContainer>
-          <Button onClick={handleSkip} variant="secondary">건너뛰기</Button>
           {currentStep < questionsData.length - 1 ? (
             <Button onClick={handleNext}>다음</Button>
           ) : (
