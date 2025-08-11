@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import Tag from '@/components/common/Tag';
 
 const CardWrapper = styled.div`
-  padding: ${({ theme }) => theme.spacing.large};
+  padding: 0;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
@@ -23,14 +23,30 @@ const CardWrapper = styled.div`
   }
 `;
 
-const ContentWrapper = styled.div``;
+const ContentWrapper = styled.div`
+  padding: 0 ${({ theme }) => theme.spacing.large} ${({ theme }) => theme.spacing.medium};
+`;
+
+const ImageContainer = styled.div`
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  position: relative; /* For positioning overlays */
+  overflow: hidden; /* Hide overflow if image is larger */
+  flex-grow: 6; /* Image area takes 6 parts */
+`;
 
 const JobImage = styled.img`
   width: 100%;
-  height: 150px; /* Fixed height for consistency */
+  height: 100%;
   object-fit: cover; /* Cover the area, cropping if necessary */
-  border-radius: 4px;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const TextAndButtonContainer = styled.div`
+  flex-grow: 4; /* Text and button area takes 4 parts */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const Company = styled.h3`
@@ -50,6 +66,25 @@ const InfoWrapper = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
+const OverlayTag = styled.span`
+  position: absolute;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  background-color: black; /* Fully opaque */
+  top: ${({ theme }) => theme.spacing.medium};
+`;
+
+const SourceTopLeft = styled(OverlayTag)`
+  left: ${({ theme }) => theme.spacing.medium};
+`;
+
+const DueDateTopRight = styled(OverlayTag)`
+  right: ${({ theme }) => theme.spacing.medium};
+`;
+
 const TagWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -61,7 +96,7 @@ const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.small};
-  margin-top: ${({ theme }) => theme.spacing.large};
+  padding: 0 ${({ theme }) => theme.spacing.large} ${({ theme }) => theme.spacing.large};
 `;
 
 const IconButton = styled.button`
@@ -112,24 +147,28 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
 
   return (
     <CardWrapper>
-      <ContentWrapper>
+      <ImageContainer>
         <JobImage src="https://blog.greetinghr.com/content/images/2022/03/---------------------.png" alt="Job Post Image" />
-        <Company>{job.company}</Company>
-        <Title>{job.title}</Title>
-        <InfoWrapper>
-          <span>{job.location}</span>
-          <span>{job.experience}</span>
-          {job.dueDate && <span>{dDay}</span>}
-          {job.source && <span>{job.source}</span>}
-        </InfoWrapper>
-        
-      </ContentWrapper>
-      <ButtonGroup>
-        <IconButton onClick={handleCreateClick} title="이 공고로 자소서 생성">📝</IconButton>
-        <IconButton onClick={handleInterestClick} title="관심 공고 등록/해제">
-          {isInterested ? '★' : '☆'}
-        </IconButton>
-      </ButtonGroup>
+        {job.source && <SourceTopLeft>{job.source}</SourceTopLeft>}
+        {job.dueDate && <DueDateTopRight>{dDay}</DueDateTopRight>}
+      </ImageContainer>
+      <TextAndButtonContainer>
+        <ContentWrapper>
+          <Company>{job.company}</Company>
+          <Title>{job.title}</Title>
+          <InfoWrapper>
+            <span>{job.location}</span>
+            <span>{job.experience}</span>
+          </InfoWrapper>
+          
+        </ContentWrapper>
+        <ButtonGroup>
+          <IconButton onClick={handleCreateClick} title="이 공고로 자소서 생성">📝</IconButton>
+          <IconButton onClick={handleInterestClick} title="관심 공고 등록/해제">
+            {isInterested ? '★' : '☆'}
+          </IconButton>
+        </ButtonGroup>
+      </TextAndButtonContainer>
     </CardWrapper>
   );
 }
