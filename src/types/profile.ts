@@ -4,7 +4,6 @@ export interface Education {
   major: string;
   startDate: string;
   endDate: string;
-  description?: string;
 }
 
 export interface WorkExperience {

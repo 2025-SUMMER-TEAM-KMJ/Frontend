@@ -82,7 +82,7 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
   };
 
   const handleAddEducation = () => {
-    setEducation([...education, { id: Date.now().toString(), institution: '', major: '', startDate: '', endDate: '', description: '' }]);
+    setEducation([...education, { id: Date.now().toString(), institution: '', major: '', startDate: '', endDate: '' }]);
   };
 
   const handleDeleteEducation = (id: string) => {
@@ -120,11 +120,6 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
             placeholder="종료일 (YYYY-MM) 또는 '현재'"
             value={edu.endDate}
             onChange={(e) => handleInputChange(index, 'endDate', e.target.value)}
-          />
-          <TextArea
-            placeholder="세부 내용"
-            value={edu.description}
-            onChange={(e) => handleInputChange(index, 'description', e.target.value)}
           />
           <Button className="danger" onClick={() => handleDeleteEducation(edu.id)}>삭제</Button>
         </EducationItemContainer>

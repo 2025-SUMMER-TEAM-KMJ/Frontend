@@ -36,6 +36,7 @@ const TextArea = styled.textarea`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   font-size: 16px;
+  font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */
   resize: vertical;
 `;
 
