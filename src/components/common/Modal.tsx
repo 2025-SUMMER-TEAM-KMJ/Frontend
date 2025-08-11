@@ -69,9 +69,9 @@ const Modal: React.FC<ModalProps> = ({ children, onClose, title, top, left, tran
     <ModalOverlay onClick={onClose} style={{ top, left, transform }}>
       <ModalContent
         onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 1 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        transition={{ duration: 0.1, ease: 'easeOut' }}
       >
         <ModalHeader>
           {title && <ModalTitle>{title}</ModalTitle>}
