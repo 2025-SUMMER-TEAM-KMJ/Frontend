@@ -40,6 +40,16 @@ const SubLink = styled(Link)`
   }
 `;
 
+const FormWrapper = styled.div`
+  width: 100%;
+  max-width: 380px; /* Adjust this size as needed for login/signup */
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.xlarge};
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+`;
+
 type Inputs = {
   email: string;
   password?: string;
@@ -69,7 +79,7 @@ export default function LoginPage() {
   };
 
   return (
-    <>
+    <FormWrapper>
       <Title>로그인</Title>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Input
@@ -94,6 +104,6 @@ export default function LoginPage() {
       </Form>
       <SubLink href="/signup">회원가입</SubLink>
       <SubLink href="/forgot-password">비밀번호를 잊으셨나요?</SubLink>
-    </>
+    </FormWrapper>
   );
 }

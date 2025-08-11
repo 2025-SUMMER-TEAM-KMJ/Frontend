@@ -34,9 +34,19 @@ const InfoText = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
+const FormWrapper = styled.div`
+  width: 100%;
+  max-width: 380px; /* Adjust this size as needed for login/signup */
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.xlarge};
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+`;
+
 export default function ForgotPasswordPage() {
   return (
-    <>
+    <FormWrapper>
       <Title>비밀번호 찾기</Title>
       <InfoText>가입하신 이메일을 입력하시면 비밀번호 재설정 링크를 보내드립니다.</InfoText>
       <Form>
@@ -44,6 +54,6 @@ export default function ForgotPasswordPage() {
         <Button>재설정 링크 받기</Button>
       </Form>
       <SubLink href="/login">로그인으로 돌아가기</SubLink>
-    </>
+    </FormWrapper>
   );
 }

@@ -1,25 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
-import { addMyStory } from '@/lib/api/profile';
 import Button from '@/components/common/Button';
+import { addMyStory } from '@/lib/api/profile';
 import { MyStory } from '@/types/profile';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
   padding: 40px 24px;
 `;
 
 const ContentWrapper = styled.div`
   width: 100%;
-  max-width: 700px;
+  max-width: 650px;
   text-align: center;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: ${({ theme }) => theme.spacing.xlarge};
+  margin: 0 auto;
 `;
 
 const Title = styled.h1`

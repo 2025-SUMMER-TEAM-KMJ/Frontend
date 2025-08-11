@@ -42,6 +42,16 @@ const SubLink = styled(Link)`
   }
 `;
 
+const FormWrapper = styled.div`
+  width: 100%;
+  max-width: 380px; /* Adjust this size as needed for login/signup */
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.xlarge};
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+`;
+
 type Step1Inputs = {
   email: string;
   password?: string;
@@ -90,7 +100,7 @@ export default function SignupPage() {
   };
 
   return (
-    <>
+    <FormWrapper>
       <Title>회원가입</Title>
       {step === 1 && (
         <Form onSubmit={handleSubmit(onNextStep1)}>
@@ -148,6 +158,6 @@ export default function SignupPage() {
         </Form>
       )}
       <SubLink href="/login">이미 계정이 있으신가요? 로그인</SubLink>
-    </>
+    </FormWrapper>
   );
 }
