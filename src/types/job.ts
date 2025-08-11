@@ -6,6 +6,8 @@ export interface Job {
   experience: string;
   tags: string[];
   jobGroup?: string; // jobGroup 추가
+  dueDate: string; // 마감일 추가
+  source: string; // 출처 추가
 }
 
 export interface JobFilters {

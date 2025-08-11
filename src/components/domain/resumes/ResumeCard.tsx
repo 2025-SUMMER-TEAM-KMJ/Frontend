@@ -8,10 +8,16 @@ const CardWrapper = styled.div`
   padding: ${({ theme }) => theme.spacing.large};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
-  transition: box-shadow 0.2s ease-in-out;
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  cursor: pointer;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 `;
 

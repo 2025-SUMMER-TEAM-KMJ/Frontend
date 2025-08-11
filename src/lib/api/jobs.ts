@@ -1,14 +1,14 @@
 import { Job, JobFilters, SortOption } from '@/types';
 
 const ALL_JOBS: Job[] = [
-  { id: 1, company: '네이버', title: '프론트엔드 개발자', location: '경기', experience: '신입/경력', tags: ['React', 'TypeScript'] },
-  { id: 2, company: '카카오', title: '백엔드 개발자 (Java)', location: '제주', experience: '경력 3년+', tags: ['Java', 'Spring'] },
-  { id: 3, company: '쿠팡', title: 'iOS 개발자', location: '서울', experience: '경력 5년+', tags: ['Swift', 'iOS'] },
-  { id: 4, company: '토스', title: '데이터 분석가', location: '서울', experience: '신입', tags: ['SQL', 'Python'] },
-  { id: 5, company: '배달의민족', title: '안드로이드 개발자', location: '서울', experience: '경력 2년+', tags: ['Kotlin', 'Android'] },
-  { id: 6, company: '삼성전자', title: 'AI 연구원', location: '서울', experience: '석사 이상', tags: ['PyTorch', 'AI'] },
-  { id: 7, company: '네이버', title: 'UI/UX 디자이너', location: '경기', experience: '경력 3년+', tags: ['Figma', 'UX'] },
-  { id: 8, company: '카카오', title: '프론트엔드 개발자 (Vue)', location: '제주', experience: '경력 1년+', tags: ['Vue.js', 'JavaScript'] },
+  { id: 1, company: '네이버', title: '프론트엔드 개발자', location: '경기', experience: '신입/경력', tags: ['React', 'TypeScript'], dueDate: '2025-09-15', source: 'Wanted' },
+  { id: 2, company: '카카오', title: '백엔드 개발자 (Java)', location: '제주', experience: '경력 3년+', tags: ['Java', 'Spring'], dueDate: '2025-08-20', source: 'Saramin' },
+  { id: 3, company: '쿠팡', title: 'iOS 개발자', location: '서울', experience: '경력 5년+', tags: ['Swift', 'iOS'], dueDate: '2025-09-01', source: 'JobKorea' },
+  { id: 4, company: '토스', title: '데이터 분석가', location: '서울', experience: '신입', tags: ['SQL', 'Python'], dueDate: '2025-08-10', source: 'Wanted' },
+  { id: 5, company: '배달의민족', title: '안드로이드 개발자', location: '서울', experience: '경력 2년+', tags: ['Kotlin', 'Android'], dueDate: '2025-09-25', source: 'Saramin' },
+  { id: 6, company: '삼성전자', title: 'AI 연구원', location: '서울', experience: '석사 이상', tags: ['PyTorch', 'AI'], dueDate: '2025-08-12', source: 'JobKorea' },
+  { id: 7, company: '네이버', title: 'UI/UX 디자이너', location: '경기', experience: '경력 3년+', tags: ['Figma', 'UX'], dueDate: '2025-09-05', source: 'Wanted' },
+  { id: 8, company: '카카오', title: '프론트엔드 개발자 (Vue)', location: '제주', experience: '경력 1년+', tags: ['Vue.js', 'JavaScript'], dueDate: '2025-08-18', source: 'Saramin' },
 ];
 
 export const getJobs = (

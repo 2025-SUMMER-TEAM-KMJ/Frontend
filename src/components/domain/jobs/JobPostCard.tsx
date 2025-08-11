@@ -2,6 +2,7 @@
 
 import styled from 'styled-components';
 import { Job } from '@/types';
+import { useState, useEffect } from 'react';
 import Tag from '@/components/common/Tag';
 
 const CardWrapper = styled.div`
@@ -14,6 +15,7 @@ const CardWrapper = styled.div`
   justify-content: space-between;
   height: 100%;
   cursor: pointer;
+  position: relative; /* Re-added for overlay positioning */
 
   &:hover {
     transform: translateY(-5px);
@@ -22,6 +24,14 @@ const CardWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div``;
+
+const JobImage = styled.img`
+  width: 100%;
+  height: 150px; /* Fixed height for consistency */
+  object-fit: cover; /* Cover the area, cropping if necessary */
+  border-radius: 4px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
 
 const Company = styled.h3`
   font-size: 18px;
@@ -84,18 +94,35 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
     onToggleInterest(job);
   };
 
+  const calculateDDay = (dueDate: string) => {
+    const today = new Date();
+    const deadlineDate = new Date(dueDate);
+    const diffTime = deadlineDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 ? `D-${diffDays}` : `D+${Math.abs(diffDays)}`;
+  };
+
+  const [dDay, setDDay] = useState('');
+
+  useEffect(() => {
+    if (job.dueDate) {
+      setDDay(calculateDDay(job.dueDate));
+    }
+  }, [job.dueDate]);
+
   return (
     <CardWrapper>
       <ContentWrapper>
+        <JobImage src="https://blog.greetinghr.com/content/images/2022/03/---------------------.png" alt="Job Post Image" />
         <Company>{job.company}</Company>
         <Title>{job.title}</Title>
         <InfoWrapper>
           <span>{job.location}</span>
           <span>{job.experience}</span>
+          {job.dueDate && <span>{dDay}</span>}
+          {job.source && <span>{job.source}</span>}
         </InfoWrapper>
-        <TagWrapper>
-          {job.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
-        </TagWrapper>
+        
       </ContentWrapper>
       <ButtonGroup>
         <IconButton onClick={handleCreateClick} title="이 공고로 자소서 생성">📝</IconButton>
