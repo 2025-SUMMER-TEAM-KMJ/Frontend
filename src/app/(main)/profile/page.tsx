@@ -65,8 +65,18 @@ function ProfilePageContent() {
     return newResume;
   };
 
-  const handleSaveBasicInfo = async (data: { name: string; age: number; gender: string; email: string; phone: string; }) => {
+  const handleSaveBasicInfo = async (data: { name: string; age: number; gender: string; email: string; phone: string; preferredJobGroup?: string; preferredJob?: string; }) => {
     if (!profile) return;
+
+    const newPreferredPosition = [];
+    if (data.preferredJobGroup || data.preferredJob) {
+      newPreferredPosition.push({
+        id: profile.preferredPosition?.[0]?.id || `pref-${Date.now()}`,
+        industry: data.preferredJobGroup || '',
+        title: data.preferredJob || '',
+      });
+    }
+
     const newProfile: Profile = {
       ...profile,
       name: data.name,
@@ -74,6 +84,7 @@ function ProfilePageContent() {
       gender: data.gender,
       email: data.email,
       phone: data.phone,
+      preferredPosition: newPreferredPosition,
     };
     await updateProfile(newProfile);
     await fetchProfile(); // Re-fetch to show updated data

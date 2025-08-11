@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { signupUser } from '@/lib/api/auth';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import CustomDropdown from '@/components/common/CustomDropdown';
+import Dropdown from '@/components/common/Dropdown';
 
 // (LoginPage와 유사한 스타일 컴포넌트들 재사용)
 const Title = styled.h1`
@@ -70,7 +70,7 @@ export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<Step1Inputs & Step2Inputs>>({});
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, trigger } = useForm<Step1Inputs | Step2Inputs>();
+  const { register, handleSubmit, formState: { errors, isSubmitting }, trigger, watch } = useForm<Step1Inputs | Step2Inputs>();
 
   const onNextStep1: SubmitHandler<Step1Inputs | Step2Inputs> = async (data) => {
     const step1Data = data as Step1Inputs;
@@ -139,12 +139,12 @@ export default function SignupPage() {
           />
           {(errors as FieldErrors<Step2Inputs>).age && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).age!.message}</ErrorMessage>}
 
-          <CustomDropdown
-            label="성별"
+          <Dropdown
+            {...register('gender', { required: '성별은 필수입니다.' })}
             options={[{ value: '', label: '성별 선택' }, { value: '남', label: '남' }, { value: '여', label: '여' }]}
-            value={formData.gender || ''}
-            onChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+            value={watch('gender') || ''}
           />
+          {(errors as FieldErrors<Step2Inputs>).gender && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).gender!.message}</ErrorMessage>}
 
           <Input
             {...register('phone', { required: '연락처는 필수입니다.' })}

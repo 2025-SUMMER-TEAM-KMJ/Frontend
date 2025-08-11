@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { MyStory } from '@/types/profile';
-import { getProfile, updateMyStoryTag } from '@/lib/api/profile';
+import { getProfile, updateMyStoryTag, updateMyStory } from '@/lib/api/profile';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
@@ -117,17 +117,7 @@ export default function MyStoryCardView() {
   }, []);
 
   const handleTagChange = async (storyId: string, newTag: '자기소개' | '일화' | '기타') => {
-    try {
-      await updateMyStoryTag(storyId, newTag);
-      setStories(prevStories =>
-        prevStories.map(story =>
-          story.id === storyId ? { ...story, tag: newTag } : story
-        )
-      );
-    } catch (error) {
-      console.error('Failed to update tag', error);
-      alert('태그 업데이트에 실패했습니다.');
-    }
+    setSelectedCard(prev => prev ? { ...prev, tag: newTag } : null);
   };
 
   const handleCardClick = (card: MyStory) => {
@@ -137,6 +127,26 @@ export default function MyStoryCardView() {
 
   const handleCloseModal = () => {
     setSelectedCard(null);
+  };
+
+  const handleSave = async () => {
+    if (!selectedCard) return;
+
+    try {
+      // Update the story in the backend (mock API)
+      await updateMyStory(selectedCard);
+
+      // After successful save, update the local stories state
+      setStories(prevStories =>
+        prevStories.map(story =>
+          story.id === selectedCard.id ? selectedCard : story
+        )
+      );
+      handleCloseModal(); // Close modal after saving
+    } catch (error) {
+      console.error('Failed to save story', error);
+      alert('스토리 저장에 실패했습니다.');
+    }
   };
 
   return (
@@ -176,7 +186,7 @@ export default function MyStoryCardView() {
               onChange={(e) => handleTagChange(selectedCard.id, e.target.value as any)}
             />
             <ButtonContainer>
-              <Button onClick={handleCloseModal}> {/* Replace with actual save logic */}
+              <Button onClick={handleSave}>
                 저장
               </Button>
             </ButtonContainer>

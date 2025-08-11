@@ -14,6 +14,8 @@ interface EditBasicInfoFormData {
   gender: string;
   email: string;
   phone: string;
+  preferredJobGroup?: string;
+  preferredJob?: string;
 }
 
 interface Props {
@@ -43,6 +45,8 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
       gender: profile.gender,
       email: profile.email,
       phone: profile.phone,
+      preferredJobGroup: profile.preferredPosition?.[0]?.industry || '',
+      preferredJob: profile.preferredPosition?.[0]?.title || '',
     },
   });
 
@@ -80,10 +84,17 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
           {...register('phone', { required: '전화번호는 필수입니다.' })}
           error={errors.phone?.message}
         />
+        <Input
+          label="희망 직군"
+          {...register('preferredJobGroup')}
+          error={errors.preferredJobGroup?.message}
+        />
+        <Input
+          label="희망 직무"
+          {...register('preferredJob')}
+          error={errors.preferredJob?.message}
+        />
         <ButtonContainer>
-          <Button type="button" onClick={onClose} variant="secondary">
-            취소
-          </Button>
           <Button type="submit">
             저장
           </Button>

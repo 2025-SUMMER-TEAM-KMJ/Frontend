@@ -92,3 +92,22 @@ export const addMyStory = (story: MyStory): Promise<void> => {
     }, 200);
   });
 };
+
+export const updateMyStory = (updatedStory: MyStory): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (MOCK_PROFILE && MOCK_PROFILE.myStories) {
+        const index = MOCK_PROFILE.myStories.findIndex(s => s.id === updatedStory.id);
+        if (index > -1) {
+          MOCK_PROFILE.myStories[index] = updatedStory;
+          console.log('MyStory updated:', updatedStory);
+          resolve();
+        } else {
+          reject(new Error('MyStory not found'));
+        }
+      } else {
+        reject(new Error('Profile or stories not found'));
+      }
+    }, 200);
+  });
+};
