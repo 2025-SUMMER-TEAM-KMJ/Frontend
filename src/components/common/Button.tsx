@@ -9,14 +9,21 @@ const StyledButton = styled.button<{ variant?: string }>` // variant prop 추가
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: opacity 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   background-color: ${({ theme, variant }) =>
     variant === 'secondary' ? theme.colors.secondary : theme.colors.primary};
   color: ${({ variant }) => (variant === 'secondary' ? 'black' : 'white')}; // secondary variant 텍스트 색상 변경
 
   &:hover {
-    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 `;
 

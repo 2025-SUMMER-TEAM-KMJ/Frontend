@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { QnA } from '@/types';
 import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
+import { QnA } from '@/types';
+import { useState } from 'react';
+import styled from 'styled-components';
+
 
 const ModalBackdrop = styled.div`
   position: fixed;
@@ -27,7 +27,7 @@ const ModalContent = styled.div`
   max-width: 1200px;
   height: 80vh;
   display: flex;
-  gap: ${({ theme }) => theme.spacing.large};
+    gap: ${({ theme }) => theme.spacing.large};
 `;
 
 const LeftModalContent = styled.div`
@@ -47,10 +47,21 @@ const RightModalContent = styled.div`
   padding-left: ${({ theme }) => theme.spacing.large};
 `;
 
+
+
 const SectionTitle = styled.h3`
   font-size: 20px;
   font-weight: bold;
   margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  height: auto; /* 최소 높이 설정 */
+  padding: 10px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 4px;
+  font-size: 16px;
 `;
 
 const StyledTextArea = styled.textarea`
@@ -61,6 +72,7 @@ const StyledTextArea = styled.textarea`
   border-radius: 4px;
   font-size: 16px;
   resize: vertical;
+  flex-grow: 1;
 `;
 
 const ChatContainer = styled.div`
@@ -99,32 +111,18 @@ const ChatInputContainer = styled.div`
   border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-const ChatInput = styled(Input)`
+const ChatInput = styled.input`
   flex-grow: 1;
   margin-right: ${({ theme }) => theme.spacing.small};
+  padding: 10px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 4px;
+  font-size: 16px;
 `;
 
-const AiSuggestionContainer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.medium};
-  padding: ${({ theme }) => theme.spacing.medium};
-  background-color: ${({ theme }) => theme.colors.lightGray};
-  border-radius: 8px;
-`;
 
-const OriginalContent = styled.div`
-  background-color: ${({ theme }) => theme.colors.lightGray};
-  padding: ${({ theme }) => theme.spacing.medium};
-  border-radius: 8px;
-`;
 
-const OriginalQuestion = styled.p`
-  font-weight: bold;
-  margin-bottom: ${({ theme }) => theme.spacing.small};
-`;
 
-const OriginalAnswer = styled.p`
-  white-space: pre-wrap;
-`;
 
 interface Props {
   qna: QnA;
@@ -138,7 +136,7 @@ export default function EditQnADualModal({ qna, resumeId, onSave, onClose }: Pro
   const [editedAnswer, setEditedAnswer] = useState(qna.answer);
   const [chatHistory, setChatHistory] = useState<{ type: 'user' | 'ai'; message: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+  
 
   const handleChatSubmit = () => {
     if (!chatInput.trim()) return;
@@ -151,18 +149,10 @@ export default function EditQnADualModal({ qna, resumeId, onSave, onClose }: Pro
     setTimeout(() => {
       const aiResponse = `AI: "${userMessage}"에 대한 답변을 개선해 드릴까요? 예를 들어, "${userMessage}"에 대한 구체적인 경험을 바탕으로 답변을 작성해보세요.`;
       setChatHistory(prev => [...prev, { type: 'ai', message: aiResponse }]);
-      setAiSuggestion(`AI가 제안하는 답변: 
-
-${userMessage}에 대한 AI 생성 답변입니다. 이 내용을 참고하여 답변을 수정해보세요.`);
     }, 1000);
   };
 
-  const handleApplySuggestion = () => {
-    if (aiSuggestion) {
-      setEditedAnswer(aiSuggestion);
-      setAiSuggestion(null);
-    }
-  };
+  
 
   const handleSave = () => {
     onSave(qna.id, editedQuestion, editedAnswer);
@@ -171,11 +161,11 @@ ${userMessage}에 대한 AI 생성 답변입니다. 이 내용을 참고하여 �
   return (
     <ModalBackdrop onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        {/* Left Modal Content: Q&A Editor + Chatbot */}
+        {/* Left Modal Content: Q&A Editor */}
         <LeftModalContent>
           <SectionTitle>Q&A 수정</SectionTitle>
-          <Input
-            label="질문"
+          <StyledInput
+            placeholder="질문을 입력하세요."
             value={editedQuestion}
             onChange={(e) => setEditedQuestion(e.target.value)}
           />
@@ -185,7 +175,10 @@ ${userMessage}에 대한 AI 생성 답변입니다. 이 내용을 참고하여 �
             placeholder="답변을 입력하세요."
           />
           <Button onClick={handleSave}>저장</Button>
+        </LeftModalContent>
 
+        {/* Right Modal Content: AI Chatbot */}
+        <RightModalContent>
           <SectionTitle>AI 챗봇</SectionTitle>
           <ChatContainer>
             <ChatHistory>
@@ -205,22 +198,10 @@ ${userMessage}에 대한 AI 생성 답변입니다. 이 내용을 참고하여 �
               <Button onClick={handleChatSubmit}>전송</Button>
             </ChatInputContainer>
           </ChatContainer>
-          {aiSuggestion && (
-            <AiSuggestionContainer>
-              <p>{aiSuggestion}</p>
-              <Button onClick={handleApplySuggestion}>AI 제안 적용</Button>
-            </AiSuggestionContainer>
-          )}
-        </LeftModalContent>
-
-        {/* Right Modal Content: Original Q&A Preview */}
-        <RightModalContent>
-          <SectionTitle>원본 Q&A</SectionTitle>
-          <OriginalContent>
-            <OriginalQuestion>질문: {qna.question}</OriginalQuestion>
-            <OriginalAnswer>답변: {qna.answer}</OriginalAnswer>
-          </OriginalContent>
+          
         </RightModalContent>
+
+        
       </ModalContent>
     </ModalBackdrop>
   );

@@ -9,10 +9,12 @@ const StyledInput = styled.input`
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 16px;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.2);
   }
 `;
 
@@ -23,10 +25,12 @@ const StyledTextarea = styled.textarea`
   border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 16px;
   resize: vertical;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.2);
   }
 `;
 

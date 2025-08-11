@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { Resume, Job } from '@/types';
 import { getResumes, createProfileBasedResume, createJobBasedResume } from '@/lib/api/resumes';
-import { getInterestedJobs, addInterestedJob, removeInterestedJob } from '@/lib/api/jobs';
+import { getInterestedJobs, removeInterestedJob } from '@/lib/api/jobs';
 import AuthGuard from '@/components/auth/AuthGuard';
 import Button from '@/components/common/Button';
 import ResumeCard from '@/components/domain/resumes/ResumeCard';
@@ -104,7 +104,7 @@ function ResumesPageContent() {
             <div key={job.id} onClick={() => setSelectedJob(job)} style={{ cursor: 'pointer' }}>
               <JobPostCard 
                 job={job} 
-                isInterested={true} // 관심 공고 목록에 있으므로 항상 true
+                isInterested={true}
                 onToggleInterest={handleToggleInterest}
                 onCreateResume={handleCreateResume}
               />

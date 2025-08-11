@@ -4,7 +4,12 @@ import { QnA } from '@/types';
 import styled from 'styled-components';
 
 const ItemWrapper = styled.div`
+  background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  padding: ${({ theme }) => theme.spacing.medium};
   margin-bottom: ${({ theme }) => theme.spacing.large};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative; /* For positioning the edit button */
 `;
 
@@ -36,15 +41,15 @@ const EditButton = styled.button`
   }
 `;
 
-const AnswerTextarea = styled.textarea`
+const AnswerContent = styled.div`
   width: 100%;
   min-height: 120px;
   padding: 12px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: none;
   border-radius: 8px;
   font-size: 16px;
   line-height: 1.6;
-  resize: vertical;
+  /* resize: vertical; */ /* div는 resize 속성을 지원하지 않으므로 제거 */
 `;
 
 const ButtonWrapper = styled.div`
@@ -73,7 +78,7 @@ export default function QnAItem({ item, onEdit, onDelete }: Props) {
           <EditButton onClick={() => onDelete(item.id)}>🗑️</EditButton>
         </ActionButtons>
       </QuestionHeader>
-      <AnswerTextarea value={item.answer} readOnly />
+      <AnswerContent>{item.answer}</AnswerContent>
     </ItemWrapper>
   );
 }

@@ -117,9 +117,9 @@ function JobsPageContent() {
 }
 
 export default function JobsPage() {
-    return (
-        <AuthGuard>
-            <JobsPageContent />
-        </AuthGuard>
-    )
+  return (
+    <AuthGuard>
+      <JobsPageContent />
+    </AuthGuard>
+  );
 }

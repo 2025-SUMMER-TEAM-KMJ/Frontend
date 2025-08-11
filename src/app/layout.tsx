@@ -1,4 +1,5 @@
 import StyledComponentsRegistry from '@/lib/styled-registry';
+import { Providers } from './providers';
 
 export const metadata = {
   title: 'careergo - AI 취업 준비 파트너',
@@ -13,7 +14,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <StyledComponentsRegistry>
+          <Providers>{children}</Providers>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

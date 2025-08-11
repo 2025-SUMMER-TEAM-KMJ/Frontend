@@ -11,7 +11,6 @@ import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileView from '@/components/domain/profile/ProfileView';
 import ProfileSetupModal from '@/components/domain/profile/ProfileSetupModal';
 import EditBasicInfoModal from '@/components/domain/profile/modals/EditBasicInfoModal';
-
 import Button from '@/components/common/Button';
 
 const ProfilePageContainer = styled.div`
@@ -25,8 +24,6 @@ const Loading = styled.p`
   text-align: center;
   padding: 50px;
 `;
-
-
 
 function ProfilePageContent() {
   const [profile, setProfile] = useState<Profile | null>(null);

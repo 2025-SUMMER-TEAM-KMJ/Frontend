@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import styled from 'styled-components';
-import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/common/Button';
+import { useAuth } from '@/hooks/useAuth';
+import Image from 'next/image';
+import Link from 'next/link';
+import styled from 'styled-components';
 
 const HeaderWrapper = styled.header`
   position: fixed;
@@ -62,8 +62,8 @@ export default function Header() {
       </Link>
       <Nav>
         <NavLink href="/jobs">채용공고</NavLink>
-        {isLoggedIn && <NavLink href="/resumes">자소서 관리</NavLink>}
         {isLoggedIn && <NavLink href="/profile">프로필</NavLink>}
+        {isLoggedIn && <NavLink href="/resumes">자소서 관리</NavLink>}
       </Nav>
       <AuthWrapper>
         {isLoggedIn ? (
