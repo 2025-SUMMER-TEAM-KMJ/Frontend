@@ -8,6 +8,7 @@ import { getJobs, getInterestedJobs, addInterestedJob, removeInterestedJob } fro
 import { createJobBasedResume } from '@/lib/api/resumes';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { Job, JobFilters, SortOption } from '@/types';
+import Button from '@/components/common/Button';
 import JobFilter from '@/components/domain/jobs/JobFilter';
 import JobPostList from '@/components/domain/jobs/JobPostList';
 import Pagination from '@/components/domain/jobs/Pagination';
@@ -28,6 +29,12 @@ const Title = styled.h1`
 const Loading = styled.p`
   text-align: center;
   padding: 50px;
+`;
+
+const ButtonRightContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
 function JobsPageContent() {
@@ -69,6 +76,10 @@ function JobsPageContent() {
     setSearchTerm(term);
   };
 
+  const handleGetRecommendations = () => {
+    alert('추천받기 버튼 클릭됨!');
+  };
+
   const handleToggleInterest = async (job: Job) => {
     if (!isLoggedIn) {
       router.push('/login');
@@ -103,8 +114,11 @@ function JobsPageContent() {
 
   return (
     <JobsPageContainer>
-      <Title>채용 공고</Title>
+                  <Title>채용 공고</Title>
       
+      <ButtonRightContainer>
+        <Button onClick={handleGetRecommendations}>추천받기</Button>
+      </ButtonRightContainer>
       <JobFilter
         filters={filters}
         sort={sort}

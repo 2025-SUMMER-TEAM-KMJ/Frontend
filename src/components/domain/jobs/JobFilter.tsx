@@ -20,21 +20,6 @@ const FilterGroup = styled.div`
   flex-grow: 1;
 `;
 
-const SortGroup = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.small};
-`;
-
-const SortButton = styled.button<{ $isActive: boolean }>`
-  background: none;
-  border: none;
-  font-size: 14px;
-  font-weight: ${({ $isActive }) => ($isActive ? 'bold' : 'normal')};
-  color: ${({ $isActive, theme }) => ($isActive ? theme.colors.primary : theme.colors.textSecondary)};
-  cursor: pointer;
-  padding: 4px;
-`;
-
 interface JobFilterProps {
   filters: JobFilters;
   sort: SortOption;
@@ -56,7 +41,7 @@ const jobOptions = [{ value: '전체', label: '직무 (전체)' }];
 
 export default function JobFilter({ filters, sort, onFilterChange, onSortChange, onSearch }: JobFilterProps) {
   return (
-    <FilterContainer>
+        <FilterContainer>
       <FilterGroup>
         <SearchBar onSearch={onSearch} />
         <Dropdown
@@ -75,14 +60,6 @@ export default function JobFilter({ filters, sort, onFilterChange, onSortChange,
           onChange={(e) => onFilterChange('job', e.target.value)}
         />
       </FilterGroup>
-      <SortGroup>
-        <SortButton $isActive={sort === 'recommend'} onClick={() => onSortChange('recommend')}>
-          추천순
-        </SortButton>
-        <SortButton $isActive={sort === 'latest'} onClick={() => onSortChange('latest')}>
-          최신순
-        </SortButton>
-      </SortGroup>
     </FilterContainer>
   );
 }
