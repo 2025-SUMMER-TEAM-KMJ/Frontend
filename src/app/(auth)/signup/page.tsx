@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { signupUser } from '@/lib/api/auth';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import Dropdown from '@/components/common/Dropdown';
+import CustomDropdown from '@/components/common/CustomDropdown';
 
 // (LoginPage와 유사한 스타일 컴포넌트들 재사용)
 const Title = styled.h1`
@@ -139,11 +139,12 @@ export default function SignupPage() {
           />
           {(errors as FieldErrors<Step2Inputs>).age && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).age!.message}</ErrorMessage>}
 
-          <Dropdown
-            {...register('gender', { required: '성별은 필수입니다.' })}
+          <CustomDropdown
+            label="성별"
             options={[{ value: '', label: '성별 선택' }, { value: '남', label: '남' }, { value: '여', label: '여' }]}
+            value={formData.gender || ''}
+            onChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
           />
-          {(errors as FieldErrors<Step2Inputs>).gender && <ErrorMessage>{(errors as FieldErrors<Step2Inputs>).gender!.message}</ErrorMessage>}
 
           <Input
             {...register('phone', { required: '연락처는 필수입니다.' })}

@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { MyStory } from '@/types/profile';
 import { getProfile, updateMyStoryTag } from '@/lib/api/profile';
 import Modal from '@/components/common/Modal';
-import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
 
@@ -48,6 +47,39 @@ const CardTitle = styled.h3`
   margin-top: ${({ theme }) => theme.spacing.large}; // to make space for the tag
   margin-bottom: ${({ theme }) => theme.spacing.small};
   color: ${({ theme }) => theme.colors.text};
+`;
+
+const Label = styled.label`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 4px;
+`;
+
+const StyledBorderlessInput = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: none; /* No border */
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: transparent; /* Ensure background is transparent */
+  &:focus {
+    outline: none;
+  }
+`;
+
+const StyledBorderlessTextarea = styled.textarea`
+  width: 100%;
+  padding: 12px;
+  border: none; /* No border */
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */
+  resize: none; /* Changed from vertical to none */
+  flex-grow: 1;
+  background-color: transparent; /* Ensure background is transparent */
+  &:focus {
+    outline: none;
+  }
 `;
 
 const ModalContentWrapper = styled.div`
@@ -119,20 +151,24 @@ export default function MyStoryCardView() {
       </CardGrid>
 
       {selectedCard && (
-        <Modal onClose={handleCloseModal} title="본인 소개 카드 수정">
+        <Modal onClose={handleCloseModal} title="나의 이야기 수정">
           <ModalContentWrapper>
-            <Input
-              label="제목"
-              value={selectedCard.title}
-              // onChange handler for title
-            />
-            <Input
-              label="내용"
-              value={selectedCard.content}
-              // onChange handler for content
-              textarea
-              rows={10}
-            />
+            <div> {/* Add a div to contain label and input */}
+              <Label>제목</Label>
+              <StyledBorderlessTextarea
+                value={selectedCard.title}
+                rows={2}
+                onChange={(e) => setSelectedCard(prev => prev ? { ...prev, title: e.target.value } : null)}
+              />
+            </div>
+            <div> {/* Add a div to contain label and input */}
+              <Label>내용</Label>
+              <StyledBorderlessTextarea
+                value={selectedCard.content}
+                rows={10}
+                onChange={(e) => setSelectedCard(prev => prev ? { ...prev, content: e.target.value } : null)}
+              />
+            </div>
             <Dropdown
               label="태그 선택"
               options={tagOptions}
@@ -140,9 +176,6 @@ export default function MyStoryCardView() {
               onChange={(e) => handleTagChange(selectedCard.id, e.target.value as any)}
             />
             <ButtonContainer>
-              <Button onClick={handleCloseModal} variant="secondary">
-                취소
-              </Button>
               <Button onClick={handleCloseModal}> {/* Replace with actual save logic */}
                 저장
               </Button>
