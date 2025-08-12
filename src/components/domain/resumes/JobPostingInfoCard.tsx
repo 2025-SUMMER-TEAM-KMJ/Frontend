@@ -1,8 +1,8 @@
 'use client';
 
+import { JobPosting, Resume } from '@/types';
 import { useState } from 'react'; // useState 임포트 추가
 import styled from 'styled-components';
-import { Resume, JobPosting } from '@/types';
 
 const CardContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
@@ -61,7 +61,7 @@ export default function JobPostingInfoCard({ resume }: Props) {
   return (
     <CardContainer>
       <SectionTitle onClick={handleToggle}>
-        <DocumentIcon /> 공고 정보 {isOpen ? '▲' : '▼'} {/* 토글 아이콘 추가 */}
+        공고 정보 {isOpen ? '▲' : '▼'} {/* 토글 아이콘 추가 */}
       </SectionTitle>
       {isOpen && ( // isOpen 상태에 따라 InfoGrid 표시
         <InfoGrid>

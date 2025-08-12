@@ -1,15 +1,14 @@
 'use client';
 
 import AuthGuard from '@/components/auth/AuthGuard';
-import Tag from '@/components/common/Tag';
-import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal';
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
+import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
-import { QnA, Resume } from '@/types';
+import { Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const ResumeDetailPageContainer = styled.div`
+const AnalysisPageContainer = styled.div`
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
@@ -41,31 +40,7 @@ const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const SectionTitle = styled.h2`
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
-`;
 
-const ContentText = styled.p`
-  font-size: 16px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-`;
-
-const TagContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.small};
-`;
-
-const Card = styled.div`
-  background-color: white;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  padding: ${({ theme }) => theme.spacing.large};
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-`;
 
 interface Props {
   params: { id: string };
@@ -73,7 +48,6 @@ interface Props {
 
 function ProfileBasedResumeDetailPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
-  const [editingQnA, setEditingQnA] = useState<QnA | null>(null);
 
   useEffect(() => {
     getResumeById(params.id).then(data => {
@@ -99,59 +73,25 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
     setResume(updatedResume);
   };
 
-  const handleEditQnA = (qna: QnA) => {
-    setEditingQnA(qna);
-  };
-
-  const handleSaveEditedQnA = async (qnaId: string, newQuestion: string, newAnswer: string) => {
-    if (!resume) return;
-    const updatedResume = await updateResumeQnA(resume.id, qnaId, newQuestion, newAnswer);
-    setResume(updatedResume);
-    setEditingQnA(null); // Close modal
-  };
-
   if (!resume) return <Loading>자기소개서 정보를 불러오는 중...</Loading>;
 
   return (
-    <ResumeDetailPageContainer>
+    <AnalysisPageContainer>
       <ResumeHeader>
         <Title>{resume.title}</Title>
         <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
       </ResumeHeader>
 
-      <Card>
-        <SectionTitle>나의 역량</SectionTitle>
-        <TagContainer>
-          {resume.snapshot.skills.map(skill => (
-            <Tag key={skill.id}>{skill.name}</Tag>
-          ))}
-        </TagContainer>
-      </Card>
+      <CompetencyAnalysis type="profile-based" profileSkills={resume.snapshot.skills} />
 
-      <Card>
-        <SectionTitle>자기소개</SectionTitle>
-        <ContentText>{resume.snapshot.brief}</ContentText>
-      </Card>
+      <ResumeQnA 
+        qnas={resume.qnas} 
+        onAdd={handleAddQnA}
+        onDelete={handleDeleteQnA}
+      />
 
-      <Card>
-        <SectionTitle>자기소개서 질문과 답변</SectionTitle>
-        <ResumeQnA 
-          qnas={resume.qnas} 
-          onAdd={handleAddQnA}
-          onDelete={handleDeleteQnA}
-          onEdit={handleEditQnA}
-        />
-      </Card>
-
-      {editingQnA && (
-        <EditQnADualModal
-          qna={editingQnA}
-          resumeId={resume.id}
-          onSave={handleSaveEditedQnA}
-          onClose={() => setEditingQnA(null)}
-        />
-      )}
-    </ResumeDetailPageContainer>
+      
+    </AnalysisPageContainer>
   );
 }
 

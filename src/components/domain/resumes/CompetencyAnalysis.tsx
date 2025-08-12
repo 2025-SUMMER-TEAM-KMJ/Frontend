@@ -1,7 +1,7 @@
 'use client';
 
-import styled from 'styled-components';
 import Tag from '@/components/common/Tag';
+import styled from 'styled-components';
 
 const AnalysisContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
@@ -57,20 +57,32 @@ const mockImproveSkills = ['KBS', 'MBN', '프로젝트 관리', '고객 데이�
 // Mock Icon
 const ChartIcon = () => <span>📊</span>;
 
-export default function CompetencyAnalysis() {
+interface CompetencyAnalysisProps {
+  type: 'job-based' | 'profile-based';
+  profileSkills?: string[]; // Only for profile-based
+}
+
+export default function CompetencyAnalysis({ type, profileSkills }: CompetencyAnalysisProps) {
+  const usedSkills = type === 'profile-based' ? (profileSkills || []) : mockUsedSkills;
+  const improveSkills = mockImproveSkills; // Keep as mock for now
+
+  const title = type === 'profile-based' ? '나의 역량 분석' : 'AI 역량 분석';
+  const subtitle1 = type === 'profile-based' ? '프로필에서 강조된 나의 핵심 역량입니다.' : '자기소개서에서 강조된 나의 핵심 역량입니다.';
+  const subtitle2 = type === 'profile-based' ? '프로필에 충분히 드러나지 않은 역량입니다.' : '직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.';
+
   return (
     <AnalysisContainer>
-      <SectionTitle><ChartIcon /> AI 역량 분석</SectionTitle>
+      <SectionTitle>{title}</SectionTitle>
       <CompetencySection>
-        <Subtitle>자기소개서에서 강조된 나의 핵심 역량입니다.</Subtitle>
+        <Subtitle>{subtitle1}</Subtitle>
         <TagGroup>
-          {mockUsedSkills.map(skill => <BlueTag key={skill}>{skill}</BlueTag>)}
+          {usedSkills.map(skill => <BlueTag key={skill.id}>{skill.name}</BlueTag>)}
         </TagGroup>
       </CompetencySection>
       <CompetencySection>
-        <Subtitle>직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.</Subtitle>
+        <Subtitle>{subtitle2}</Subtitle>
         <TagGroup>
-          {mockImproveSkills.map(skill => <GrayTag key={skill}>{skill}</GrayTag>)}
+          {improveSkills.map(skill => <GrayTag key={skill}>{skill}</GrayTag>)}
         </TagGroup>
       </CompetencySection>
     </AnalysisContainer>
