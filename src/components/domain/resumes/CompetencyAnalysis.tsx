@@ -51,40 +51,53 @@ const GrayTag = styled(Tag)`
 `;
 
 // Mock Data
-const mockUsedSkills = ['SQL', 'MSSQL', '데이터 시각화', '문제 해결 능력', 'A/B 테스트'];
-const mockImproveSkills = ['KBS', 'MBN', '프로젝트 관리', '고객 데이터 분석', '커뮤니케이션'];
+const mockUsedSkills = [
+  { id: '1', name: 'SQL' },
+  { id: '2', name: 'MSSQL' },
+  { id: '3', name: '데이터 시각화' },
+  { id: '4', name: '문제 해결 능력' },
+  { id: '5', name: 'A/B 테스트' },
+];
+const mockImproveSkills = [
+  { id: '6', name: 'KBS' },
+  { id: '7', name: 'MBN' },
+  { id: '8', name: '프로젝트 관리' },
+  { id: '9', name: '고객 데이터 분석' },
+  { id: '10', name: '커뮤니케이션' },
+];
 
 // Mock Icon
 const ChartIcon = () => <span>📊</span>;
 
-interface CompetencyAnalysisProps {
-  type: 'job-based' | 'profile-based';
-  profileSkills?: string[]; // Only for profile-based
+interface CompetencySectionData {
+  subtitle: string;
+  competencies: { id: string; name: string }[];
+  tagType: 'blue' | 'gray';
 }
 
-export default function CompetencyAnalysis({ type, profileSkills }: CompetencyAnalysisProps) {
-  const usedSkills = type === 'profile-based' ? (profileSkills || []) : mockUsedSkills;
-  const improveSkills = mockImproveSkills; // Keep as mock for now
+interface CompetencyAnalysisProps {
+  title: string;
+  sections: CompetencySectionData[];
+}
 
-  const title = type === 'profile-based' ? '나의 역량 분석' : 'AI 역량 분석';
-  const subtitle1 = type === 'profile-based' ? '프로필에서 강조된 나의 핵심 역량입니다.' : '자기소개서에서 강조된 나의 핵심 역량입니다.';
-  const subtitle2 = type === 'profile-based' ? '프로필에 충분히 드러나지 않은 역량입니다.' : '직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.';
-
+export default function CompetencyAnalysis({ title, sections }: CompetencyAnalysisProps) {
   return (
     <AnalysisContainer>
       <SectionTitle>{title}</SectionTitle>
-      <CompetencySection>
-        <Subtitle>{subtitle1}</Subtitle>
-        <TagGroup>
-          {usedSkills.map(skill => <BlueTag key={skill.id}>{skill.name}</BlueTag>)}
-        </TagGroup>
-      </CompetencySection>
-      <CompetencySection>
-        <Subtitle>{subtitle2}</Subtitle>
-        <TagGroup>
-          {improveSkills.map(skill => <GrayTag key={skill}>{skill}</GrayTag>)}
-        </TagGroup>
-      </CompetencySection>
+      {sections.map((section, index) => (
+        <CompetencySection key={index}>
+          <Subtitle>{section.subtitle}</Subtitle>
+          <TagGroup>
+            {section.competencies.map(skill => (
+              section.tagType === 'blue' ? (
+                <BlueTag key={skill.id}>{skill.name}</BlueTag>
+              ) : (
+                <GrayTag key={skill.id}>{skill.name}</GrayTag>
+              )
+            ))}
+          </TagGroup>
+        </CompetencySection>
+      ))}
     </AnalysisContainer>
   );
 }

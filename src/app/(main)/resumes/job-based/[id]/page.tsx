@@ -9,6 +9,22 @@ import { Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+// Mock Data for job-based skills
+const mockUsedSkills = [
+  { id: '1', name: 'SQL' },
+  { id: '2', name: 'MSSQL' },
+  { id: '3', name: '데이터 시각화' },
+  { id: '4', name: '문제 해결 능력' },
+  { id: '5', name: 'A/B 테스트' },
+];
+const mockImproveSkills = [
+  { id: '6', name: 'KBS' },
+  { id: '7', name: 'MBN' },
+  { id: '8', name: '프로젝트 관리' },
+  { id: '9', name: '고객 데이터 분석' },
+  { id: '10', name: '커뮤니케이션' },
+];
+
 const AnalysisPageContainer = styled.div`
   width: 100%;
   max-width: 900px;
@@ -80,7 +96,21 @@ function ResumeAnalysisPageContent({ params }: Props) {
       </ResumeHeader>
 
       <JobPostingInfoCard resume={resume} />
-      <CompetencyAnalysis />
+      <CompetencyAnalysis
+        title="AI 역량 분석"
+        sections={[
+          {
+            subtitle: "프로필에서 분석된 나의 핵심 역량입니다.",
+            competencies: mockUsedSkills,
+            tagType: "blue",
+          },
+          {
+            subtitle: "나의 부족한 역량입니다.",
+            competencies: mockImproveSkills,
+            tagType: "gray",
+          },
+        ]}
+      />
 
       <ResumeQnA 
         qnas={resume.qnas} 

@@ -1,12 +1,21 @@
 'use client';
 
 import AuthGuard from '@/components/auth/AuthGuard';
-import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
 import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
+import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
 import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
 import { Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
+// Mock Data for profile-based improve skills
+const mockImproveSkills = [
+  { id: '6', name: 'KBS' },
+  { id: '7', name: 'MBN' },
+  { id: '8', name: '프로젝트 관리' },
+  { id: '9', name: '고객 데이터 분석' },
+  { id: '10', name: '커뮤니케이션' },
+];
 
 const AnalysisPageContainer = styled.div`
   width: 100%;
@@ -82,7 +91,16 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
         <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
       </ResumeHeader>
 
-      <CompetencyAnalysis type="profile-based" profileSkills={resume.snapshot.skills} />
+      <CompetencyAnalysis
+        title="나의 역량 분석"
+        sections={[
+          {
+            subtitle: "프로필에서 분석된 나의 핵심 역량입니다.",
+            competencies: resume.snapshot.skills,
+            tagType: "blue",
+          },
+        ]}
+      />
 
       <ResumeQnA 
         qnas={resume.qnas} 
