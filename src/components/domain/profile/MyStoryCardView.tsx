@@ -70,7 +70,7 @@ const StyledBorderlessInput = styled.input`
 const StyledBorderlessTextarea = styled.textarea`
   width: 100%;
   padding: 12px;
-  border: none; /* No border */
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */

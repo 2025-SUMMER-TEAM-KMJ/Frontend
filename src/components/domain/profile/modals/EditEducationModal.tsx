@@ -45,7 +45,8 @@ const TextArea = styled.textarea`
 `;
 
 const Label = styled.label`
-  font-weight: bold;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
   margin-bottom: 4px;
   display: block;
 `;

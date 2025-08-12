@@ -14,6 +14,18 @@ const Label = styled.label`
   margin-bottom: 4px;
 `;
 
+const RemoveLinkButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0 5px;
+  &:hover {
+    color: ${({ theme }) => theme.colors.error};
+  }
+`;
+
 interface EditBasicInfoFormData {
   name: string;
   age: number;
@@ -116,9 +128,9 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
               placeholder="링크 URL"
               style={{ flexGrow: 1 }}
             />
-            <Button type="button" onClick={() => remove(index)} variant="secondary">
-              삭제
-            </Button>
+            <RemoveLinkButton type="button" onClick={() => remove(index)}>
+              &times;
+            </RemoveLinkButton>
           </div>
         ))}
         <Button type="button" onClick={() => append('')}>
