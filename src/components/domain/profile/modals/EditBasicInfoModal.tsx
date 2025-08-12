@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { Profile } from '@/types/profile';
 import Modal from '@/components/common/Modal';
 import Input from '@/components/common/Input';
