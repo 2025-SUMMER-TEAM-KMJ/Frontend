@@ -124,10 +124,8 @@ export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
           </SkillTag>
         ))}
       </SkillListContainer>
-      <ButtonContainer>
-        <Button className="secondary" onClick={onClose}>취소</Button>
-        <Button className="primary" onClick={handleSave}>저장</Button>
-      </ButtonContainer>
+      
+      
     </Modal>
   );
 }

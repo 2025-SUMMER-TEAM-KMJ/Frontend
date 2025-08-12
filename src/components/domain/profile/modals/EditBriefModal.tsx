@@ -12,14 +12,20 @@ const ScrollableContent = styled.div`
 
 const TextArea = styled.textarea`
   width: 100%;
-  min-height: 150px; /* Keep min-height for initial size */
+  min-height: 300px; /* Keep min-height for initial size */
   padding: ${({ theme }) => theme.spacing.small};
-  border: none; /* Removed border */
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */
   resize: none; /* Prevent resizing */
   flex-grow: 1; /* Added to occupy remaining space */
+`;
+
+const Label = styled.label`
+  font-weight: bold;
+  margin-bottom: 4px;
+  display: block;
 `;
 
 const Button = styled.button`
@@ -61,10 +67,10 @@ export default function EditBriefModal({ profile, onSave, onClose }: Props) {
   return (
     <Modal onClose={onClose} title="자기소개 수정">
       <ScrollableContent>
+        <Label>자기소개</Label>
         <TextArea
           value={brief}
           onChange={(e) => setBrief(e.target.value)}
-          placeholder="자기소개를 입력하세요."
         />
       </ScrollableContent>
       <ButtonContainer>

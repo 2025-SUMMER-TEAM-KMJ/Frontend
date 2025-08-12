@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Profile, Certification } from '@/types/profile';
 import Modal from '@/components/common/Modal';
+import { Certification } from '@/types/profile';
+import { ko } from 'date-fns/locale';
+import { useEffect, useState } from 'react';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import styled from 'styled-components';
+
+registerLocale('ko', ko);
 
 const Title = styled.h2`
   font-size: 24px;
@@ -31,12 +36,31 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   width: 100%;
-  min-height: 80px;
+  min-height: 150px;
   padding: ${({ theme }) => theme.spacing.small};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   font-size: 16px;
-  resize: vertical;
+  resize: none;
+`;
+
+const StyledDatePicker = styled(DatePicker)`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: ${({ theme }) => theme.fonts.main};
+`;
+
+const AddButtonWrapper = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.medium};
+`;
+
+const Label = styled.label`
+  font-weight: bold;
+  margin-bottom: 4px;
+  display: block;
 `;
 
 const ButtonContainer = styled.div`
@@ -97,30 +121,36 @@ export default function EditCertificationsModal({ profile, onSave, onClose }: Pr
     <Modal onClose={onClose} title="자격증 수정">
       {certifications.map((cert, index) => (
         <CertificationItemContainer key={cert.id}>
+          <Label>자격증명</Label>
           <Input
             type="text"
-            placeholder="자격증명"
             value={cert.name}
             onChange={(e) => handleInputChange(index, 'name', e.target.value)}
           />
+          <Label>발급기관</Label>
           <Input
             type="text"
-            placeholder="발급기관"
             value={cert.issuer}
             onChange={(e) => handleInputChange(index, 'issuer', e.target.value)}
           />
-          <Input
-            type="text"
-            placeholder="발급일 (YYYY-MM-DD)"
-            value={cert.issueDate}
-            onChange={(e) => handleInputChange(index, 'issueDate', e.target.value)}
+          <Label>취득일</Label>
+          <StyledDatePicker
+            selected={cert.issueDate && !isNaN(new Date(cert.issueDate).getTime()) ? new Date(cert.issueDate) : null}
+            onChange={(date: Date) => handleInputChange(index, 'issueDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}` : '')}
+            dateFormat="yyyy-MM-dd"
+            showYearDropdown
+            showMonthDropdown
+            dropdownMode="select"
+            locale="ko"
+            placeholderText=""
           />
           <Button className="danger" onClick={() => handleDeleteCertification(cert.id)}>삭제</Button>
         </CertificationItemContainer>
       ))}
-      <Button className="secondary" onClick={handleAddCertification}>자격증 추가</Button>
+      <AddButtonWrapper>
+        <Button className="secondary" onClick={handleAddCertification}>자격증 추가</Button>
+      </AddButtonWrapper>
       <ButtonContainer>
-        <Button className="secondary" onClick={onClose}>취소</Button>
         <Button className="primary" onClick={handleSave}>저장</Button>
       </ButtonContainer>
     </Modal>

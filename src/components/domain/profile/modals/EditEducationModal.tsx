@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Profile, Education } from '@/types/profile';
 import Modal from '@/components/common/Modal';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { ko } from 'date-fns/locale';
+
+registerLocale('ko', ko);
 
 const Title = styled.h2`
   font-size: 24px;
@@ -31,13 +36,40 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   width: 100%;
-  min-height: 80px;
+  min-height: 150px;
   padding: ${({ theme }) => theme.spacing.small};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   font-size: 16px;
-  resize: vertical;
+  resize: none;
 `;
+
+const Label = styled.label`
+  font-weight: bold;
+  margin-bottom: 4px;
+  display: block;
+`;
+
+const DateRangeContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.medium};
+  width: 100%;
+
+  & > div {
+    flex: 1;
+  }
+`;
+
+const StyledDatePicker = styled(DatePicker)`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: ${({ theme }) => theme.fonts.main};
+`;
+
+
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -97,36 +129,46 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
     <Modal onClose={onClose} title="학력 수정">
       {education.map((edu, index) => (
         <EducationItemContainer key={edu.id}>
+          <Label>학교명</Label>
           <Input
             type="text"
-            placeholder="학교명"
             value={edu.institution}
             onChange={(e) => handleInputChange(index, 'institution', e.target.value)}
           />
+          <Label>전공</Label>
           <Input
             type="text"
-            placeholder="전공"
             value={edu.major}
             onChange={(e) => handleInputChange(index, 'major', e.target.value)}
           />
-          <Input
-            type="text"
-            placeholder="시작일 (YYYY-MM)"
-            value={edu.startDate}
-            onChange={(e) => handleInputChange(index, 'startDate', e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="종료일 (YYYY-MM) 또는 '현재'"
-            value={edu.endDate}
-            onChange={(e) => handleInputChange(index, 'endDate', e.target.value)}
-          />
+          <DateRangeContainer>
+            <div>
+              <Label>시작일</Label>
+              <StyledDatePicker
+                selected={edu.startDate && !isNaN(new Date(edu.startDate).getTime()) ? new Date(edu.startDate) : null}
+                onChange={(date: Date) => handleInputChange(index, 'startDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                dateFormat="yyyy-MM"
+                showMonthYearPicker
+                locale="ko"
+              />
+            </div>
+            <div>
+              <Label>종료일</Label>
+              <StyledDatePicker
+                selected={edu.endDate && edu.endDate !== '현재' && !isNaN(new Date(edu.endDate).getTime()) ? new Date(edu.endDate) : null}
+                onChange={(date: Date) => handleInputChange(index, 'endDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                dateFormat="yyyy-MM"
+                showMonthYearPicker
+                locale="ko"
+                placeholderText=""
+              />
+            </div>
+          </DateRangeContainer>
           <Button className="danger" onClick={() => handleDeleteEducation(edu.id)}>삭제</Button>
         </EducationItemContainer>
       ))}
       <Button className="secondary" onClick={handleAddEducation}>학력 추가</Button>
       <ButtonContainer>
-        <Button className="secondary" onClick={onClose}>취소</Button>
         <Button className="primary" onClick={handleSave}>저장</Button>
       </ButtonContainer>
     </Modal>

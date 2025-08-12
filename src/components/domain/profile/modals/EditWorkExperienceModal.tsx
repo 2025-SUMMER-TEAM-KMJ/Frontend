@@ -173,7 +173,6 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
       ))}
       <Button className="secondary" onClick={handleAddExperience}>경력 추가</Button>
       <ButtonContainer>
-        <Button className="secondary" onClick={onClose}>취소</Button>
         <Button className="primary" onClick={handleSave}>저장</Button>
       </ButtonContainer>
     </Modal>

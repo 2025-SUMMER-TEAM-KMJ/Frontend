@@ -169,7 +169,6 @@ export default function EditProjectExperienceModal({ profile, onSave, onClose }:
       ))}
       <Button className="secondary" onClick={handleAddProject}>프로젝트 추가</Button>
       <ButtonContainer>
-        <Button className="secondary" onClick={onClose}>취소</Button>
         <Button className="primary" onClick={handleSave}>저장</Button>
       </ButtonContainer>
     </Modal>
