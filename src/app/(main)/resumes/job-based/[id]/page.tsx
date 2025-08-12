@@ -100,14 +100,14 @@ function ResumeAnalysisPageContent({ params }: Props) {
         title="AI 역량 분석"
         sections={[
           {
-            subtitle: "프로필에서 분석된 나의 핵심 역량입니다.",
+            subtitle: "자기소개서에서 강조된 나의 핵심 역량입니다.",
             competencies: mockUsedSkills,
-            tagType: "blue",
+            tagColor: "#eaf2ff", // Actual color value
           },
           {
-            subtitle: "나의 부족한 역량입니다.",
+            subtitle: "직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.",
             competencies: mockImproveSkills,
-            tagType: "gray",
+            tagColor: "lightGray", // Actual color value (from theme)
           },
         ]}
       />

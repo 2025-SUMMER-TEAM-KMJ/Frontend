@@ -39,16 +39,7 @@ const TagGroup = styled.div`
   gap: ${({ theme }) => theme.spacing.small};
 `;
 
-const BlueTag = styled(Tag)`
-  background-color: #eaf2ff;
-  color: ${({ theme }) => theme.colors.primary};
-  font-weight: 500;
-`;
 
-const GrayTag = styled(Tag)`
-  background-color: ${({ theme }) => theme.colors.lightGray};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
 
 // Mock Data
 const mockUsedSkills = [
@@ -72,7 +63,7 @@ const ChartIcon = () => <span>📊</span>;
 interface CompetencySectionData {
   subtitle: string;
   competencies: { id: string; name: string }[];
-  tagType: 'blue' | 'gray';
+  tagColor: string; // Now accepts any string color
 }
 
 interface CompetencyAnalysisProps {
@@ -89,11 +80,13 @@ export default function CompetencyAnalysis({ title, sections }: CompetencyAnalys
           <Subtitle>{section.subtitle}</Subtitle>
           <TagGroup>
             {section.competencies.map(skill => (
-              section.tagType === 'blue' ? (
-                <BlueTag key={skill.id}>{skill.name}</BlueTag>
-              ) : (
-                <GrayTag key={skill.id}>{skill.name}</GrayTag>
-              )
+              <Tag
+                key={skill.id}
+                backgroundColor={section.tagColor} // Directly use the provided color
+                textColor={section.tagColor === '#eaf2ff' ? ({ theme }) => theme.colors.primary : ({ theme }) => theme.colors.textSecondary} // Keep conditional for text color based on background
+              >
+                {skill.name}
+              </Tag>
             ))}
           </TagGroup>
         </CompetencySection>

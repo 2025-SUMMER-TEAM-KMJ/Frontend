@@ -95,9 +95,14 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
         title="나의 역량 분석"
         sections={[
           {
-            subtitle: "프로필에서 분석된 나의 핵심 역량입니다.",
+            subtitle: "프로필에서 강조된 나의 핵심 역량입니다.",
             competencies: resume.snapshot.skills,
-            tagType: "blue",
+            tagColor: "#eaf2ff", // Actual color value
+          },
+          {
+            subtitle: "프로필에 충분히 드러나지 않은 역량입니다.",
+            competencies: mockImproveSkills,
+            tagColor: "lightGray", // Actual color value (from theme)
           },
         ]}
       />
