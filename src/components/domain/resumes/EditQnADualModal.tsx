@@ -6,13 +6,15 @@ import { QnA } from '@/types';
 import { useState } from 'react';
 import styled from 'styled-components';
 
-const LeftModalContent = styled.div`
-  flex: 1;
+const LeftModalContent = styled.div<{ $showChatbot: boolean }>`
+  flex: ${({ $showChatbot }) => ($showChatbot ? 1 : 'none')}; /* Take full width when chatbot is hidden */
+  width: ${({ $showChatbot }) => ($showChatbot ? 'auto' : '100%')};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.medium};
-  border-right: 1px solid ${({ theme }) => theme.colors.border};
-  padding-right: ${({ theme }) => theme.spacing.large};
+  border-right: ${({ $showChatbot, theme }) => ($showChatbot ? `1px solid ${theme.colors.border}` : 'none')};
+  padding-right: ${({ $showChatbot, theme }) => ($showChatbot ? theme.spacing.large : '0')};
+  position: relative; /* For positioning the toggle button */
 `;
 
 const RightModalContent = styled.div`
@@ -21,6 +23,27 @@ const RightModalContent = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.medium};
   padding-left: ${({ theme }) => theme.spacing.large};
+`;
+
+const ModalContentWrapper = styled.div<{ $showChatbot: boolean }>`
+  display: flex;
+  width: 100%;
+  height: 100%; /* Ensure it takes full height of modal */
+`;
+
+const ChatToggleButton = styled.button`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  padding: 10px 5px;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 10;
 `;
 
 
@@ -113,7 +136,8 @@ export default function EditQnADualModal({ qna, resumeId, onSave, onClose }: Pro
   const [editedAnswer, setEditedAnswer] = useState(qna.answer);
   const [chatHistory, setChatHistory] = useState<{ type: 'user' | 'ai'; message: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
-  
+  const [showChatbot, setShowChatbot] = useState(false); // New state
+
 
   const handleChatSubmit = () => {
     if (!chatInput.trim()) return;
@@ -136,45 +160,51 @@ export default function EditQnADualModal({ qna, resumeId, onSave, onClose }: Pro
   };
 
   return (
-    <Modal onClose={onClose} title="Q&A 수정">
-      {/* Left Modal Content: Q&A Editor */}
-      <LeftModalContent>
-        <SectionTitle>Q&A 수정</SectionTitle>
-        <StyledInput
-          placeholder="질문을 입력하세요."
-          value={editedQuestion}
-          onChange={(e) => setEditedQuestion(e.target.value)}
-        />
-        <StyledTextArea
-          value={editedAnswer}
-          onChange={(e) => setEditedAnswer(e.target.value)}
-          placeholder="답변을 입력하세요."
-        />
-        <Button onClick={handleSave}>저장</Button>
-      </LeftModalContent>
+    <Modal onClose={onClose} title="Q&A 수정" dynamicWidth={showChatbot ? '1200px' : '600px'}> {/* Pass dynamicWidth */}
+      {/* Main Modal Content Wrapper */}
+      <ModalContentWrapper $showChatbot={showChatbot}> {/* New wrapper for flex layout */}
+        {/* Left Modal Content: Q&A Editor */}
+        <LeftModalContent $showChatbot={showChatbot}> {/* Pass showChatbot prop */}
+          <SectionTitle>Q&A 수정</SectionTitle>
+          <StyledInput
+            placeholder="질문을 입력하세요."
+            value={editedQuestion}
+            onChange={(e) => setEditedQuestion(e.target.value)}
+          />
+          <StyledTextArea
+            value={editedAnswer}
+            onChange={(e) => setEditedAnswer(e.target.value)}
+            placeholder="답변을 입력하세요."
+          />
+          <Button onClick={handleSave}>저장</Button>
+          <ChatToggleButton onClick={() => setShowChatbot(!showChatbot)}>{showChatbot ? '<<' : '>>'}</ChatToggleButton> {/* New button */}
+        </LeftModalContent>
 
-      {/* Right Modal Content: AI Chatbot */}
-      <RightModalContent>
-        <SectionTitle>AI 챗봇</SectionTitle>
-        <ChatContainer>
-          <ChatHistory>
-            {chatHistory.map((msg, index) => (
-              <ChatMessage key={index} $isUser={msg.type === 'user'}>
-                <span>{msg.message}</span>
-              </ChatMessage>
-            ))}
-          </ChatHistory>
-          <ChatInputContainer>
-            <ChatInput
-              placeholder="AI에게 질문하거나 답변 개선을 요청하세요."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleChatSubmit()}
-            />
-            <Button onClick={handleChatSubmit}>전송</Button>
-          </ChatInputContainer>
-        </ChatContainer>
-        </RightModalContent>
+        {/* Right Modal Content: AI Chatbot */}
+        {showChatbot && (
+          <RightModalContent>
+            <SectionTitle>AI 챗봇</SectionTitle>
+            <ChatContainer>
+              <ChatHistory>
+                {chatHistory.map((msg, index) => (
+                  <ChatMessage key={index} $isUser={msg.type === 'user'}> 
+                    <span>{msg.message}</span>
+                  </ChatMessage>
+                ))}
+              </ChatHistory>
+              <ChatInputContainer>
+                <ChatInput
+                  placeholder="AI에게 질문하거나 답변 개선을 요청하세요."
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleChatSubmit()}
+                />
+                <Button onClick={handleChatSubmit}>전송</Button>
+              </ChatInputContainer>
+            </ChatContainer>
+          </RightModalContent>
+        )}
+      </ModalContentWrapper>
     </Modal>
   );
 }

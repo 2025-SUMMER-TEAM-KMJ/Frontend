@@ -26,17 +26,28 @@ const ModalOverlay = styled.div`
   z-index: 1000;
 `;
 
-const ModalContent = styled(motion.div)`
+const ModalContent = styled(motion.div)<{ $dynamicWidth?: string }>`
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
+  width: ${({ $dynamicWidth }) => $dynamicWidth || '90%'}; /* Use dynamicWidth or default */
+  max-width: ${({ $dynamicWidth }) => $dynamicWidth || '600px'}; /* Use dynamicWidth or default */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
+  transition: max-width 0.3s ease-in-out, width 0.3s ease-in-out; /* Smooth transition */
 `;
+
+interface ModalProps {
+  children: ReactNode;
+  onClose: () => void;
+  title?: string;
+  top?: string;
+  left?: string;
+  transform?: string;
+  dynamicWidth?: string; // New prop
+}
 
 const ModalHeader = styled.div`
   display: flex;
@@ -64,10 +75,11 @@ const CloseButton = styled.button`
   }
 `;
 
-const Modal: React.FC<ModalProps> = ({ children, onClose, title, top, left, transform }) => {
+const Modal: React.FC<ModalProps> = ({ children, onClose, title, top, left, transform, dynamicWidth }) => {
   return (
     <ModalOverlay onClick={onClose} style={{ top, left, transform }}>
       <ModalContent
+        $dynamicWidth={dynamicWidth} // Pass the new prop
         onClick={(e) => e.stopPropagation()}
         initial={{ opacity: 0, scale: 1 }}
         animate={{ opacity: 1, scale: 1 }}

@@ -1,8 +1,9 @@
 'use client';
 
 import AuthGuard from '@/components/auth/AuthGuard';
-import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
+import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
+import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
 import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
 import { Resume } from '@/types';
 import { useEffect, useState } from 'react';
@@ -55,8 +56,11 @@ interface Props {
   params: { id: string };
 }
 
+import { QnA } from '@/types'; // Import QnA type
+
 function ProfileBasedResumeDetailPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
+  const [editingQnA, setEditingQnA] = useState<QnA | null>(null); // Add editingQnA state
 
   useEffect(() => {
     getResumeById(params.id).then(data => {
@@ -82,39 +86,60 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
     setResume(updatedResume);
   };
 
+  const handleEditQnA = (qna: QnA) => { // Add handleEditQnA function
+    setEditingQnA(qna);
+  };
+
+  const handleSaveEditedQnA = async (qnaId: string, newQuestion: string, newAnswer: string) => { // Add handleSaveEditedQnA function
+    if (!resume) return;
+    const updatedResume = await updateResumeQnA(resume.id, qnaId, newQuestion, newAnswer);
+    setResume(updatedResume);
+    setEditingQnA(null); // Close modal
+  };
+
   if (!resume) return <Loading>자기소개서 정보를 불러오는 중...</Loading>;
 
   return (
-    <AnalysisPageContainer>
-      <ResumeHeader>
-        <Title>{resume.title}</Title>
-        <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
-      </ResumeHeader>
+    <>
+      <AnalysisPageContainer>
+        <ResumeHeader>
+          <Title>{resume.title}</Title>
+          <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
+        </ResumeHeader>
 
-      <CompetencyAnalysis
-        title="나의 역량 분석"
-        sections={[
-          {
-            subtitle: "프로필에서 강조된 나의 핵심 역량입니다.",
-            competencies: resume.snapshot.skills,
-            tagColor: "#eaf2ff", // Actual color value
-          },
-          {
-            subtitle: "프로필에 충분히 드러나지 않은 역량입니다.",
-            competencies: mockImproveSkills,
-            tagColor: "lightGray", // Actual color value (from theme)
-          },
-        ]}
-      />
+        <CompetencyAnalysis
+          title="나의 역량 분석"
+          sections={[
+            {
+              subtitle: "프로필에서 강조된 나의 핵심 역량입니다.",
+              competencies: resume.snapshot.skills,
+              tagColor: "#eaf2ff", // Actual color value
+            },
+            {
+              subtitle: "프로필에 충분히 드러나지 않은 역량입니다.",
+              competencies: mockImproveSkills,
+              tagColor: "lightGray", // Actual color value (from theme)
+            },
+          ]}
+        />
 
-      <ResumeQnA 
-        qnas={resume.qnas} 
-        onAdd={handleAddQnA}
-        onDelete={handleDeleteQnA}
-      />
+        <ResumeQnA 
+          qnas={resume.qnas} 
+          onAdd={handleAddQnA}
+          onDelete={handleDeleteQnA}
+          onEdit={handleEditQnA} // Pass onEdit handler
+        />
+      </AnalysisPageContainer>
 
-      
-    </AnalysisPageContainer>
+      {editingQnA && (
+        <EditQnADualModal
+          qna={editingQnA}
+          resumeId={resume.id}
+          onSave={handleSaveEditedQnA}
+          onClose={() => setEditingQnA(null)}
+        />
+      )}
+    </>
   );
 }
 

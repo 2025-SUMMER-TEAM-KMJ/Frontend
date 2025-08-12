@@ -11,6 +11,11 @@ const ItemWrapper = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.large};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative; /* For positioning the edit button */
+  cursor: pointer; /* Indicate clickability */
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle hover effect */
+  }
 `;
 
 const QuestionHeader = styled.div`
@@ -71,12 +76,12 @@ interface Props {
 
 export default function QnAItem({ item, onEdit, onDelete }: Props) {
   return (
-    <ItemWrapper>
+    <ItemWrapper onClick={() => onEdit(item)}> {/* Make the whole item clickable */}
       <QuestionHeader>
         <Question>{item.question}</Question>
         <ActionButtons>
-          <EditButton onClick={() => onEdit(item)}>✏️</EditButton>
-          <EditButton onClick={() => onDelete(item.id)}>🗑️</EditButton>
+          {/* Removed EditButton (pencil icon) */}
+          <EditButton onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}>🗑️</EditButton> {/* Ensure delete button doesn't trigger onEdit */}
         </ActionButtons>
       </QuestionHeader>
       <AnswerContent>{item.answer}</AnswerContent>
