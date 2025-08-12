@@ -89,7 +89,6 @@ const StyledTextArea = styled.textarea`
 const Label = styled.label`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 4px;
   display: block;
 `;
 
@@ -115,8 +114,8 @@ const ChatMessage = styled.div<{ $isUser: boolean }>`
 
   span {
     display: inline-block;
-    background-color: ${({ $isUser, theme }) => ($isUser ? theme.colors.primary : theme.colors.white)};
-    color: ${({ $isUser }) => ($isUser ? 'white' : 'black')};
+    background-color: ${({ $isUser, theme }) => ($isUser ? theme.colors.primary : theme.colors.background)};
+    color: ${({ $isUser, theme }) => ($isUser ? 'white' : theme.colors.text)};
     padding: 8px 12px;
     border-radius: 12px;
     max-width: 80%;
