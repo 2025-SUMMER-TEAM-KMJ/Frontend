@@ -36,7 +36,7 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   width: 100%;
-  min-height: 180px;
+  min-height: 150px;
   padding: ${({ theme }) => theme.spacing.small};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
@@ -144,7 +144,7 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
             <div>
               <Label>시작일</Label>
               <StyledDatePicker
-                selected={exp.startDate ? new Date(exp.startDate) : null}
+                selected={exp.startDate && !isNaN(new Date(exp.startDate).getTime()) ? new Date(exp.startDate) : null}
                 onChange={(date: Date) => handleInputChange(index, 'startDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
                 dateFormat="yyyy-MM"
                 showMonthYearPicker
@@ -154,7 +154,7 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
             <div>
               <Label>종료일</Label>
               <StyledDatePicker
-                selected={exp.endDate && exp.endDate !== '' ? new Date(exp.endDate) : null}
+                selected={exp.endDate && exp.endDate !== '현재' && !isNaN(new Date(exp.endDate).getTime()) ? new Date(exp.endDate) : null}
                 onChange={(date: Date) => handleInputChange(index, 'endDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
                 dateFormat="yyyy-MM"
                 showMonthYearPicker
