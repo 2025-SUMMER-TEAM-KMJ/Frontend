@@ -2,6 +2,7 @@
 
 import { QnA } from '@/types';
 import styled from 'styled-components';
+import { IoMdClose } from 'react-icons/io'; // New import
 
 const ItemWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
@@ -80,8 +81,7 @@ export default function QnAItem({ item, onEdit, onDelete }: Props) {
       <QuestionHeader>
         <Question>{item.question}</Question>
         <ActionButtons>
-          {/* Removed EditButton (pencil icon) */}
-          <EditButton onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}>🗑️</EditButton> {/* Ensure delete button doesn't trigger onEdit */}
+          <EditButton onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}><IoMdClose /></EditButton> {/* Ensure delete button doesn't trigger onEdit */}
         </ActionButtons>
       </QuestionHeader>
       <AnswerContent>{item.answer}</AnswerContent>
