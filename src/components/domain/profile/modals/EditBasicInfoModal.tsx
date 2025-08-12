@@ -19,11 +19,6 @@ const RemoveLinkButton = styled.button`
   border: none;
   color: ${({ theme }) => theme.colors.textSecondary};
   cursor: pointer;
-  font-size: 20px;
-  padding: 0 5px;
-  &:hover {
-    color: ${({ theme }) => theme.colors.error};
-  }
 `;
 
 interface EditBasicInfoFormData {
@@ -122,13 +117,13 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
         {/* Links Section */}
         <Label>링크</Label>
         {fields.map((item, index) => (
-          <div key={item.id} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div key={item.id} style={{ position: 'relative', marginBottom: '8px' }}> {/* Add relative positioning and margin-bottom */}
             <Input
               {...register(`links.${index}`)}
               placeholder="링크 URL"
-              style={{ flexGrow: 1 }}
+              style={{ paddingRight: '40px' }} // Make space for the button
             />
-            <RemoveLinkButton type="button" onClick={() => remove(index)}>
+            <RemoveLinkButton type="button" onClick={() => remove(index)} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)' }}>
               &times;
             </RemoveLinkButton>
           </div>
