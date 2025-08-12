@@ -4,6 +4,7 @@ import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import { QnA } from '@/types';
 import { useState } from 'react';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'; // New import
 import styled from 'styled-components';
 
 const LeftModalContent = styled.div<{ $showChatbot: boolean }>`
@@ -28,22 +29,31 @@ const RightModalContent = styled.div`
 const ModalContentWrapper = styled.div<{ $showChatbot: boolean }>`
   display: flex;
   width: 100%;
-  height: 100%; /* Ensure it takes full height of modal */
+  height: 70vh; /* Ensure it takes full height of modal */
 `;
 
 const ChatToggleButton = styled.button`
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative; /* Position relative to LeftModalContent */
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
   background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   border: none;
-  border-radius: 4px 0 0 4px;
-  padding: 10px 5px;
+  border-radius: 30%; /* Make it round */
+  width: 30px; /* Fixed width */
+  height: 30px; /* Fixed height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
   font-size: 18px;
-  z-index: 10;
+`;
+
+const DualModalHeader = styled.div`
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
 
@@ -61,18 +71,26 @@ const StyledInput = styled.input`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   font-size: 16px;
+  font-family: ${({ theme }) => theme.fonts.main};
 `;
 
 const StyledTextArea = styled.textarea`
   width: 100%;
   min-height: 100px; /* Keep min-height for initial size */
   padding: 10px;
-  border: none; /* Removed border */
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */
   resize: none; /* Prevent resizing */
   flex-grow: 1;
+`;
+
+const Label = styled.label`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 4px;
+  display: block;
 `;
 
 const ChatContainer = styled.div`
@@ -165,19 +183,22 @@ export default function EditQnADualModal({ qna, resumeId, onSave, onClose }: Pro
       <ModalContentWrapper $showChatbot={showChatbot}> {/* New wrapper for flex layout */}
         {/* Left Modal Content: Q&A Editor */}
         <LeftModalContent $showChatbot={showChatbot}> {/* Pass showChatbot prop */}
-          <SectionTitle>Q&A 수정</SectionTitle>
+          <DualModalHeader>
+            <ChatToggleButton onClick={() => setShowChatbot(!showChatbot)}>
+            {showChatbot ? <IoIosArrowBack /> : <IoIosArrowForward />}
+          </ChatToggleButton>
+          </DualModalHeader>
+          <Label>질문</Label>
           <StyledInput
-            placeholder="질문을 입력하세요."
             value={editedQuestion}
             onChange={(e) => setEditedQuestion(e.target.value)}
           />
+          <Label>답변</Label>
           <StyledTextArea
             value={editedAnswer}
             onChange={(e) => setEditedAnswer(e.target.value)}
-            placeholder="답변을 입력하세요."
           />
           <Button onClick={handleSave}>저장</Button>
-          <ChatToggleButton onClick={() => setShowChatbot(!showChatbot)}>{showChatbot ? '<<' : '>>'}</ChatToggleButton> {/* New button */}
         </LeftModalContent>
 
         {/* Right Modal Content: AI Chatbot */}

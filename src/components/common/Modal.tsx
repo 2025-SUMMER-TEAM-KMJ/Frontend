@@ -34,7 +34,7 @@ const ModalContent = styled(motion.div)<{ $dynamicWidth?: string }>`
   max-width: ${({ $dynamicWidth }) => $dynamicWidth || '600px'}; /* Use dynamicWidth or default */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
-  max-height: 90vh;
+  max-height: 100vh;
   overflow-y: auto;
   transition: max-width 0.3s ease-in-out, width 0.3s ease-in-out; /* Smooth transition */
 `;
