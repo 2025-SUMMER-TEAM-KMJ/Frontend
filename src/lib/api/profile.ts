@@ -37,6 +37,10 @@ let MOCK_PROFILE: Profile | null = {
     { id: 'story2', title: '가장 큰 성과를 냈던 프로젝트', content: 'XYZ 소프트 재직 시절, 레거시 코드를 리팩토링하여...', tag: '일화' },
     { id: 'story3', title: '나의 직업 가치관', content: '사용자에게 실질적인 가치를 제공하는 제품을 만드는 것이 중요하다고 생각합니다...', tag: '기타' },
   ],
+  links: [
+    'https://github.com/minjun.kim',
+    'https://minjun.kim.blog',
+  ],
 };
 
 export const getProfile = (): Promise<Profile | null> => {

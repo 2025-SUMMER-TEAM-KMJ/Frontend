@@ -65,7 +65,7 @@ function ProfilePageContent() {
     return newResume;
   };
 
-  const handleSaveBasicInfo = async (data: { name: string; age: number; gender: string; email: string; phone: string; preferredJobGroup?: string; preferredJob?: string; }) => {
+  const handleSaveBasicInfo = async (data: { name: string; age: number; gender: string; email: string; phone: string; preferredJobGroup?: string; preferredJob?: string; links?: string[]; }) => {
     if (!profile) return;
 
     const newPreferredPosition = [];
@@ -85,6 +85,7 @@ function ProfilePageContent() {
       email: data.email,
       phone: data.phone,
       preferredPosition: newPreferredPosition,
+      links: data.links?.filter(link => link.trim() !== '') || [], // Update links
     };
     await updateProfile(newProfile);
     await fetchProfile(); // Re-fetch to show updated data

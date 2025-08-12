@@ -55,4 +55,5 @@ export interface Profile {
   projectExperience: ProjectExperience[];
   certifications: Certification[];
   myStories?: MyStory[];
+  links?: string[];
 }

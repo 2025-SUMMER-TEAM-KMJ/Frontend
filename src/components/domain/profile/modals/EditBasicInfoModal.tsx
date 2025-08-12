@@ -8,6 +8,12 @@ import Modal from '@/components/common/Modal';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 
+const Label = styled.label`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 4px;
+`;
+
 interface EditBasicInfoFormData {
   name: string;
   age: number;
@@ -16,6 +22,7 @@ interface EditBasicInfoFormData {
   phone: string;
   preferredJobGroup?: string;
   preferredJob?: string;
+  links: string[]; // Changed to array
 }
 
 interface Props {
@@ -38,7 +45,7 @@ const ButtonContainer = styled.div`
 `;
 
 const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<EditBasicInfoFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<EditBasicInfoFormData>({
     defaultValues: {
       name: profile.name,
       age: profile.age,
@@ -47,7 +54,13 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
       phone: profile.phone,
       preferredJobGroup: profile.preferredPosition?.[0]?.industry || '',
       preferredJob: profile.preferredPosition?.[0]?.title || '',
+      links: profile.links || [''], // Initialize as array
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "links",
   });
 
   const onSubmit = (data: EditBasicInfoFormData) => {
@@ -94,6 +107,23 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
           {...register('preferredJob')}
           error={errors.preferredJob?.message}
         />
+        {/* Links Section */}
+        <Label>링크</Label>
+        {fields.map((item, index) => (
+          <div key={item.id} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Input
+              {...register(`links.${index}`)}
+              placeholder="링크 URL"
+              style={{ flexGrow: 1 }}
+            />
+            <Button type="button" onClick={() => remove(index)} variant="secondary">
+              삭제
+            </Button>
+          </div>
+        ))}
+        <Button type="button" onClick={() => append('')}>
+          + 링크 추가
+        </Button>
         <ButtonContainer>
           <Button type="submit">
             저장
