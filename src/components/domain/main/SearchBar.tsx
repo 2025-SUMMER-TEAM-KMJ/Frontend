@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import Button from '@/components/common/Button';
+import React from 'react';
 // import Input from '@/components/common/Input'; // Input 임포트 제거
 import styled from 'styled-components';
 
@@ -9,8 +9,7 @@ const SearchBarWrapper = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.small};
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
+  margin: 0 0;
 `;
 
 const StyledInputWrapper = styled.div`

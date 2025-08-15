@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
-import { useAuth } from '@/hooks/useAuth';
-import { getJobs, getInterestedJobs, addInterestedJob, removeInterestedJob } from '@/lib/api/jobs';
-import { createJobBasedResume } from '@/lib/api/resumes';
-import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
-import { Job, JobFilters, SortOption } from '@/types';
-import Button from '@/components/common/Button';
-import JobFilter from '@/components/domain/jobs/JobFilter';
 import JobPostList from '@/components/domain/jobs/JobPostList';
 import Pagination from '@/components/domain/jobs/Pagination';
+import SearchBar from '@/components/domain/main/SearchBar';
+import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
+import { useAuth } from '@/hooks/useAuth';
+import { addInterestedJob, getInterestedJobs, getJobs, removeInterestedJob } from '@/lib/api/jobs';
+import { createJobBasedResume } from '@/lib/api/resumes';
+import { Job, JobFilters, SortOption } from '@/types';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 const JobsPageContainer = styled.div`
   width: 100%;
@@ -20,10 +19,20 @@ const JobsPageContainer = styled.div`
   padding: 40px 24px;
 `;
 
+const PageHeader = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.xlarge};
+`;
+
 const Title = styled.h1`
   font-size: 32px;
   font-weight: 800;
-  margin-bottom: ${({ theme }) => theme.spacing.xlarge};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const SearchBarContainer = styled.div`
+  width: 80%;
+  min-width: 500px;
+  margin: 0;
 `;
 
 const Loading = styled.p`
@@ -114,18 +123,12 @@ function JobsPageContent() {
 
   return (
     <JobsPageContainer>
-                  <Title>채용 공고</Title>
-      
-      <ButtonRightContainer>
-        <Button onClick={handleGetRecommendations}>추천받기</Button>
-      </ButtonRightContainer>
-      <JobFilter
-        filters={filters}
-        sort={sort}
-        onFilterChange={handleFilterChange}
-        onSortChange={handleSortChange}
-        onSearch={handleSearch}
-      />
+      <PageHeader>
+        <Title>채용 공고</Title>
+        <SearchBarContainer>
+          <SearchBar onSearch={handleSearch} />
+        </SearchBarContainer>
+      </PageHeader>
 
       {isLoading ? (
         <Loading>채용 공고를 불러오는 중...</Loading>
