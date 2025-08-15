@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 const Container = styled.div`
   display: flex;
@@ -16,9 +17,10 @@ const Container = styled.div`
   width: 100vw;
   height: 100vh;
   padding: 40px 24px;
+  background-color: ${({ theme }) => theme.colors.lightGray};
 `;
 
-const ContentWrapper = styled.div`
+const ContentWrapper = styled(motion.div)`
   width: 50vw;
   height: 80vh;
   text-align: center;
@@ -97,6 +99,11 @@ const questionsData: { id: string; question: string; tag: MyStory['tag']; }[] = 
   { id: 'q3', question: '가장 중요한 질문입니다. 귀하의 문제해결능력이 드러나는 사례를 자유롭게 서술해주십시오.', tag: '일화' },
 ];
 
+const motionVariants = {
+  hidden: { opacity: 0, scale: 0.98 },
+  visible: { opacity: 1, scale: 1 },
+};
+
 export default function AdditionalInfoPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -138,7 +145,12 @@ export default function AdditionalInfoPage() {
 
   return (
     <Container>
-      <ContentWrapper>
+      <ContentWrapper
+        initial="hidden"
+        animate="visible"
+        variants={motionVariants}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
+      >
         <Title>🎉 회원가입이 완료되었습니다! 🎉</Title>
         <Subtitle>프로필을 더욱 풍성하게 만들기 위해 몇 가지 질문에 답변해주세요.</Subtitle>
         <Form>

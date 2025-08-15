@@ -13,11 +13,22 @@ const HomePageContainer = styled.div`
   margin: 0 auto; // 추가
 `;
 
+const SearchBarContainer = styled.div`
+  width: 60%;
+  margin: 0;
+`;
+
+const handleSearch = (term: string) => {
+
+  };
+
 export default function HomePage() {
   return (
     <HomePageContainer>
       <HeroSection />
-      <SearchBar />
+      <SearchBarContainer>
+                <SearchBar onSearch={handleSearch} />
+      </SearchBarContainer>
     </HomePageContainer>
   );
 }
