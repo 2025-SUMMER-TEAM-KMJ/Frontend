@@ -49,6 +49,8 @@ export interface Profile {
   email: string;
   phone: string;
   brief: string;
+  desiredJobGroup?: string;
+  desiredJobRole?: string;
   skills: Skill[];
   education: Education[];
   workExperience: WorkExperience[];

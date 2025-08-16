@@ -129,6 +129,13 @@ const ProfileDetail = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const LinksContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Adjust gap as needed */
+  margin-top: 5px; /* Space from "링크:" label */
+`;
+
 const Section = styled.section`
 `;
 
@@ -232,6 +239,24 @@ export default function ProfileView({ profile }: Props) {
           <ProfileDetail>프론트엔드 개발자 | {profile.workExperience[0]?.position || '경력 정보 없음'}</ProfileDetail>
           <ProfileDetail>{profile.email}</ProfileDetail>
           <ProfileDetail>{profile.phone}</ProfileDetail>
+          {profile.desiredJobGroup && (
+            <ProfileDetail>희망 직군: {profile.desiredJobGroup}</ProfileDetail>
+          )}
+          {profile.desiredJobRole && (
+            <ProfileDetail>희망 직무: {profile.desiredJobRole}</ProfileDetail>
+          )}
+          {profile.links && profile.links.length > 0 && (
+            <ProfileDetail>
+              링크:
+              <LinksContainer>
+                {profile.links.map((link, index) => (
+                  <a key={index} href={link} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                    {link}
+                  </a>
+                ))}
+              </LinksContainer>
+            </ProfileDetail>
+          )}
         </ProfileInfo>
       </ProfileHeader>
       <ToggleContainer>

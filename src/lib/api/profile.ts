@@ -8,6 +8,8 @@ let MOCK_PROFILE: Profile | null = {
   gender: '남',
   email: 'minjun.kim@email.com',
   phone: '010-1234-5678',
+  desiredJobGroup: 'IT/인터넷',
+  desiredJobRole: '프론트엔드 개발자',
   brief: '안녕하세요, 프론트엔드 개발자 김민준입니다. React와 TypeScript를 주로 사용하며, 사용자 경험을 향상시키는 인터페이스 개발에 관심이 많습니다. 최근에는 Next.js와 Tailwind CSS를 활용한 프로젝트를 진행했으며, 성능 최적화와 접근성 향상에 중점을 두고 있습니다. 새로운 기술을 배우는 것을 좋아하며, 팀과 함께 성장하는 환경에서 일하고 싶습니다.',
   skills: [
     { id: '1', name: 'JavaScript' },

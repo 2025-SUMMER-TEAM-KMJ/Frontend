@@ -1,9 +1,9 @@
 'use client';
 
 import AuthGuard from '@/components/auth/AuthGuard';
-import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
 import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
+import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
 import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
 import { Resume } from '@/types';
 import { useEffect, useState } from 'react';
@@ -128,6 +128,7 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
           onAdd={handleAddQnA}
           onDelete={handleDeleteQnA}
           onEdit={handleEditQnA} // Pass onEdit handler
+          isMultiple={false}
         />
       </AnalysisPageContainer>
 

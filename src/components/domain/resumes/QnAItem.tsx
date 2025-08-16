@@ -2,7 +2,7 @@
 
 import { QnA } from '@/types';
 import styled from 'styled-components';
-import { IoMdClose } from 'react-icons/io'; // New import
+import { IoMdClose } from 'react-icons/io';
 
 const ItemWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
@@ -11,11 +11,11 @@ const ItemWrapper = styled.div`
   padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.small};
   margin-bottom: ${({ theme }) => theme.spacing.large};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  position: relative; /* For positioning the edit button */
-  cursor: pointer; /* Indicate clickability */
+  position: relative;
+  cursor: pointer;
 
   &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle hover effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -32,7 +32,7 @@ const Question = styled.h3`
   font-weight: bold;
   flex-grow: 1;
   flex-shrink: 1;
-  min-width: 0; /* Allow text to shrink */
+  min-width: 0;
 `;
 
 const EditButton = styled.button`
@@ -41,7 +41,7 @@ const EditButton = styled.button`
   font-size: 18px;
   cursor: pointer;
   color: ${({ theme }) => theme.colors.textSecondary};
-  flex-shrink: 0; /* Prevent button from shrinking */
+  flex-shrink: 0;
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
@@ -56,7 +56,6 @@ const AnswerContent = styled.div`
   border-radius: 8px;
   font-size: 16px;
   line-height: 1.6;
-  /* resize: vertical; */ /* div는 resize 속성을 지원하지 않으므로 제거 */
 `;
 
 const ButtonWrapper = styled.div`
@@ -72,7 +71,7 @@ const ActionButtons = styled.div`
 interface Props {
   item: QnA;
   onEdit: (qna: QnA) => void;
-  onDelete: (qnaId: string) => void;
+  onDelete?: (qnaId: string) => void; // Make optional
 }
 
 export default function QnAItem({ item, onEdit, onDelete }: Props) {
@@ -81,7 +80,9 @@ export default function QnAItem({ item, onEdit, onDelete }: Props) {
       <QuestionHeader>
         <Question>{item.question}</Question>
         <ActionButtons>
-          <EditButton onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}><IoMdClose /></EditButton> {/* Ensure delete button doesn't trigger onEdit */}
+          {onDelete && ( // Conditionally render delete button
+            <EditButton onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}><IoMdClose /></EditButton>
+          )}
         </ActionButtons>
       </QuestionHeader>
       <AnswerContent>{item.answer}</AnswerContent>

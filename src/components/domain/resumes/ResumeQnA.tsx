@@ -26,22 +26,26 @@ interface Props {
   onAdd: () => void;
   onDelete: (qnaId: string) => void;
   onEdit: (qna: QnA) => void; // New prop
+  isMultiple: boolean;
 }
 
-export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit }: Props) {
+export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit, isMultiple = true }: Props) {
   return (
     <QnAContainer>
       {qnas.map(qna => (
         <QnAItem 
           key={qna.id} 
           item={qna} 
-          onDelete={onDelete} 
+          onDelete={isMultiple ? onDelete : undefined } 
           onEdit={onEdit} // Pass onEdit to QnAItem
         />
       ))}
-      <ButtonContainer>
-        <Button onClick={onAdd}>+ 질문/답변 추가</Button>
-      </ButtonContainer>
+      {
+        isMultiple ? <ButtonContainer>
+          <Button onClick={onAdd}>+ 질문/답변 추가</Button>
+        </ButtonContainer> : <></>
+      }
+      
     </QnAContainer>
   );
 }

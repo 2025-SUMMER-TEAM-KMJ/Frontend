@@ -2,9 +2,9 @@
 
 import AuthGuard from '@/components/auth/AuthGuard';
 import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
+import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
 import JobPostingInfoCard from '@/components/domain/resumes/JobPostingInfoCard';
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
-import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
 import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
 import { QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
@@ -60,7 +60,6 @@ interface Props {
   params: { id: string };
 }
 
-import { QnA } from '@/types'; // Import QnA type
 
 function ResumeAnalysisPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
@@ -133,6 +132,7 @@ function ResumeAnalysisPageContent({ params }: Props) {
           onAdd={handleAddQnA}
           onDelete={handleDeleteQnA}
           onEdit={handleEditQnA} // Pass onEdit handler
+          isMultiple={true}
         />
       </AnalysisPageContainer>
 
