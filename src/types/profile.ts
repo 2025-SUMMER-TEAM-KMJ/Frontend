@@ -21,6 +21,7 @@ export interface ProjectExperience {
   startDate: string;
   endDate: string;
   description?: string;
+  links?: string[]; // Add links field
 }
 
 export interface Skill {
