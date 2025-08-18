@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { useForm, SubmitHandler, FieldErrors } from 'react-hook-form';
-import { signupUser } from '@/lib/api/auth';
+import { signupUser, loginUser } from '@/lib/api/auth';
+import { getProfile } from '@/lib/api/profile';
+import { useAuthStore } from '@/store/authStore';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
@@ -68,11 +70,16 @@ export default function SignupPage() {
   };
 
   const onFinalSubmit: SubmitHandler<SignUpRequest> = async (data) => {
-    const finalData = { ...formData, ...data };
+    const finalData = { ...formData, ...data } as SignUpRequest;
     setApiError(null);
     try {
-      await signupUser(finalData as SignUpRequest);
-      router.push('/login');
+      await signupUser(finalData);
+      // After signup, automatically login
+      const tokenResponse = await loginUser({ email: finalData.email, password: finalData.password });
+      useAuthStore.getState().setTokens(tokenResponse.access_token);
+      const userProfile = await getProfile();
+      useAuthStore.getState().login(userProfile);
+      router.push('/signup/additional-info');
     } catch (error) {
       if (error instanceof Error) {
         setApiError(error.message);

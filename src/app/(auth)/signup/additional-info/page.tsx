@@ -3,11 +3,11 @@
 import Button from '@/components/common/Button';
 import { getProfile, updateProfile } from '@/lib/api/profile';
 import { schemas__user__QnA as MyStory } from '@/types/api';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
 const Container = styled.div`
   display: flex;
@@ -93,10 +93,10 @@ const SkipButton = styled.button`
   }
 `;
 
-const questionsData: { id: string; question: string; tag: string; }[] = [
-  { id: 'q1', question: '귀하의 장점과 단점 3개를 자유롭게 문장 형식으로 작성해주세요 :)', tag: '자기소개' },
-  { id: 'q2', question: '귀하께서 갖고 계신 인생관, 혹은 평소에 생각하고 계신 것이 있나요?', tag: '자기소개' },
-  { id: 'q3', question: '가장 중요한 질문입니다. 귀하의 문제해결능력이 드러나는 사례를 자유롭게 서술해주십시오.', tag: '일화' },
+const questionsData: { question: string; tag: string; }[] = [
+  { question: '귀하의 장점과 단점 3개를 자유롭게 문장 형식으로 작성해주세요 :)', tag: '자기소개' },
+  { question: '귀하께서 갖고 계신 인생관, 혹은 평소에 생각하고 계신 것이 있나요?', tag: '자기소개' },
+  { question: '가장 중요한 질문입니다. 귀하의 문제해결능력이 드러나는 사례를 자유롭게 서술해주십시오.', tag: '일화' },
 ];
 
 const motionVariants = {
@@ -126,7 +126,7 @@ export default function AdditionalInfoPage() {
           category: currentQuestion.tag,
         };
         const updatedQnas = [...(profile.qnas || []), newStory];
-        await updateProfile({ ...profile, qnas: updatedQnas });
+        await updateProfile({ qnas: updatedQnas });
       }
 
       if (currentStep < questionsData.length - 1) {

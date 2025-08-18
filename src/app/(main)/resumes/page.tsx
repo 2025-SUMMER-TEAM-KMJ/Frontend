@@ -61,6 +61,13 @@ const Separator = styled.hr`
   margin: ${({ theme }) => theme.spacing.xlarge} 0;
 `;
 
+const NoDataMessage = styled.p`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.medium} 0;
+`;
+
 function ResumesPageContent() {
   const [profileResumes, setProfileResumes] = useState<Resume[]>([]);
   const [interestedJobs, setInterestedJobs] = useState<JobPosting[]>([]);
@@ -109,9 +116,13 @@ function ResumesPageContent() {
           <SectionTitle>프로필 기반 자기소개서</SectionTitle>
           <Button onClick={handleCreateProfileResume}>+ 새 프로필 기반 자소서 작성</Button>
         </SectionHeaderWithButton>
-        <ItemGrid>
-          {profileResumes.map(r => <ResumeCard key={r.id} resume={r} />)}
-        </ItemGrid>
+        {profileResumes.length > 0 ? (
+          <ItemGrid>
+            {profileResumes.map(r => <ResumeCard key={r.id} resume={r} />)}
+          </ItemGrid>
+        ) : (
+          <NoDataMessage>아직 작성된 프로필 기반 자기소개서가 없습니다.</NoDataMessage>
+        )}
       </Section>
 
       <Separator />
@@ -122,18 +133,22 @@ function ResumesPageContent() {
         transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
       >
         <SectionTitle>관심 공고</SectionTitle>
-        <ItemGrid>
-          {interestedJobs.map(job => (
-            <div key={job.id} onClick={() => setSelectedJob(job)} style={{ cursor: 'pointer' }}>
-              <JobPostCard 
-                job={job} 
-                isInterested={true}
-                onToggleInterest={handleToggleInterest}
-                onCreateResume={handleCreateResume}
-              />
-            </div>
-          ))}
-        </ItemGrid>
+        {interestedJobs.length > 0 ? (
+          <ItemGrid>
+            {interestedJobs.map(job => (
+              <div key={job.id} onClick={() => setSelectedJob(job)} style={{ cursor: 'pointer' }}>
+                <JobPostCard 
+                  job={job} 
+                  isInterested={true}
+                  onToggleInterest={handleToggleInterest}
+                  onCreateResume={handleCreateResume}
+                />
+              </div>
+            ))}
+          </ItemGrid>
+        ) : (
+          <NoDataMessage>아직 관심 공고가 없습니다.</NoDataMessage>
+        )}
       </Section>
 
       {selectedJob && (

@@ -83,27 +83,28 @@ const ButtonContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
+const NoDataMessage = styled.p`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.medium} 0;
+`;
+
 const tagOptions = [
   { value: '자기소개', label: '자기소개' },
   { value: '일화', label: '일화' },
   { value: '기타', label: '기타' },
 ];
 
-export default function MyStoryCardView() {
+export default function MyStoryCardView({ profile }: { profile: UserResponse }) {
   const [stories, setStories] = useState<MyStory[]>([]);
   const [selectedCard, setSelectedCard] = useState<MyStory | null>(null);
-  const [profile, setProfile] = useState<UserResponse | null>(null);
 
   useEffect(() => {
-    const fetchStories = async () => {
-      const profileData = await getProfile();
-      setProfile(profileData);
-      if (profileData && profileData.qnas) {
-        setStories(profileData.qnas);
-      }
-    };
-    fetchStories();
-  }, []);
+    if (profile && profile.qnas) {
+      setStories(profile.qnas);
+    }
+  }, [profile]);
 
   const handleTagChange = (newTag: string) => {
     setSelectedCard(prev => prev ? { ...prev, category: newTag } : null);
@@ -122,8 +123,7 @@ export default function MyStoryCardView() {
 
     try {
       const updatedQnas = profile.qnas.map(qna => qna.title === selectedCard.title ? selectedCard : qna);
-      const updatedProfile = { ...profile, qnas: updatedQnas };
-      await updateProfile(updatedProfile);
+      await updateProfile({ qnas: updatedQnas });
 
       setStories(updatedQnas);
       handleCloseModal();
@@ -135,14 +135,18 @@ export default function MyStoryCardView() {
 
   return (
     <>
-      <CardGrid>
-        {stories.map((story, index) => (
-          <Card key={index} onClick={() => handleCardClick(story)}>
-            <TagDisplay>{story.category}</TagDisplay>
-            <CardTitle>{story.title}</CardTitle>
-          </Card>
-        ))}
-      </CardGrid>
+      {stories.length > 0 ? (
+        <CardGrid>
+          {stories.map((story, index) => (
+            <Card key={index} onClick={() => handleCardClick(story)}>
+              <TagDisplay>{story.category}</TagDisplay>
+              <CardTitle>{story.title}</CardTitle>
+            </Card>
+          ))}
+        </CardGrid>
+      ) : (
+        <NoDataMessage>아직 나의 이야기가 없습니다.</NoDataMessage>
+      )}
 
       {selectedCard && (
         <Modal onClose={handleCloseModal} title="나의 이야기 수정">

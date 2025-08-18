@@ -55,7 +55,6 @@ const FormWrapper = styled.div`
 export default function LoginPage() {
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
-  const { login, setTokens } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -66,8 +65,9 @@ export default function LoginPage() {
     setApiError(null);
     try {
       const tokenResponse = await loginUser(data);
+      useAuthStore.getState().setTokens(tokenResponse.access_token);
       const userProfile = await getProfile();
-      login(userProfile, tokenResponse.access_token);
+      useAuthStore.getState().login(userProfile);
       router.push('/'); // Redirect to home on success
     } catch (error) {
       if (error instanceof Error) {

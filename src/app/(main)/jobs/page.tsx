@@ -48,17 +48,12 @@ function JobsPageContent() {
   const [filters, setFilters] = useState<JobFilters>({ location: '전체', category: '전체', job: '전체' });
   const [sort, setSort] = useState<SortOption>('latest');
   const [searchTerm, setSearchTerm] = useState('');
-  const [interestedJobIds, setInterestedJobIds] = useState<Set<string>>(new Set());
   const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
 
   const fetchInitialData = useCallback(async () => {
     setIsLoading(true);
-    const [jobsData, interestedJobsData] = await Promise.all([
-      getJobPostings(searchTerm, 0, 20),
-      getBookmarkedJobPostings(0, 100),
-    ]);
+    const jobsData = await getJobPostings(searchTerm, 0, 20);
     setJobs(jobsData.items);
-    setInterestedJobIds(new Set(interestedJobsData.items.map(j => j.id)));
     setIsLoading(false);
   }, [searchTerm]);
 
@@ -85,24 +80,30 @@ function JobsPageContent() {
       return;
     }
 
-    const newInterestedIds = new Set(interestedJobIds);
-    if (interestedJobIds.has(job.id)) {
-      await removeBookmark(job.id);
-      newInterestedIds.delete(job.id);
-    } else {
-      await addBookmark(job.id);
-      newInterestedIds.add(job.id);
+    try {
+      if (job.bookmarked) {
+        await removeBookmark(job.id);
+      } else {
+        await addBookmark(job.id);
+      }
+      // Update the job's bookmarked status in the state
+      setJobs(prevJobs => prevJobs.map(j => 
+        j.id === job.id ? { ...j, bookmarked: !j.bookmarked } : j
+      ));
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '북마크 업데이트 실패');
     }
-    setInterestedJobIds(newInterestedIds);
   };
 
   const handleCreateResume = async (job: JobPosting) => {
-    if (interestedJobIds.has(job.id)) {
+    if (job.bookmarked) {
       setSelectedJobForModal(job);
     } else {
-      await addBookmark(job.id);
-      setInterestedJobIds(prev => new Set(prev).add(job.id));
       try {
+        await addBookmark(job.id);
+        setJobs(prevJobs => prevJobs.map(j => 
+          j.id === job.id ? { ...j, bookmarked: true } : j
+        ));
         const newResume = await createCoverLetter({ title: `${job.company.name} ${job.detail.position?.job?.[0] || '지원'}`, type: 'job_posting', job_posting_id: job.id });
         router.push(`/resumes/job-based/${newResume.id}`);
       } catch (error) {
@@ -126,7 +127,6 @@ function JobsPageContent() {
         <>
           <JobPostList 
             jobs={jobs} 
-            interestedJobIds={interestedJobIds}
             onToggleInterest={handleToggleInterest}
             onCreateResume={handleCreateResume}
           />

@@ -217,9 +217,15 @@ const ToggleContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-import { Profile } from '@/types';
-
-// ... (imports and styled components remain the same)
+const NoContentMessage = styled.p`
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 16px;
+  padding: 20px;
+  border: 1px dashed ${({ theme }) => theme.colors.lightGray};
+  border-radius: 8px;
+  margin-top: 20px;
+`;
 
 export default function ProfileView({ profile }: { profile: Profile }) {
   const { openBasicInfoModal, openEditModal, closeEditModal, editingSection } = useAuthStore();
@@ -238,10 +244,10 @@ export default function ProfileView({ profile }: { profile: Profile }) {
           <ProfileDetail>{profile.email}</ProfileDetail>
           <ProfileDetail>{profile.phone}</ProfileDetail>
           {profile.preferred_position && profile.preferred_position.length > 0 && (
-            <ProfileDetail>희망 직군: {profile.preferred_position[0].job_group}</ProfileDetail>
-          )}
-          {profile.preferred_position && profile.preferred_position.length > 0 && (
-            <ProfileDetail>희망 직무: {profile.preferred_position[0].job}</ProfileDetail>
+            <>
+              <ProfileDetail>희망 직군: {profile.preferred_position[0].job_group}</ProfileDetail>
+              <ProfileDetail>희망 직무: {profile.preferred_position[0].job}</ProfileDetail>
+            </>
           )}
           {profile.urls && profile.urls.length > 0 && (
             <ProfileDetail>
@@ -272,7 +278,11 @@ export default function ProfileView({ profile }: { profile: Profile }) {
                   <SectionTitle>자기소개</SectionTitle>
                   <EditIcon onClick={() => openEditModal('brief')}>✏️</EditIcon>
                 </SectionHeader>
-                <ContentText>{profile.brief}</ContentText>
+                {profile.brief ? (
+                  <ContentText>{profile.brief}</ContentText>
+                ) : (
+                  <NoContentMessage>자기소개 정보가 없습니다.</NoContentMessage>
+                )}
               </Section>
 
               <Section>
@@ -280,13 +290,17 @@ export default function ProfileView({ profile }: { profile: Profile }) {
                   <SectionTitle>경력</SectionTitle>
                   <EditIcon onClick={() => openEditModal('workExperience')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.work_experience.map((exp, index) => (
-                  <ExperienceItem key={index}>
-                    <ExperienceTitle>{exp.company_name} - {exp.job}</ExperienceTitle>
-                    <ExperiencePeriod>{exp.start_date} ~ {exp.end_date}</ExperiencePeriod>
-                    <ExperienceDescription>{exp.description}</ExperienceDescription>
-                  </ExperienceItem>
-                ))}
+                {profile.work_experience && profile.work_experience.length > 0 ? (
+                  profile.work_experience.map((exp, index) => (
+                    <ExperienceItem key={index}>
+                      <ExperienceTitle>{exp.company_name} - {exp.job}</ExperienceTitle>
+                      <ExperiencePeriod>{exp.start_date} ~ {exp.end_date}</ExperiencePeriod>
+                      <ExperienceDescription>{exp.description}</ExperienceDescription>
+                    </ExperienceItem>
+                  ))
+                ) : (
+                  <NoContentMessage>경력 정보가 없습니다.</NoContentMessage>
+                )}
               </Section>
 
               <Section>
@@ -294,13 +308,17 @@ export default function ProfileView({ profile }: { profile: Profile }) {
                   <SectionTitle>프로젝트</SectionTitle>
                   <EditIcon onClick={() => openEditModal('projectExperience')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.experiences.map((proj, index) => (
-                  <ExperienceItem key={index}>
-                    <ExperienceTitle>{proj.title}</ExperienceTitle>
-                    <ExperiencePeriod>{proj.start_date} ~ {proj.end_date}</ExperiencePeriod>
-                    <ExperienceDescription>{proj.description}</ExperienceDescription>
-                  </ExperienceItem>
-                ))}
+                {profile.experiences && profile.experiences.length > 0 ? (
+                  profile.experiences.map((proj, index) => (
+                    <ExperienceItem key={index}>
+                      <ExperienceTitle>{proj.title}</ExperienceTitle>
+                      <ExperiencePeriod>{proj.start_date} ~ {proj.end_date}</ExperiencePeriod>
+                      <ExperienceDescription>{proj.description}</ExperienceDescription>
+                    </ExperienceItem>
+                  ))
+                ) : (
+                  <NoContentMessage>프로젝트 경험 정보가 없습니다.</NoContentMessage>
+                )}
               </Section>
             </LeftColumn>
 
@@ -310,11 +328,15 @@ export default function ProfileView({ profile }: { profile: Profile }) {
                   <SectionTitle>기술 스택</SectionTitle>
                   <EditIcon onClick={() => openEditModal('skills')}>✏️</EditIcon>
                 </SectionHeader>
-                <SkillList>
-                  {profile.competencies.map((skill, index) => (
-                    <SkillItem key={index}>{skill}</SkillItem>
-                  ))}
-                </SkillList>
+                {profile.competencies && profile.competencies.length > 0 ? (
+                  <SkillList>
+                    {profile.competencies.map((skill, index) => (
+                      <SkillItem key={index}>{skill}</SkillItem>
+                    ))}
+                  </SkillList>
+                ) : (
+                  <NoContentMessage>기술 스택 정보가 없습니다.</NoContentMessage>
+                )}
               </Section>
 
               <Section>
@@ -322,12 +344,16 @@ export default function ProfileView({ profile }: { profile: Profile }) {
                   <SectionTitle>학력</SectionTitle>
                   <EditIcon onClick={() => openEditModal('education')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.educations.map((edu, index) => (
-                  <ExperienceItem key={index}>
-                    <ExperienceTitle>{edu.school_name} - {edu.major}</ExperienceTitle>
-                    <ExperiencePeriod>{edu.start_date} ~ {edu.end_date}</ExperiencePeriod>
-                  </ExperienceItem>
-                ))}
+                {profile.educations && profile.educations.length > 0 ? (
+                  profile.educations.map((edu, index) => (
+                    <ExperienceItem key={index}>
+                      <ExperienceTitle>{edu.school_name} - {edu.major}</ExperienceTitle>
+                      <ExperiencePeriod>{edu.start_date} ~ {edu.end_date}</ExperiencePeriod>
+                    </ExperienceItem>
+                  ))
+                ) : (
+                  <NoContentMessage>학력 정보가 없습니다.</NoContentMessage>
+                )}
               </Section>
 
               <Section>
@@ -335,13 +361,17 @@ export default function ProfileView({ profile }: { profile: Profile }) {
                   <SectionTitle>자격증</SectionTitle>
                   <EditIcon onClick={() => openEditModal('certifications')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.certifications.map((cert, index) => (
-                  <ExperienceItem key={index}>
-                    <ExperienceTitle>{cert.name}</ExperienceTitle>
-                    <ExperiencePeriod>{cert.issue_date}</ExperiencePeriod>
-                    <ExperienceDescription>{cert.agency}</ExperienceDescription>
-                  </ExperienceItem>
-                ))}
+                {profile.certifications && profile.certifications.length > 0 ? (
+                  profile.certifications.map((cert, index) => (
+                    <ExperienceItem key={index}>
+                      <ExperienceTitle>{cert.name}</ExperienceTitle>
+                      <ExperiencePeriod>{cert.issue_date}</ExperiencePeriod>
+                      <ExperienceDescription>{cert.agency}</ExperienceDescription>
+                    </ExperienceItem>
+                  ))
+                ) : (
+                  <NoContentMessage>자격증 정보가 없습니다.</NoContentMessage>
+                )}
               </Section>
             </RightColumn>
           </>

@@ -35,12 +35,11 @@ const containerVariants = {
 
 interface JobPostListProps {
   jobs: JobPosting[];
-  interestedJobIds: Set<string>;
   onToggleInterest: (job: JobPosting) => void;
   onCreateResume: (job: JobPosting) => void;
 }
 
-export default function JobPostList({ jobs, interestedJobIds, onToggleInterest, onCreateResume }: JobPostListProps) {
+export default function JobPostList({ jobs, onToggleInterest, onCreateResume }: JobPostListProps) {
   return (
     <ListWrapper
       variants={containerVariants}
@@ -48,10 +47,10 @@ export default function JobPostList({ jobs, interestedJobIds, onToggleInterest, 
       animate="visible"
     >
       {jobs.map((job) => (
-        <motion.div key={job.id} variants={cardVariants}>
+        <motion.div key={job.id} variants={cardVariants} onClick={() => window.open(job.external_url, '_blank')}>
           <JobPostCard 
             job={job} 
-            isInterested={interestedJobIds.has(job.id)}
+            isInterested={job.bookmarked || false}
             onToggleInterest={onToggleInterest}
             onCreateResume={onCreateResume}
           />

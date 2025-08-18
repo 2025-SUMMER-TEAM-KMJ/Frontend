@@ -21,6 +21,16 @@ const ButtonContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
+const NoContentMessage = styled.p`
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 16px;
+  padding: 20px;
+  border: 1px dashed ${({ theme }) => theme.colors.lightGray};
+  border-radius: 8px;
+  margin-top: 20px;
+`;
+
 interface Props {
   qnas: QnA[];
   onAdd: () => void;
@@ -32,14 +42,18 @@ interface Props {
 export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit, isMultiple = true }: Props) {
   return (
     <QnAContainer>
-      {qnas.map(qna => (
-        <QnAItem 
-          key={qna.id} 
-          item={qna} 
-          onDelete={isMultiple ? onDelete : undefined } 
-          onEdit={onEdit} // Pass onEdit to QnAItem
-        />
-      ))}
+      {qnas.length > 0 ? (
+        qnas.map(qna => (
+          <QnAItem 
+            key={qna.id} 
+            item={qna} 
+            onDelete={isMultiple ? onDelete : undefined } 
+            onEdit={onEdit} // Pass onEdit to QnAItem
+          />
+        ))
+      ) : (
+        <NoContentMessage>아직 작성된 질문/답변이 없습니다.</NoContentMessage>
+      )}
       {
         isMultiple ? <ButtonContainer>
           <Button onClick={onAdd}>+ 질문/답변 추가</Button>

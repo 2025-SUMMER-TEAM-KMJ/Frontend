@@ -30,17 +30,23 @@ const ContentWrapper = styled.div`
 
 const ImageContainer = styled.div`
   width: 100%;
+  height: 180px; /* Fixed height for consistency */
   border-radius: 4px;
   margin-bottom: ${({ theme }) => theme.spacing.medium};
   position: relative; /* For positioning overlays */
   overflow: hidden; /* Hide overflow if image is larger */
   flex-grow: 6; /* Image area takes 6 parts */
+  background-color: ${({ theme }) => theme.colors.lightGray}; /* Gray background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const JobImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover; /* Cover the area, cropping if necessary */
+  ${({ src }) => !src && 'display: none;'} /* Hide image if no src */
 `;
 
 const TextAndButtonContainer = styled.div`
@@ -51,12 +57,12 @@ const TextAndButtonContainer = styled.div`
 `;
 
 const Company = styled.h3`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
+  font-size: 18px;
   margin: ${({ theme }) => theme.spacing.small} 0;
 `;
 
@@ -64,6 +70,7 @@ const InfoWrapper = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.medium};
   color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px; /* Reduced from 16px (default for p/span) */
   margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
@@ -71,7 +78,7 @@ const OverlayTag = styled.span`
   position: absolute;
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 10px; /* Reduced from 12px */
   font-weight: bold;
   color: white;
   background-color: black; /* Fully opaque */
@@ -96,7 +103,7 @@ const ButtonGroup = styled.div`
 const IconButton = styled.button`
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 22px; /* Reduced from 24px */
   cursor: pointer;
   color: ${({ theme }) => theme.colors.textSecondary};
 
@@ -126,13 +133,17 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
   return (
     <CardWrapper>
       <ImageContainer>
-        <JobImage src={job.title_images?.[0] || "https://blog.greetinghr.com/content/images/2022/03/---------------------.png"} alt="Job Post Image" />
+        <JobImage src={job.title_images?.[0]} alt="Job Post Image" />
         {job.metadata.source && <SourceTopLeft>{job.metadata.source}</SourceTopLeft>}
       </ImageContainer>
       <TextAndButtonContainer>
         <ContentWrapper>
           <Company>{job.company.name}</Company>
-          <Title>{job.detail.position?.job?.join(', ')}</Title>
+          <Title>
+  {Array.isArray(job.detail.position?.job)
+    ? job.detail.position.job.join(', ')
+    : job.detail.position?.job}
+</Title>
           <InfoWrapper>
             <span>{job.company.address?.full_location}</span>
           </InfoWrapper>

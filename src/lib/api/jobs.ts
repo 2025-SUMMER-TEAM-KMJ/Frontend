@@ -1,8 +1,12 @@
 import fetchWithAuth from './client';
 import { JobPostingListResponse, JobPostingResponse } from '@/types/api';
 
-export const getJobPostings = async (q: string, offset: number, limit: number): Promise<JobPostingListResponse> => {
-  const response = await fetchWithAuth(`/job-postings?q=${q}&offset=${offset}&limit=${limit}`);
+export const getJobPostings = async (q?: string, offset: number = 0, limit: number = 20): Promise<JobPostingListResponse> => {
+  let url = `/job-postings?offset=${offset}&limit=${limit}`;
+  if (q) {
+    url += `&q=${q}`;
+  }
+  const response = await fetchWithAuth(url);
   return response;
 };
 

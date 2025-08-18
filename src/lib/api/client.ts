@@ -22,6 +22,8 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
+  console.log(`[API Request] ${options.method || 'GET'}: ${url}` , options.body ? { body: options.body } : {});
+
   let response = await fetch(`${API_BASE_URL}${url}`, {
     ...options,
     headers,
@@ -30,19 +32,20 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
   if (response.status === 401) {
     try {
+      console.log('[API Token] Token expired, trying to reissue...');
       const newTokenResponse = await reissueToken();
       const newAccessToken = newTokenResponse.access_token;
       useAuthStore.getState().setAccessToken(newAccessToken);
       headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-      // Retry the original request with the new token
+      console.log('[API Retry] Retrying original request with new token...');
       response = await fetch(`${API_BASE_URL}${url}`, {
         ...options,
         headers,
         credentials: 'include',
       });
     } catch (reissueError) {
-      // If reissue fails, logout the user
+      console.error('[API Error] Token reissue failed:', reissueError);
       useAuthStore.getState().logout();
       throw new Error('Session expired. Please login again.');
     }
@@ -50,13 +53,17 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    console.error(`[API Error] Status: ${response.status}`, errorData);
     throw new Error(`HTTP error! status: ${response.status}, details: ${JSON.stringify(errorData)}`);
   }
 
-  const contentType = response.headers.get('content-type');
+    const contentType = response.headers.get('content-type');
   if (contentType && contentType.indexOf('application/json') !== -1) {
-    return response.json();
+    const data = await response.json();
+    console.log(`[API Response] ${options.method || 'GET'}: ${url}`, { status: response.status, data });
+    return data;
   } else {
+    console.log(`[API Response] ${options.method || 'GET'}: ${url}`, { status: response.status, data: 'No JSON content' });
     return;
   }
 };
