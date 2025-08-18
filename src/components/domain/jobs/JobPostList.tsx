@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { Job } from '@/types/job';
+import { JobPosting } from '@/types';
 import JobPostCard from './JobPostCard';
 import { motion } from 'framer-motion';
 
@@ -34,10 +34,10 @@ const containerVariants = {
 };
 
 interface JobPostListProps {
-  jobs: Job[];
-  interestedJobIds: Set<number>;
-  onToggleInterest: (job: Job) => void;
-  onCreateResume: (job: Job) => void;
+  jobs: JobPosting[];
+  interestedJobIds: Set<string>;
+  onToggleInterest: (job: JobPosting) => void;
+  onCreateResume: (job: JobPosting) => void;
 }
 
 export default function JobPostList({ jobs, interestedJobIds, onToggleInterest, onCreateResume }: JobPostListProps) {

@@ -5,7 +5,7 @@ import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
 import JobPostingInfoCard from '@/components/domain/resumes/JobPostingInfoCard';
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
-import { addResumeQnA, deleteResumeQnA, getResumeById, updateResumeQnA } from '@/lib/api/resumes';
+import { getCoverLetter, updateQnA, createQnA, deleteQnA } from '@/lib/api/resumes';
 import { QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -66,26 +66,26 @@ function ResumeAnalysisPageContent({ params }: Props) {
   const [editingQnA, setEditingQnA] = useState<QnA | null>(null); // Add editingQnA state
 
   useEffect(() => {
-    getResumeById(params.id).then(data => {
+    getCoverLetter(params.id).then(data => {
       if (data) setResume(data);
     });
   }, [params.id]);
 
   const handleUpdateQnA = async (qnaId: string, question: string, answer: string) => {
     if (!resume) return;
-    const updatedResume = await updateResumeQnA(resume.id, qnaId, question, answer);
+    const updatedResume = await updateQnA(resume.id, qnaId, { question, answer });
     setResume(updatedResume);
   };
 
   const handleAddQnA = async () => {
     if (!resume) return;
-    const updatedResume = await addResumeQnA(resume.id);
+    const updatedResume = await createQnA(resume.id, { question: '새로운 질문', answer: '' });
     setResume(updatedResume);
   };
 
   const handleDeleteQnA = async (qnaId: string) => {
     if (!resume) return;
-    const updatedResume = await deleteResumeQnA(resume.id, qnaId);
+    const updatedResume = await deleteQnA(resume.id, qnaId);
     setResume(updatedResume);
   };
 
@@ -95,7 +95,7 @@ function ResumeAnalysisPageContent({ params }: Props) {
 
   const handleSaveEditedQnA = async (qnaId: string, newQuestion: string, newAnswer: string) => { // Add handleSaveEditedQnA function
     if (!resume) return;
-    const updatedResume = await updateResumeQnA(resume.id, qnaId, newQuestion, newAnswer);
+    const updatedResume = await updateQnA(resume.id, qnaId, { question: newQuestion, answer: newAnswer });
     setResume(updatedResume);
     setEditingQnA(null); // Close modal
   };
@@ -107,10 +107,10 @@ function ResumeAnalysisPageContent({ params }: Props) {
       <AnalysisPageContainer>
         <ResumeHeader>
           <Title>{resume.title}</Title>
-          <Subtitle>최종 수정일: {new Date(resume.updatedAt).toLocaleDateString()}</Subtitle>
+          <Subtitle>최종 수정일: {new Date(resume.updated_at).toLocaleDateString()}</Subtitle>
         </ResumeHeader>
 
-        <JobPostingInfoCard resume={resume} />
+        {/* <JobPostingInfoCard resume={resume} /> */}
         <CompetencyAnalysis
           title="AI 역량 분석"
           sections={[
@@ -151,4 +151,3 @@ function ResumeAnalysisPageContent({ params }: Props) {
 export default function ResumeAnalysisPage({ params }: Props) {
   return <AuthGuard><ResumeAnalysisPageContent params={params} /></AuthGuard>;
 }
-

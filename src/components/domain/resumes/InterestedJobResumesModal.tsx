@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
-import { Job, Resume } from '@/types';
-import { getResumes, createJobBasedResume } from '@/lib/api/resumes';
+import { JobPosting, Resume } from '@/types';
+import { getCoverLetters, createCoverLetter } from '@/lib/api/resumes';
 import ResumeCard from './ResumeCard';
 import Button from '@/components/common/Button';
 
@@ -76,7 +76,7 @@ const EmptyMessage = styled.p`
 `;
 
 interface Props {
-  job: Job;
+  job: JobPosting;
   onClose: () => void;
 }
 
@@ -88,8 +88,8 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
   useEffect(() => {
     const fetchResumes = async () => {
       setIsLoading(true);
-      const data = await getResumes(job.id.toString());
-      setResumes(data);
+      const data = await getCoverLetters('job_posting', job.id);
+      setResumes(data.items);
       setIsLoading(false);
     };
     fetchResumes();
@@ -97,7 +97,7 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
 
   const handleCreateResume = async () => {
     try {
-      const newResume = await createJobBasedResume(job);
+      const newResume = await createCoverLetter({ title: `${job.company.name} ${job.detail.position?.job?.[0] || '지원'}`, type: 'job_posting', job_posting_id: job.id });
       router.push(`/resumes/job-based/${newResume.id}`);
       onClose(); // 모달 닫기
     } catch (error) {
@@ -109,7 +109,7 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
     <ModalBackdrop onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <Title>`${job.title}` 기반 자소서 목록</Title>
+          <Title>`${job.detail.position?.job?.[0] || job.company.name}` 기반 자소서 목록</Title>
           <CloseButton onClick={onClose}>×</CloseButton>
         </ModalHeader>
         <ContentContainer>
@@ -132,4 +132,3 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
     </ModalBackdrop>
   );
 }
-

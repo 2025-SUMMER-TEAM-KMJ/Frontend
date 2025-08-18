@@ -1,22 +1,19 @@
 import { create } from 'zustand';
-import { QnA } from '@/types';
-
-interface User {
-  name: string;
-  email: string;
-}
+import { QnA, UserResponse } from '@/types';
 
 interface AuthState {
   isLoggedIn: boolean;
-  user: User | null;
+  user: UserResponse | null;
+  accessToken: string | null;
   showProfileSetupModal: boolean;
   showBasicInfoModal: boolean; // New: Controls visibility of basic info modal
   editingSection: string | null; // New: Tracks which section is being edited
   showQnAModal: boolean; // New: Controls visibility of QnA modal
   selectedQnA: QnA | null; // New: Stores the selected QnA for the modal
   profileViewMode: string; // New: Stores the profile view mode
-  login: (user: User) => void;
+  login: (user: UserResponse, accessToken: string) => void;
   logout: () => void;
+  setTokens: (accessToken: string) => void;
   openProfileSetupModal: () => void;
   closeProfileSetupModal: () => void;
   openBasicInfoModal: () => void; // New: Opens basic info modal
@@ -31,14 +28,16 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   user: null,
+  accessToken: null,
   showProfileSetupModal: false,
   showBasicInfoModal: false, // Initialize to false
   editingSection: null, // Initialize to null
   showQnAModal: false, // Initialize to false
   selectedQnA: null, // Initialize to null
   profileViewMode: 'default', // Initialize to 'default'
-  login: (user) => set({ isLoggedIn: true, user }),
-  logout: () => set({ isLoggedIn: false, user: null }),
+  login: (user, accessToken) => set({ isLoggedIn: true, user, accessToken }),
+  logout: () => set({ isLoggedIn: false, user: null, accessToken: null }),
+  setTokens: (accessToken) => set({ accessToken }),
   openProfileSetupModal: () => set({ showProfileSetupModal: true }),
   closeProfileSetupModal: () => set({ showProfileSetupModal: false }),
   openBasicInfoModal: () => set({ showBasicInfoModal: true }), // Action to open basic info modal

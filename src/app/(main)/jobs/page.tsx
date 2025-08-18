@@ -5,9 +5,9 @@ import Pagination from '@/components/domain/jobs/Pagination';
 import SearchBar from '@/components/domain/main/SearchBar';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { useAuth } from '@/hooks/useAuth';
-import { addInterestedJob, getInterestedJobs, getJobs, removeInterestedJob } from '@/lib/api/jobs';
-import { createJobBasedResume } from '@/lib/api/resumes';
-import { Job, JobFilters, SortOption } from '@/types';
+import { getJobPostings, addBookmark, removeBookmark, getBookmarkedJobPostings } from '@/lib/api/jobs';
+import { createCoverLetter } from '@/lib/api/resumes';
+import { JobPosting, JobFilters, SortOption } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -40,33 +40,27 @@ const Loading = styled.p`
   padding: 50px;
 `;
 
-const ButtonRightContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
-`;
-
 function JobsPageContent() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<JobFilters>({ location: '전체', category: '전체', job: '전체' });
   const [sort, setSort] = useState<SortOption>('latest');
   const [searchTerm, setSearchTerm] = useState('');
-  const [interestedJobIds, setInterestedJobIds] = useState<Set<number>>(new Set());
-  const [selectedJobForModal, setSelectedJobForModal] = useState<Job | null>(null);
+  const [interestedJobIds, setInterestedJobIds] = useState<Set<string>>(new Set());
+  const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
 
   const fetchInitialData = useCallback(async () => {
     setIsLoading(true);
     const [jobsData, interestedJobsData] = await Promise.all([
-      getJobs(filters, sort, isLoggedIn, searchTerm),
-      getInterestedJobs(),
+      getJobPostings(searchTerm, 0, 20),
+      getBookmarkedJobPostings(0, 100),
     ]);
-    setJobs(jobsData);
-    setInterestedJobIds(new Set(interestedJobsData.map(j => j.id)));
+    setJobs(jobsData.items);
+    setInterestedJobIds(new Set(interestedJobsData.items.map(j => j.id)));
     setIsLoading(false);
-  }, [filters, sort, isLoggedIn, searchTerm]);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchInitialData();
@@ -85,11 +79,7 @@ function JobsPageContent() {
     setSearchTerm(term);
   };
 
-  const handleGetRecommendations = () => {
-    alert('추천받기 버튼 클릭됨!');
-  };
-
-  const handleToggleInterest = async (job: Job) => {
+  const handleToggleInterest = async (job: JobPosting) => {
     if (!isLoggedIn) {
       router.push('/login');
       return;
@@ -97,23 +87,23 @@ function JobsPageContent() {
 
     const newInterestedIds = new Set(interestedJobIds);
     if (interestedJobIds.has(job.id)) {
-      await removeInterestedJob(job.id);
+      await removeBookmark(job.id);
       newInterestedIds.delete(job.id);
     } else {
-      await addInterestedJob(job);
+      await addBookmark(job.id);
       newInterestedIds.add(job.id);
     }
     setInterestedJobIds(newInterestedIds);
   };
 
-  const handleCreateResume = async (job: Job) => {
+  const handleCreateResume = async (job: JobPosting) => {
     if (interestedJobIds.has(job.id)) {
       setSelectedJobForModal(job);
     } else {
-      await addInterestedJob(job);
+      await addBookmark(job.id);
       setInterestedJobIds(prev => new Set(prev).add(job.id));
       try {
-        const newResume = await createJobBasedResume(job);
+        const newResume = await createCoverLetter({ title: `${job.company.name} ${job.detail.position?.job?.[0] || '지원'}`, type: 'job_posting', job_posting_id: job.id });
         router.push(`/resumes/job-based/${newResume.id}`);
       } catch (error) {
         alert(error instanceof Error ? error.message : '자소서 생성 실패');

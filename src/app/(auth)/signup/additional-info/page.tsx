@@ -1,8 +1,8 @@
 'use client';
 
 import Button from '@/components/common/Button';
-import { addMyStory } from '@/lib/api/profile';
-import { MyStory } from '@/types/profile';
+import { getProfile, updateProfile } from '@/lib/api/profile';
+import { schemas__user__QnA as MyStory } from '@/types/api';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaAngleDoubleRight } from 'react-icons/fa';
@@ -93,7 +93,7 @@ const SkipButton = styled.button`
   }
 `;
 
-const questionsData: { id: string; question: string; tag: MyStory['tag']; }[] = [
+const questionsData: { id: string; question: string; tag: string; }[] = [
   { id: 'q1', question: '귀하의 장점과 단점 3개를 자유롭게 문장 형식으로 작성해주세요 :)', tag: '자기소개' },
   { id: 'q2', question: '귀하께서 갖고 계신 인생관, 혹은 평소에 생각하고 계신 것이 있나요?', tag: '자기소개' },
   { id: 'q3', question: '가장 중요한 질문입니다. 귀하의 문제해결능력이 드러나는 사례를 자유롭게 서술해주십시오.', tag: '일화' },
@@ -118,13 +118,16 @@ export default function AdditionalInfoPage() {
     }
 
     try {
-      const newStory: MyStory = {
-        id: `story-${Date.now()}-${currentStep}`,
-        title: currentQuestion.question,
-        content: answer,
-        tag: currentQuestion.tag,
-      };
-      await addMyStory(newStory);
+      const profile = await getProfile();
+      if (profile) {
+        const newStory: MyStory = {
+          title: currentQuestion.question,
+          content: answer,
+          category: currentQuestion.tag,
+        };
+        const updatedQnas = [...(profile.qnas || []), newStory];
+        await updateProfile({ ...profile, qnas: updatedQnas });
+      }
 
       if (currentStep < questionsData.length - 1) {
         setCurrentStep(prev => prev + 1);

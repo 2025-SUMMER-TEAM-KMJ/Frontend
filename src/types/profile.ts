@@ -1,40 +1,6 @@
-export interface Education {
-  id: string;
-  institution: string;
-  major: string;
-  startDate: string;
-  endDate: string;
-}
+import { UserResponse } from './api';
 
-export interface WorkExperience {
-  id: string;
-  company: string;
-  position: string;
-  startDate: string;
-  endDate: string;
-  description?: string;
-}
-
-export interface ProjectExperience {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  description?: string;
-  links?: string[]; // Add links field
-}
-
-export interface Skill {
-  id: string;
-  name: string;
-}
-
-export interface Certification {
-  id: string;
-  name: string;
-  issueDate: string;
-  issuer: string;
-}
+export type { UserResponse as Profile };
 
 export interface MyStory {
   id: string;
@@ -43,20 +9,7 @@ export interface MyStory {
   tag: '자기소개' | '일화' | '기타';
 }
 
-export interface Profile {
+export interface Skill {
+  id: string;
   name: string;
-  age: number;
-  gender: string;
-  email: string;
-  phone: string;
-  brief: string;
-  desiredJobGroup?: string;
-  desiredJobRole?: string;
-  skills: Skill[];
-  education: Education[];
-  workExperience: WorkExperience[];
-  projectExperience: ProjectExperience[];
-  certifications: Certification[];
-  myStories?: MyStory[];
-  links?: string[];
 }

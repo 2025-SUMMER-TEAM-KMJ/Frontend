@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { MyStory } from '@/types/profile';
-import { getProfile, updateMyStoryTag, updateMyStory } from '@/lib/api/profile';
+import { schemas__user__QnA as MyStory, UserResponse } from '@/types/api';
+import { getProfile, updateProfile } from '@/lib/api/profile';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
@@ -55,28 +55,16 @@ const Label = styled.label`
   margin-bottom: 4px;
 `;
 
-const StyledBorderlessInput = styled.input`
-  width: 100%;
-  padding: 12px;
-  border: none; /* No border */
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: transparent; /* Ensure background is transparent */
-  &:focus {
-    outline: none;
-  }
-`;
-
 const StyledBorderlessTextarea = styled.textarea`
   width: 100%;
   padding: 12px;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   font-size: 16px;
-  font-family: ${({ theme }) => theme.fonts.main}; /* Added font change */
-  resize: none; /* Changed from vertical to none */
+  font-family: ${({ theme }) => theme.fonts.main};
+  resize: none;
   flex-grow: 1;
-  background-color: transparent; /* Ensure background is transparent */
+  background-color: transparent;
   &:focus {
     outline: none;
   }
@@ -104,25 +92,25 @@ const tagOptions = [
 export default function MyStoryCardView() {
   const [stories, setStories] = useState<MyStory[]>([]);
   const [selectedCard, setSelectedCard] = useState<MyStory | null>(null);
-  // Editing states for modal can be added here if needed
+  const [profile, setProfile] = useState<UserResponse | null>(null);
 
   useEffect(() => {
     const fetchStories = async () => {
-      const profile = await getProfile();
-      if (profile && profile.myStories) {
-        setStories(profile.myStories);
+      const profileData = await getProfile();
+      setProfile(profileData);
+      if (profileData && profileData.qnas) {
+        setStories(profileData.qnas);
       }
     };
     fetchStories();
   }, []);
 
-  const handleTagChange = async (storyId: string, newTag: '자기소개' | '일화' | '기타') => {
-    setSelectedCard(prev => prev ? { ...prev, tag: newTag } : null);
+  const handleTagChange = (newTag: string) => {
+    setSelectedCard(prev => prev ? { ...prev, category: newTag } : null);
   };
 
   const handleCardClick = (card: MyStory) => {
     setSelectedCard(card);
-    // Logic to handle editing title and content can be added here
   };
 
   const handleCloseModal = () => {
@@ -130,19 +118,15 @@ export default function MyStoryCardView() {
   };
 
   const handleSave = async () => {
-    if (!selectedCard) return;
+    if (!selectedCard || !profile) return;
 
     try {
-      // Update the story in the backend (mock API)
-      await updateMyStory(selectedCard);
+      const updatedQnas = profile.qnas.map(qna => qna.title === selectedCard.title ? selectedCard : qna);
+      const updatedProfile = { ...profile, qnas: updatedQnas };
+      await updateProfile(updatedProfile);
 
-      // After successful save, update the local stories state
-      setStories(prevStories =>
-        prevStories.map(story =>
-          story.id === selectedCard.id ? selectedCard : story
-        )
-      );
-      handleCloseModal(); // Close modal after saving
+      setStories(updatedQnas);
+      handleCloseModal();
     } catch (error) {
       console.error('Failed to save story', error);
       alert('스토리 저장에 실패했습니다.');
@@ -152,9 +136,9 @@ export default function MyStoryCardView() {
   return (
     <>
       <CardGrid>
-        {stories.map(story => (
-          <Card key={story.id} onClick={() => handleCardClick(story)}>
-            <TagDisplay>{story.tag}</TagDisplay>
+        {stories.map((story, index) => (
+          <Card key={index} onClick={() => handleCardClick(story)}>
+            <TagDisplay>{story.category}</TagDisplay>
             <CardTitle>{story.title}</CardTitle>
           </Card>
         ))}
@@ -163,7 +147,7 @@ export default function MyStoryCardView() {
       {selectedCard && (
         <Modal onClose={handleCloseModal} title="나의 이야기 수정">
           <ModalContentWrapper>
-            <div> {/* Add a div to contain label and input */}
+            <div>
               <Label>제목</Label>
               <StyledBorderlessTextarea
                 value={selectedCard.title}
@@ -171,10 +155,10 @@ export default function MyStoryCardView() {
                 onChange={(e) => setSelectedCard(prev => prev ? { ...prev, title: e.target.value } : null)}
               />
             </div>
-            <div> {/* Add a div to contain label and input */}
+            <div>
               <Label>내용</Label>
               <StyledBorderlessTextarea
-                value={selectedCard.content}
+                value={selectedCard.content || ''}
                 rows={10}
                 onChange={(e) => setSelectedCard(prev => prev ? { ...prev, content: e.target.value } : null)}
               />
@@ -182,8 +166,8 @@ export default function MyStoryCardView() {
             <Dropdown
               label="태그 선택"
               options={tagOptions}
-              value={selectedCard.tag}
-              onChange={(e) => handleTagChange(selectedCard.id, e.target.value as any)}
+              value={selectedCard.category || ''}
+              onChange={(e) => handleTagChange(e.target.value)}
             />
             <ButtonContainer>
               <Button onClick={handleSave}>

@@ -3,7 +3,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { Profile } from '@/types/profile';
+import { Profile } from '@/types';
+import { UserUpdateRequest } from '@/types/api';
 import Modal from '@/components/common/Modal';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
@@ -21,23 +22,6 @@ const RemoveLinkButton = styled.button`
   cursor: pointer;
 `;
 
-interface EditBasicInfoFormData {
-  name: string;
-  age: number;
-  gender: string;
-  email: string;
-  phone: string;
-  preferredJobGroup?: string;
-  preferredJob?: string;
-  links: string[]; // Changed to array
-}
-
-interface Props {
-  profile: Profile;
-  onSave: (data: EditBasicInfoFormData) => void;
-  onClose: () => void;
-}
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -51,26 +35,31 @@ const ButtonContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.large};
 `;
 
+interface Props {
+  profile: Profile;
+  onSave: (data: Partial<UserUpdateRequest>) => void;
+  onClose: () => void;
+}
+
 const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<EditBasicInfoFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<UserUpdateRequest>({
     defaultValues: {
       name: profile.name,
       age: profile.age,
       gender: profile.gender,
       email: profile.email,
       phone: profile.phone,
-      preferredJobGroup: profile.preferredPosition?.[0]?.industry || '',
-      preferredJob: profile.preferredPosition?.[0]?.title || '',
-      links: profile.links || [''], // Initialize as array
+      preferred_position: profile.preferred_position,
+      urls: profile.urls,
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "links",
+    name: "urls",
   });
 
-  const onSubmit = (data: EditBasicInfoFormData) => {
+  const onSubmit = (data: UserUpdateRequest) => {
     onSave(data);
   };
 
@@ -106,29 +95,26 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
         />
         <Input
           label="희망 직군"
-          {...register('preferredJobGroup')}
-          error={errors.preferredJobGroup?.message}
+          {...register('preferred_position.0.job_group')}
         />
         <Input
           label="희망 직무"
-          {...register('preferredJob')}
-          error={errors.preferredJob?.message}
+          {...register('preferred_position.0.job')}
         />
-        {/* Links Section */}
         <Label>링크</Label>
         {fields.map((item, index) => (
-          <div key={item.id} style={{ position: 'relative', marginBottom: '8px' }}> {/* Add relative positioning and margin-bottom */}
+          <div key={item.id} style={{ position: 'relative', marginBottom: '8px' }}>
             <Input
-              {...register(`links.${index}`)}
+              {...register(`urls.${index}`)}
               placeholder="링크 URL"
-              style={{ paddingRight: '40px' }} // Make space for the button
+              style={{ paddingRight: '40px' }}
             />
             <RemoveLinkButton type="button" onClick={() => remove(index)} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)' }}>
               &times;
             </RemoveLinkButton>
           </div>
         ))}
-        <Button type="button" onClick={() => append('')}>
+        <Button type="button" onClick={() => append({ value: "" })}>
           + 링크 추가
         </Button>
         <ButtonContainer>

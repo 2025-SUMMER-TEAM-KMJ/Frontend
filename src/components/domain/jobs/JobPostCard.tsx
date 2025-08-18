@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { Job } from '@/types';
+import { JobPosting } from '@/types';
 import { useState, useEffect } from 'react';
 import { FaRegEdit, FaStar, FaRegStar, FaListAlt } from 'react-icons/fa';
 import Tag from '@/components/common/Tag';
@@ -86,13 +86,6 @@ const DueDateTopRight = styled(OverlayTag)`
   right: ${({ theme }) => theme.spacing.medium};
 `;
 
-const TagWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.small};
-  margin-top: ${({ theme }) => theme.spacing.medium};
-`;
-
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -113,10 +106,10 @@ const IconButton = styled.button`
 `;
 
 interface JobPostCardProps {
-  job: Job;
+  job: JobPosting;
   isInterested: boolean;
-  onToggleInterest: (job: Job) => void;
-  onCreateResume: (job: Job) => void;
+  onToggleInterest: (job: JobPosting) => void;
+  onCreateResume: (job: JobPosting) => void;
 }
 
 export default function JobPostCard({ job, isInterested, onToggleInterest, onCreateResume }: JobPostCardProps) {
@@ -130,36 +123,18 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
     onToggleInterest(job);
   };
 
-  const calculateDDay = (dueDate: string) => {
-    const today = new Date();
-    const deadlineDate = new Date(dueDate);
-    const diffTime = deadlineDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 ? `D-${diffDays}` : `D+${Math.abs(diffDays)}`;
-  };
-
-  const [dDay, setDDay] = useState('');
-
-  useEffect(() => {
-    if (job.dueDate) {
-      setDDay(calculateDDay(job.dueDate));
-    }
-  }, [job.dueDate]);
-
   return (
     <CardWrapper>
       <ImageContainer>
-        <JobImage src="https://blog.greetinghr.com/content/images/2022/03/---------------------.png" alt="Job Post Image" />
-        {job.source && <SourceTopLeft>{job.source}</SourceTopLeft>}
-        {job.dueDate && <DueDateTopRight>{dDay}</DueDateTopRight>}
+        <JobImage src={job.title_images?.[0] || "https://blog.greetinghr.com/content/images/2022/03/---------------------.png"} alt="Job Post Image" />
+        {job.metadata.source && <SourceTopLeft>{job.metadata.source}</SourceTopLeft>}
       </ImageContainer>
       <TextAndButtonContainer>
         <ContentWrapper>
-          <Company>{job.company}</Company>
-          <Title>{job.title}</Title>
+          <Company>{job.company.name}</Company>
+          <Title>{job.detail.position?.job?.join(', ')}</Title>
           <InfoWrapper>
-            <span>{job.location}</span>
-            <span>{job.experience}</span>
+            <span>{job.company.address?.full_location}</span>
           </InfoWrapper>
           
         </ContentWrapper>

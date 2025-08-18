@@ -180,7 +180,7 @@
     - 입력 필드(자격증명, 발급기관, 발급일)에 `Label` 추가.
     - 날짜 입력에 `react-datepicker` 통합 및 유효하지 않은 날짜 값에 대한 견고한 처리 추가.
     - `TextArea` 높이를 `150px`로 늘리고 `resize: none`으로 설정.
-    - 입력 필드 간 간격(`gap`)을 `theme.spacing.small`로 늘림.
+    - 입력 필드 간 간격(`gap`)을 `theme.spacing.small`으로 늘림.
     - 버튼 주변 간격(`margin-top`)을 `theme.spacing.medium`으로 조정.
     - "취소" 버튼 제거.
 - **`MyStoryCardView.tsx` (나의 이야기 수정 모달):**

@@ -5,9 +5,9 @@ import Button from '@/components/common/Button';
 import JobPostCard from '@/components/domain/jobs/JobPostCard';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import ResumeCard from '@/components/domain/resumes/ResumeCard';
-import { getInterestedJobs, removeInterestedJob } from '@/lib/api/jobs';
-import { createProfileBasedResume, getResumes } from '@/lib/api/resumes';
-import { Job, Resume } from '@/types';
+import { getBookmarkedJobPostings, removeBookmark } from '@/lib/api/jobs';
+import { createCoverLetter, getCoverLetters } from '@/lib/api/resumes';
+import { JobPosting, Resume } from '@/types';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -63,32 +63,30 @@ const Separator = styled.hr`
 
 function ResumesPageContent() {
   const [profileResumes, setProfileResumes] = useState<Resume[]>([]);
-  const [interestedJobs, setInterestedJobs] = useState<Job[]>([]);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [interestedJobs, setInterestedJobs] = useState<JobPosting[]>([]);
+  const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    getResumes().then(allResumes => {
-      setProfileResumes(allResumes.filter(r => r.basedOn === 'profile'));
-    });
-    getInterestedJobs().then(setInterestedJobs);
+    getCoverLetters('profile').then(res => setProfileResumes(res.items));
+    getBookmarkedJobPostings(0, 100).then(res => setInterestedJobs(res.items));
   }, []);
 
   const handleCreateProfileResume = async () => {
     try {
-      const newResume = await createProfileBasedResume();
+      const newResume = await createCoverLetter({ title: '새 프로필 기반 자소서', type: 'profile' });
       router.push(`/resumes/profile-based/${newResume.id}`);
     } catch (error) {
       alert(error instanceof Error ? error.message : '자소서 생성 실패');
     }
   };
 
-  const handleToggleInterest = async (job: Job) => {
-    await removeInterestedJob(job.id);
+  const handleToggleInterest = async (job: JobPosting) => {
+    await removeBookmark(job.id);
     setInterestedJobs(prevJobs => prevJobs.filter(j => j.id !== job.id));
   };
 
-  const handleCreateResume = (job: Job) => {
+  const handleCreateResume = (job: JobPosting) => {
     setSelectedJob(job);
   };
 

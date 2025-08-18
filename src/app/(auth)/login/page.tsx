@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/store/authStore';
 import { loginUser } from '@/lib/api/auth';
+import { getProfile } from '@/lib/api/profile';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import { LoginRequest } from '@/types/api';
 
 const Title = styled.h1`
   font-size: 28px;
@@ -50,26 +52,22 @@ const FormWrapper = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 `;
 
-type Inputs = {
-  email: string;
-  password?: string;
-};
-
 export default function LoginPage() {
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, setTokens } = useAuthStore();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  } = useForm<LoginRequest>();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<LoginRequest> = async (data) => {
     setApiError(null);
     try {
-      const user = await loginUser(data);
-      login(user); // Update global state
+      const tokenResponse = await loginUser(data);
+      const userProfile = await getProfile();
+      login(userProfile, tokenResponse.access_token);
       router.push('/'); // Redirect to home on success
     } catch (error) {
       if (error instanceof Error) {

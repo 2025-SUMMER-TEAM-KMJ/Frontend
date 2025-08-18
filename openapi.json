@@ -10,7 +10,7 @@
         "tags": [
           "users"
         ],
-        "summary": "Sign Up",
+        "summary": "회원가입",
         "operationId": "sign_up_users_signup_post",
         "requestBody": {
           "content": {
@@ -51,7 +51,8 @@
         "tags": [
           "users"
         ],
-        "summary": "Get Profile",
+        "summary": "프로필 조회",
+        "description": "응답에는 프로필 사진의 GCS object key(`profile_img_key`)만 포함됩니다.\n이미지 파일은 `\u003Cimg src=\"/users/profile-image\"\u003E`처럼 다운로드 API 경로로 직접 표시해야 합니다.\n프로필 사진이 없을 수 있으니 키 존재 여부를 항상 확인해야 합니다.",
         "operationId": "get_profile_users_get",
         "responses": {
           "200": {
@@ -104,6 +105,89 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/users/profile-image": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "프로필 이미지 다운로드(표시용)",
+        "description": "프론트 예시:\n```html\n\u003Cimg src=\"/users/profile-image\" alt=\"profile\" /\u003E\n```\n백엔드가 GCS에서 파일을 읽어 응답 바디에 이미지 바이트로 내려줍니다.",
+        "operationId": "download_profile_image_users_profile_image_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              },
+              "image/*": {
+
+              }
+            }
+          },
+          "404": {
+            "description": "이미지 없음"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "프로필 이미지 업로드",
+        "description": "요청 바디에 이미지 파일 바이트를 그대로 넣어야 합니다. 헤더에는 Content-Type을 설정해야 합니다.\nContent-Type은 image/png, image/jpeg, image/jpg 중 하나로 설정해야 합니다.",
+        "operationId": "upload_profile_image_users_profile_image_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "프로필 이미지 삭제",
+        "description": "현재 로그인 사용자의 프로필 이미지를 GCS와 DB에서 삭제합니다.",
+        "operationId": "delete_profile_image_users_profile_image_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
                 }
               }
             }
@@ -928,6 +1012,185 @@
           }
         }
       }
+    },
+    "/cover-letters/{cl_id}/qnas": {
+      "post": {
+        "tags": [
+          "cover-letters"
+        ],
+        "summary": "자기소개서 항목 생성",
+        "operationId": "create_qna_cover_letters__cl_id__qnas_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cl_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cl Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QnACreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverLetterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cover-letters/{cl_id}/qnas/{qna_id}": {
+      "patch": {
+        "tags": [
+          "cover-letters"
+        ],
+        "summary": "문항 수정 (유저가 question/answer 수정)",
+        "operationId": "update_qna_cover_letters__cl_id__qnas__qna_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cl_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cl Id"
+            }
+          },
+          {
+            "name": "qna_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Qna Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QnAUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverLetterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "cover-letters"
+        ],
+        "summary": "문항 삭제",
+        "operationId": "delete_qna_cover_letters__cl_id__qnas__qna_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cl_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cl Id"
+            }
+          },
+          {
+            "name": "qna_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Qna Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverLetterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -971,12 +1234,6 @@
             "title": "Title",
             "description": "자기소개서 제목"
           },
-          "content": {
-            "type": "string",
-            "minLength": 1,
-            "title": "Content",
-            "description": "자기소개서 내용 (AI로 생성된 결과를 넣어도 됨)"
-          },
           "type": {
             "type": "string",
             "enum": [
@@ -997,12 +1254,26 @@
             ],
             "title": "Job Posting Id",
             "description": "공고 기반일 경우 해당 공고 id"
+          },
+          "qnas": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/schemas__cover_letter__QnA"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qnas",
+            "description": "초기 문항 리스트"
           }
         },
         "type": "object",
         "required": [
           "title",
-          "content",
           "type"
         ],
         "title": "CoverLetterCreate",
@@ -1045,10 +1316,6 @@
             "type": "string",
             "title": "Title"
           },
-          "content": {
-            "type": "string",
-            "title": "Content"
-          },
           "type": {
             "type": "string",
             "enum": [
@@ -1068,6 +1335,13 @@
             ],
             "title": "Job Posting Id"
           },
+          "qnas": {
+            "items": {
+              "$ref": "#/components/schemas/schemas__cover_letter__QnA"
+            },
+            "type": "array",
+            "title": "Qnas"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -1084,8 +1358,8 @@
           "id",
           "user_id",
           "title",
-          "content",
           "type",
+          "qnas",
           "created_at",
           "updated_at"
         ],
@@ -1106,23 +1380,11 @@
               }
             ],
             "title": "Title"
-          },
-          "content": {
-            "anyOf": [
-              {
-                "type": "string",
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Content"
           }
         },
         "type": "object",
         "title": "CoverLetterUpdate",
-        "description": "자기소개서 수정 요청 (부분 업데이트)"
+        "description": "자기소개서 상위 메타 수정 요청 (부분 업데이트), 문항 수정은 별도 엔드포인트로 진행"
       },
       "Education": {
         "properties": {
@@ -1669,13 +1931,16 @@
         ],
         "title": "PreferredPosition"
       },
-      "QnA": {
+      "QnACreate": {
         "properties": {
-          "title": {
+          "question": {
             "type": "string",
-            "title": "Title"
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Question",
+            "description": "자기소개서 문항 질문"
           },
-          "content": {
+          "answer": {
             "anyOf": [
               {
                 "type": "string"
@@ -1684,25 +1949,47 @@
                 "type": "null"
               }
             ],
-            "title": "Content"
-          },
-          "category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Category"
+            "title": "Answer"
           }
         },
         "type": "object",
         "required": [
-          "title"
+          "question"
         ],
-        "title": "QnA"
+        "title": "QnACreate",
+        "description": "자기소개서 개별 항목 생성 -\u003E AI로 생성 진행"
+      },
+      "QnAUpdate": {
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "QnAUpdate",
+        "description": "자기소개서 개별 항목 수정 -\u003E 유저가 수정"
       },
       "SignUpRequest": {
         "properties": {
@@ -1793,6 +2080,17 @@
             "type": "string",
             "title": "Phone"
           },
+          "profile_img_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Img Key"
+          },
           "urls": {
             "items": {
               "type": "string",
@@ -1858,7 +2156,7 @@
           },
           "qnas": {
             "items": {
-              "$ref": "#/components/schemas/QnA"
+              "$ref": "#/components/schemas/schemas__user__QnA"
             },
             "type": "array",
             "title": "Qnas"
@@ -2021,7 +2319,7 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/QnA"
+                  "$ref": "#/components/schemas/schemas__user__QnA"
                 },
                 "type": "array"
               },
@@ -2133,6 +2431,77 @@
           "start_date"
         ],
         "title": "WorkExperience"
+      },
+      "schemas__cover_letter__QnA": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "문항에 대한 식별자"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question",
+            "description": "자기소개서 문항"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "문항에 맞는 답변"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "QnA"
+      },
+      "schemas__user__QnA": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "QnA"
       }
     },
     "securitySchemes": {

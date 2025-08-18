@@ -217,7 +217,11 @@ const ToggleContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-export default function ProfileView({ profile }: Props) {
+import { Profile } from '@/types';
+
+// ... (imports and styled components remain the same)
+
+export default function ProfileView({ profile }: { profile: Profile }) {
   const { openBasicInfoModal, openEditModal, closeEditModal, editingSection } = useAuthStore();
   const [viewMode, setViewMode] = useState<'resume' | 'card'>('resume');
 
@@ -227,27 +231,27 @@ export default function ProfileView({ profile }: Props) {
         <ProfileHeaderEditIcon onClick={openBasicInfoModal}>✏️</ProfileHeaderEditIcon>
         <ProfileImage>
           {/* 임시 이미지 또는 사용자 아바타 */}
-          <Image src="/images/profile_placeholder.png" alt="프로필 이미지" width={120} height={120} />
+          <Image src={profile.profile_img_key ? `http://35.192.157.46:8765/users/profile-image` : "/images/profile_placeholder.png"} alt="프로필 이미지" width={120} height={120} />
         </ProfileImage>
         <ProfileInfo>
           <ProfileName>{profile.name}</ProfileName>
           <ProfileDetail>{profile.email}</ProfileDetail>
           <ProfileDetail>{profile.phone}</ProfileDetail>
-          {profile.desiredJobGroup && (
-            <ProfileDetail>희망 직군: {profile.desiredJobGroup}</ProfileDetail>
+          {profile.preferred_position && profile.preferred_position.length > 0 && (
+            <ProfileDetail>희망 직군: {profile.preferred_position[0].job_group}</ProfileDetail>
           )}
-          {profile.desiredJobRole && (
-            <ProfileDetail>희망 직무: {profile.desiredJobRole}</ProfileDetail>
+          {profile.preferred_position && profile.preferred_position.length > 0 && (
+            <ProfileDetail>희망 직무: {profile.preferred_position[0].job}</ProfileDetail>
           )}
-          {profile.links && profile.links.length > 0 && (
+          {profile.urls && profile.urls.length > 0 && (
             <ProfileDetail>
               링크:
-              {profile.links.map((link, index) => (
+              {profile.urls.map((link, index) => (
                 <span key={index}>
                   <a href={link} target="_blank" rel="noopener noreferrer" style={{ marginLeft: index === 0 ? '5px' : '0', color: 'blue', textDecoration: 'underline' }}>
                     {link}
                   </a>
-                  {index < profile.links.length - 1 && ' | '}
+                  {index < profile.urls.length - 1 && ' | '}
                 </span>
               ))}
             </ProfileDetail>
@@ -276,10 +280,10 @@ export default function ProfileView({ profile }: Props) {
                   <SectionTitle>경력</SectionTitle>
                   <EditIcon onClick={() => openEditModal('workExperience')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.workExperience.map(exp => (
-                  <ExperienceItem key={exp.id}>
-                    <ExperienceTitle>{exp.company} - {exp.position}</ExperienceTitle>
-                    <ExperiencePeriod>{exp.startDate} ~ {exp.endDate}</ExperiencePeriod>
+                {profile.work_experience.map((exp, index) => (
+                  <ExperienceItem key={index}>
+                    <ExperienceTitle>{exp.company_name} - {exp.job}</ExperienceTitle>
+                    <ExperiencePeriod>{exp.start_date} ~ {exp.end_date}</ExperiencePeriod>
                     <ExperienceDescription>{exp.description}</ExperienceDescription>
                   </ExperienceItem>
                 ))}
@@ -290,10 +294,10 @@ export default function ProfileView({ profile }: Props) {
                   <SectionTitle>프로젝트</SectionTitle>
                   <EditIcon onClick={() => openEditModal('projectExperience')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.projectExperience.map(proj => (
-                  <ExperienceItem key={proj.id}>
+                {profile.experiences.map((proj, index) => (
+                  <ExperienceItem key={index}>
                     <ExperienceTitle>{proj.title}</ExperienceTitle>
-                    <ExperiencePeriod>{proj.startDate} ~ {proj.endDate}</ExperiencePeriod>
+                    <ExperiencePeriod>{proj.start_date} ~ {proj.end_date}</ExperiencePeriod>
                     <ExperienceDescription>{proj.description}</ExperienceDescription>
                   </ExperienceItem>
                 ))}
@@ -307,8 +311,8 @@ export default function ProfileView({ profile }: Props) {
                   <EditIcon onClick={() => openEditModal('skills')}>✏️</EditIcon>
                 </SectionHeader>
                 <SkillList>
-                  {profile.skills.map(skill => (
-                    <SkillItem key={skill.id}>{skill.name}</SkillItem>
+                  {profile.competencies.map((skill, index) => (
+                    <SkillItem key={index}>{skill}</SkillItem>
                   ))}
                 </SkillList>
               </Section>
@@ -318,11 +322,10 @@ export default function ProfileView({ profile }: Props) {
                   <SectionTitle>학력</SectionTitle>
                   <EditIcon onClick={() => openEditModal('education')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.education.map(edu => (
-                  <ExperienceItem key={edu.id}>
-                    <ExperienceTitle>{edu.institution} - {edu.major}</ExperienceTitle>
-                    <ExperiencePeriod>{edu.startDate} ~ {edu.endDate}</ExperiencePeriod>
-                    <ExperienceDescription>{edu.description}</ExperienceDescription>
+                {profile.educations.map((edu, index) => (
+                  <ExperienceItem key={index}>
+                    <ExperienceTitle>{edu.school_name} - {edu.major}</ExperienceTitle>
+                    <ExperiencePeriod>{edu.start_date} ~ {edu.end_date}</ExperiencePeriod>
                   </ExperienceItem>
                 ))}
               </Section>
@@ -332,11 +335,11 @@ export default function ProfileView({ profile }: Props) {
                   <SectionTitle>자격증</SectionTitle>
                   <EditIcon onClick={() => openEditModal('certifications')}>✏️</EditIcon>
                 </SectionHeader>
-                {profile.certifications.map(cert => (
-                  <ExperienceItem key={cert.id}>
+                {profile.certifications.map((cert, index) => (
+                  <ExperienceItem key={index}>
                     <ExperienceTitle>{cert.name}</ExperienceTitle>
-                    <ExperiencePeriod>{cert.issueDate}</ExperiencePeriod>
-                    <ExperienceDescription>{cert.issuer}</ExperienceDescription>
+                    <ExperiencePeriod>{cert.issue_date}</ExperiencePeriod>
+                    <ExperienceDescription>{cert.agency}</ExperienceDescription>
                   </ExperienceItem>
                 ))}
               </Section>
@@ -421,3 +424,4 @@ export default function ProfileView({ profile }: Props) {
     </ViewContainer>
   );
 }
+
