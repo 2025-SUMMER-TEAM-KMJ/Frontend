@@ -9,6 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
 import CommonInput from '@/components/common/Input'; // Renamed to avoid conflict
 import CommonButton from '@/components/common/Button'; // Renamed to avoid conflict
+import { FaTimes, FaPlus } from 'react-icons/fa'; // Added for icons
 
 registerLocale('ko', ko);
 
@@ -19,6 +20,7 @@ const Title = styled.h2`
 `;
 
 const ProjectItemContainer = styled.div`
+  position: relative; /* Added for absolute positioning of delete button */
   border: 1px solid ${({ theme }) => theme.colors.border};
   padding: ${({ theme }) => theme.spacing.medium};
   border-radius: 8px;
@@ -83,6 +85,28 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.small};
   margin-top: ${({ theme }) => theme.spacing.large}; /* Added margin-top */
+`;
+
+const DeleteButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  cursor: pointer;
+  font-size: 20px;
+  &:hover {
+    color: ${({ theme }) => theme.colors.danger};
+  }
+`;
+
+const AddProjectButton = styled(CommonButton)``;
+
+const CenteredButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: ${({ theme }) => theme.spacing.medium};
 `;
 
 interface EditProjectExperienceFormData {
@@ -170,22 +194,23 @@ export default function EditProjectExperienceModal({ profile, onSave, onClose }:
             <Label>링크</Label>
             <LinkFields projectIndex={projectIndex} control={control} /> {/* New component for links */}
 
-            <CommonButton // Use common Button
-              className="danger"
+            <DeleteButton
               type="button"
               onClick={() => handleDeleteProject(projectIndex)}
             >
-              삭제
-            </CommonButton>
+              <FaTimes />
+            </DeleteButton>
           </ProjectItemContainer>
         ))}
-        <CommonButton // Use common Button
-          className="secondary"
-          type="button"
-          onClick={handleAddProject}
-        >
-          프로젝트 추가
-        </CommonButton>
+        <CenteredButtonContainer>
+          <AddProjectButton
+            className="secondary"
+            type="button"
+            onClick={handleAddProject}
+          >
+            프로젝트 추가
+          </AddProjectButton>
+        </CenteredButtonContainer>
         <ButtonContainer>
           <CommonButton // Use common Button
             className="primary"
