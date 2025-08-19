@@ -98,7 +98,7 @@ interface Props {
 export default function EditProjectExperienceModal({ profile, onSave, onClose }: Props) {
   const { register, control, handleSubmit, formState: { errors } } = useForm<EditProjectExperienceFormData>({
     defaultValues: {
-      projectExperiences: profile.projectExperience.map(proj => ({
+      projectExperiences: (profile.projectExperience || []).map(proj => ({
         ...proj,
         links: proj.links || [''], // Ensure links array is initialized
       })),

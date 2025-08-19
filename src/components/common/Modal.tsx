@@ -39,6 +39,8 @@ const ModalContent = styled(motion.div)<{ $dynamicWidth?: string }>`
   transition: max-width 0.3s ease-in-out, width 0.3s ease-in-out; /* Smooth transition */
 `;
 
+
+
 interface ModalProps {
   children: ReactNode;
   onClose: () => void;
@@ -74,7 +76,6 @@ const CloseButton = styled.button`
     color: #333;
   }
 `;
-
 const Modal: React.FC<ModalProps> = ({ children, onClose, title, top, left, transform, dynamicWidth }) => {
   return (
     <ModalOverlay onClick={onClose} style={{ top, left, transform }}>

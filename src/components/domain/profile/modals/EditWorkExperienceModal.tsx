@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
+import { FaTimes } from 'react-icons/fa';
 
 registerLocale('ko', ko);
 
@@ -24,6 +25,20 @@ const ExperienceItemContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.small};
+  position: relative; /* Added for absolute positioning of delete icon */
+`;
+
+const DeleteIcon = styled.span`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.small};
+  right: ${({ theme }) => theme.spacing.small};
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 20px;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.error};
+  }
 `;
 
 const Input = styled.input`
@@ -169,7 +184,7 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
             value={exp.description}
             onChange={(e) => handleInputChange(index, 'description', e.target.value)}
           />
-          <Button className="danger" onClick={() => handleDeleteExperience(exp.id)}>삭제</Button>
+          <DeleteIcon onClick={() => handleDeleteExperience(exp.id)}><FaTimes /></DeleteIcon>
         </ExperienceItemContainer>
       ))}
       <Button className="secondary" onClick={handleAddExperience}>경력 추가</Button>
