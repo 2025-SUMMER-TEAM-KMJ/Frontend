@@ -102,11 +102,11 @@ const Button = styled.button`
 `;
 
 export default function EditEducationModal({ profile, onSave, onClose }: Props) {
-  const [education, setEducation] = useState<Education[]>(profile.education);
+  const [education, setEducation] = useState<Education[]>(profile.educations);
 
   useEffect(() => {
-    setEducation(profile.education);
-  }, [profile.education]);
+    setEducation(profile.educations);
+  }, [profile.educations]);
 
   const handleInputChange = (index: number, field: keyof Education, value: string) => {
     const newEducation = [...education];
