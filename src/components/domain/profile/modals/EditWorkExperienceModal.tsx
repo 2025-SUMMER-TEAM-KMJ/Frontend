@@ -115,6 +115,13 @@ const Button = styled.button`
   }
 `;
 
+const CenteredButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
 export default function EditWorkExperienceModal({ profile, onSave, onClose }: Props) {
   const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(profile.work_experience);
 
@@ -187,7 +194,9 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
           <DeleteIcon onClick={() => handleDeleteExperience(exp.id)}><FaTimes /></DeleteIcon>
         </ExperienceItemContainer>
       ))}
-      <Button className="secondary" onClick={handleAddExperience}>경력 추가</Button>
+      <CenteredButtonContainer>
+        <Button className="secondary" onClick={handleAddExperience}>경력 추가</Button>
+      </CenteredButtonContainer>
       <ButtonContainer>
         <Button className="primary" onClick={handleSave}>저장</Button>
       </ButtonContainer>

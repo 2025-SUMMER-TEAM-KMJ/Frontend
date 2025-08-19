@@ -1,15 +1,15 @@
 'use client';
 
+import { default as CommonButton } from '@/components/common/Button';
+import CommonInput from '@/components/common/Input'; // Renamed to avoid conflict
 import Modal from '@/components/common/Modal';
 import { ProjectExperience } from '@/types/profile';
 import { ko } from 'date-fns/locale';
-import { useForm, useFieldArray } from 'react-hook-form'; // Added useForm, useFieldArray
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useFieldArray, useForm } from 'react-hook-form'; // Added useForm, useFieldArray
+import { FaTimes } from 'react-icons/fa'; // Added for icons
 import styled from 'styled-components';
-import CommonInput from '@/components/common/Input'; // Renamed to avoid conflict
-import CommonButton from '@/components/common/Button'; // Renamed to avoid conflict
-import { FaTimes, FaPlus } from 'react-icons/fa'; // Added for icons
 
 registerLocale('ko', ko);
 
@@ -109,6 +109,29 @@ const CenteredButtonContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.medium};
 `;
 
+const Button = styled.button`
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+
+  &.primary {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: white;
+  }
+
+  &.secondary {
+    background-color: ${({ theme }) => theme.colors.lightGray};
+    color: ${({ theme }) => theme.colors.text};
+  }
+
+  &.danger {
+    background-color: ${({ theme }) => theme.colors.error};
+    color: white;
+  }
+`;
+
 interface EditProjectExperienceFormData {
   projectExperiences: ProjectExperience[];
 }
@@ -203,13 +226,7 @@ export default function EditProjectExperienceModal({ profile, onSave, onClose }:
           </ProjectItemContainer>
         ))}
         <CenteredButtonContainer>
-          <AddProjectButton
-            className="secondary"
-            type="button"
-            onClick={handleAddProject}
-          >
-            프로젝트 추가
-          </AddProjectButton>
+          <Button className="secondary" type="button" onClick={handleAddProject}>프로젝트 추가</Button>
         </CenteredButtonContainer>
         <ButtonContainer>
           <CommonButton // Use common Button
