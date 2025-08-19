@@ -54,7 +54,10 @@ const StyledDatePicker = styled(DatePicker)`
 `;
 
 const AddButtonWrapper = styled.div`
+  display: flex; /* Added for centering */
+  justify-content: center; /* Added for centering */
   margin-top: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.medium}; /* Added for consistency */
 `;
 
 const Label = styled.label`

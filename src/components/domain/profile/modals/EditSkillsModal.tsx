@@ -78,11 +78,11 @@ const Button = styled.button`
 `;
 
 export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
-  const [skills, setSkills] = useState<Skill[]>(profile.skills);
+  const [skills, setSkills] = useState<Skill[]>(profile.skills || []); // Provide default empty array
   const [newSkill, setNewSkill] = useState('');
 
   useEffect(() => {
-    setSkills(profile.skills);
+    setSkills(profile.skills || []); // Provide default empty array
   }, [profile.skills]);
 
   const handleAddSkill = () => {

@@ -117,6 +117,13 @@ const Button = styled.button`
   }
 `;
 
+const CenteredButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
 export default function EditEducationModal({ profile, onSave, onClose }: Props) {
   const [education, setEducation] = useState<Education[]>(profile.educations);
 
@@ -184,7 +191,9 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
           <DeleteIcon onClick={() => handleDeleteEducation(edu.id)}><FaTimes /></DeleteIcon>
         </EducationItemContainer>
       ))}
-      <Button className="secondary" onClick={handleAddEducation}>학력 추가</Button>
+      <CenteredButtonContainer>
+        <Button className="secondary" onClick={handleAddEducation}>학력 추가</Button>
+      </CenteredButtonContainer>
       <ButtonContainer>
         <Button className="primary" onClick={handleSave}>저장</Button>
       </ButtonContainer>
