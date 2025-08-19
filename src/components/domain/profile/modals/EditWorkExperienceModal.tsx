@@ -101,11 +101,11 @@ const Button = styled.button`
 `;
 
 export default function EditWorkExperienceModal({ profile, onSave, onClose }: Props) {
-  const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(profile.workExperience);
+  const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(profile.work_experience);
 
   useEffect(() => {
-    setWorkExperiences(profile.workExperience);
-  }, [profile.workExperience]);
+    setWorkExperiences(profile.work_experience);
+  }, [profile.work_experience]);
 
   const handleInputChange = (index: number, field: keyof WorkExperience, value: string) => {
     const newExperiences = [...workExperiences];
