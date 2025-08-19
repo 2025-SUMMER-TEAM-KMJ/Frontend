@@ -8,6 +8,8 @@ import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 
+import { FaTimes } from 'react-icons/fa';
+
 registerLocale('ko', ko);
 
 const Title = styled.h2`
@@ -24,6 +26,20 @@ const EducationItemContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.small};
+  position: relative; /* Added for absolute positioning of delete icon */
+`;
+
+const DeleteIcon = styled.span`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.small};
+  right: ${({ theme }) => theme.spacing.small};
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 20px;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.error};
+  }
 `;
 
 const Input = styled.input`
@@ -165,7 +181,7 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
               />
             </div>
           </DateRangeContainer>
-          <Button className="danger" onClick={() => handleDeleteEducation(edu.id)}>삭제</Button>
+          <DeleteIcon onClick={() => handleDeleteEducation(edu.id)}><FaTimes /></DeleteIcon>
         </EducationItemContainer>
       ))}
       <Button className="secondary" onClick={handleAddEducation}>학력 추가</Button>
