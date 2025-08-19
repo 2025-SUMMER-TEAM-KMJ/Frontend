@@ -26,9 +26,9 @@ export const getBookmarkedJobPostings = async (offset: number, limit: number): P
 };
 
 export const addBookmark = async (jobId: string): Promise<void> => {
-  await fetchWithAuth(`/job-postings/${jobId}/bookmark`, { method: 'POST' });
+  await fetchWithAuth(`/job-postings/bookmark/${jobId}`, { method: 'POST' });
 };
 
 export const removeBookmark = async (jobId: string): Promise<void> => {
-  await fetchWithAuth(`/job-postings/${jobId}/bookmark`, { method: 'DELETE' });
+  await fetchWithAuth(`/job-postings/bookmark/${jobId}`, { method: 'DELETE' });
 };
