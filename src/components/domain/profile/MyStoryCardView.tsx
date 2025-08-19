@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { schemas__user__QnA as MyStory, UserResponse } from '@/types/api';
-import { getProfile, updateProfile } from '@/lib/api/profile';
+import { FaPlus } from 'react-icons/fa';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
@@ -27,6 +26,26 @@ const Card = styled.div`
   &:hover {
     transform: translateY(-5px);
   }
+`;
+
+const AddCard = styled(Card)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: bold;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const AddIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
 `;
 
 const TagDisplay = styled.div`
@@ -99,6 +118,7 @@ const tagOptions = [
 export default function MyStoryCardView({ profile }: { profile: UserResponse }) {
   const [stories, setStories] = useState<MyStory[]>([]);
   const [selectedCard, setSelectedCard] = useState<MyStory | null>(null);
+  const [isAddingNewStory, setIsAddingNewStory] = useState(false);
 
   useEffect(() => {
     if (profile && profile.qnas) {
@@ -116,6 +136,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
 
   const handleCloseModal = () => {
     setSelectedCard(null);
+    setIsAddingNewStory(false);
   };
 
   const handleSave = async () => {
@@ -133,22 +154,52 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
     }
   };
 
+  const handleAddNewStory = () => {
+    setIsAddingNewStory(true);
+    setSelectedCard({
+      id: '', // Temporary ID, will be replaced by backend
+      title: '새로운 이야기',
+      content: '',
+      category: '자기소개',
+      created_at: '',
+      updated_at: '',
+    });
+  };
+
+  const handleCreateStory = async () => {
+    if (!selectedCard || !profile) return;
+
+    try {
+      // Assuming there's an API to add a new QnA/MyStory
+      // For now, we'll just add it to the local state and then update the profile
+      const newStory = { ...selectedCard, id: `temp-${Date.now()}` }; // Mock ID
+      const updatedQnas = [...profile.qnas, newStory];
+      await updateProfile({ qnas: updatedQnas });
+
+      setStories(updatedQnas);
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to create story', error);
+      alert('새로운 이야기 생성에 실패했습니다.');
+    }
+  };
+
   return (
     <>
-      {stories.length > 0 ? (
-        <CardGrid>
-          {stories.map((story, index) => (
-            <Card key={index} onClick={() => handleCardClick(story)}>
-              <TagDisplay>{story.category}</TagDisplay>
-              <CardTitle>{story.title}</CardTitle>
-            </Card>
-          ))}
-        </CardGrid>
-      ) : (
-        <NoDataMessage>아직 나의 이야기가 없습니다.</NoDataMessage>
-      )}
+      <CardGrid>
+        {stories.map((story, index) => (
+          <Card key={index} onClick={() => handleCardClick(story)}>
+            <TagDisplay>{story.category}</TagDisplay>
+            <CardTitle>{story.title}</CardTitle>
+          </Card>
+        ))}
+        <AddCard onClick={handleAddNewStory}>
+          <AddIcon><FaPlus /></AddIcon>
+          새로운 이야기 추가
+        </AddCard>
+      </CardGrid>
 
-      {selectedCard && (
+      {(selectedCard && !isAddingNewStory) && (
         <Modal onClose={handleCloseModal} title="나의 이야기 수정">
           <ModalContentWrapper>
             <div>
@@ -176,6 +227,40 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
             <ButtonContainer>
               <Button onClick={handleSave}>
                 저장
+              </Button>
+            </ButtonContainer>
+          </ModalContentWrapper>
+        </Modal>
+      )}
+
+      {isAddingNewStory && selectedCard && (
+        <Modal onClose={handleCloseModal} title="새로운 이야기 추가">
+          <ModalContentWrapper>
+            <div>
+              <Label>제목</Label>
+              <StyledBorderlessTextarea
+                value={selectedCard.title}
+                rows={2}
+                onChange={(e) => setSelectedCard(prev => prev ? { ...prev, title: e.target.value } : null)}
+              />
+            </div>
+            <div>
+              <Label>내용</Label>
+              <StyledBorderlessTextarea
+                value={selectedCard.content || ''}
+                rows={10}
+                onChange={(e) => setSelectedCard(prev => prev ? { ...prev, content: e.target.value } : null)}
+              />
+            </div>
+            <Dropdown
+              label="태그 선택"
+              options={tagOptions}
+              value={selectedCard.category || ''}
+              onChange={(e) => handleTagChange(e.target.value)}
+            />
+            <ButtonContainer>
+              <Button onClick={handleCreateStory}>
+                생성
               </Button>
             </ButtonContainer>
           </ModalContentWrapper>
