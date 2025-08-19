@@ -131,7 +131,12 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
   };
 
   return (
-    <CardWrapper>
+    <CardWrapper onClick={(e) => {
+      e.stopPropagation(); // Prevent event bubbling from inner buttons
+      if (job.externalUrl) {
+        window.open(job.externalUrl, '_blank');
+      }
+    }}>
       <ImageContainer>
         <JobImage src={job.title_images?.[0]} alt="Job Post Image" />
         {job.metadata.source && <SourceTopLeft>{job.metadata.source}</SourceTopLeft>}
