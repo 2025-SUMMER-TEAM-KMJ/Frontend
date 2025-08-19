@@ -5,6 +5,8 @@ import { JobPosting } from '@/types';
 import { useState, useEffect } from 'react';
 import { FaRegEdit, FaStar, FaRegStar, FaListAlt } from 'react-icons/fa';
 import Tag from '@/components/common/Tag';
+import { formatDistanceToNowStrict } from 'date-fns'; // Added import
+import { ko } from 'date-fns/locale'; // Added import for Korean locale
 
 const CardWrapper = styled.div`
   padding: 0;
@@ -130,6 +132,33 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
     onToggleInterest(job);
   };
 
+  const calculateDDay = (dueDate: string | null | undefined): string => { // Return type changed to string
+    if (!dueDate) return '상시'; // Return '상시' if no due date
+    try {
+      const targetDate = new Date(dueDate);
+      const now = new Date();
+      if (isNaN(targetDate.getTime())) {
+        return '상시'; // Return '상시' for invalid date as well
+      }
+
+      const diff = targetDate.getTime() - now.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+      if (days < 0) {
+        return '마감';
+      } else if (days === 0) {
+        return 'D-day';
+      } else {
+        return `D-${days}`;
+      }
+    } catch (error) {
+      console.error("Error calculating D-day:", error);
+      return null;
+    }
+  };
+
+  const dDay = calculateDDay(job.due_time); // Calculate D-day
+
   return (
     <CardWrapper onClick={(e) => {
       e.stopPropagation(); // Prevent event bubbling from inner buttons
@@ -140,6 +169,7 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
       <ImageContainer>
         <JobImage src={job.title_images?.[0]} alt="Job Post Image" />
         {job.metadata.source && <SourceTopLeft>{job.metadata.source}</SourceTopLeft>}
+        {dDay && <DueDateTopRight>{dDay}</DueDateTopRight>} {/* Display D-day */}
       </ImageContainer>
       <TextAndButtonContainer>
         <ContentWrapper>

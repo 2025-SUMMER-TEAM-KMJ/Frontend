@@ -146,6 +146,10 @@ export interface JobPostingResponse {
   company: JobPostingCompany;
   detail: JobPostingDetail;
   /**
+   * @format date-time
+   */
+  due_time?: string | null; // Added due_time field
+  /**
    * @format uri
    * @minLength 1
    * @maxLength 2083
