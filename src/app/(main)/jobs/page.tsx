@@ -1,7 +1,7 @@
 'use client';
 
 import JobPostList from '@/components/domain/jobs/JobPostList';
-import Pagination from '@/components/domain/jobs/Pagination';
+import Pagination from '@/components/domain/jobs/Pagination'; // Added Pagination import
 import SearchBar from '@/components/domain/main/SearchBar';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,7 +9,7 @@ import { getJobPostings, addBookmark, removeBookmark, getBookmarkedJobPostings }
 import { createCoverLetter } from '@/lib/api/resumes';
 import { JobPosting, JobFilters, SortOption } from '@/types';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react'; // Removed useRef
 import styled from 'styled-components';
 
 const JobsPageContainer = styled.div`
@@ -49,17 +49,22 @@ function JobsPageContent() {
   const [sort, setSort] = useState<SortOption>('latest');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
+  const [currentPage, setCurrentPage] = useState(1); // Added currentPage state
+  const [totalPages, setTotalPages] = useState(1); // Added totalPages state
 
-  const fetchInitialData = useCallback(async () => {
+  const fetchInitialData = useCallback(async (page: number) => {
     setIsLoading(true);
-    const jobsData = await getJobPostings(searchTerm, 0, 20);
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const jobsData = await getJobPostings(searchTerm, offset, limit);
     setJobs(jobsData.items);
+    setTotalPages(Math.ceil(jobsData.total / limit)); // Update totalPages
     setIsLoading(false);
   }, [searchTerm]);
 
   useEffect(() => {
-    fetchInitialData();
-  }, [fetchInitialData]);
+    fetchInitialData(currentPage);
+  }, [fetchInitialData, currentPage]);
 
   const handleFilterChange = (name: keyof JobFilters, value: string) => {
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -72,6 +77,11 @@ function JobsPageContent() {
       return;
     }
     setSearchTerm(term);
+    setCurrentPage(1); // Reset to first page on new search
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const handleToggleInterest = async (job: JobPosting) => {
@@ -125,12 +135,16 @@ function JobsPageContent() {
         <Loading>채용 공고를 불러오는 중...</Loading>
       ) : (
         <>
-          <JobPostList 
-            jobs={jobs} 
+          <JobPostList
+            jobs={jobs}
             onToggleInterest={handleToggleInterest}
             onCreateResume={handleCreateResume}
           />
-          <Pagination />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </>
       )}
 

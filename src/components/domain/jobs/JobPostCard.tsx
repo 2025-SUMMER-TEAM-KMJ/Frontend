@@ -91,8 +91,9 @@ const SourceTopLeft = styled(OverlayTag)`
   left: ${({ theme }) => theme.spacing.medium};
 `;
 
-const DueDateTopRight = styled(OverlayTag)`
+const DueDateTopRight = styled(OverlayTag)<{ $isUrgent?: boolean }>`
   right: ${({ theme }) => theme.spacing.medium};
+  background-color: ${({ theme, $isUrgent }) => $isUrgent ? theme.colors.danger : 'black'}; /* Change background based on urgency */
 `;
 
 const ButtonGroup = styled.div`
@@ -132,28 +133,30 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
     onToggleInterest(job);
   };
 
-  const calculateDDay = (dueDate: string | null | undefined): string => { // Return type changed to string
-    if (!dueDate) return '상시'; // Return '상시' if no due date
+  const calculateDDay = (dueDate: string | null | undefined): { text: string, isUrgent: boolean } => {
+    if (!dueDate) return { text: '상시', isUrgent: false };
     try {
       const targetDate = new Date(dueDate);
       const now = new Date();
       if (isNaN(targetDate.getTime())) {
-        return '상시'; // Return '상시' for invalid date as well
+        return { text: '상시', isUrgent: false };
       }
 
       const diff = targetDate.getTime() - now.getTime();
       const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
+      const isUrgent = days > 0 && days <= 7; // Urgent if 1 to 7 days left
+
       if (days < 0) {
-        return '마감';
+        return { text: '마감', isUrgent: false };
       } else if (days === 0) {
-        return 'D-day';
+        return { text: 'D-day', isUrgent: true }; // D-day is urgent
       } else {
-        return `D-${days}`;
+        return { text: `D-${days}`, isUrgent: isUrgent };
       }
     } catch (error) {
       console.error("Error calculating D-day:", error);
-      return null;
+      return { text: '상시', isUrgent: false }; // Fallback for error
     }
   };
 
@@ -169,7 +172,7 @@ export default function JobPostCard({ job, isInterested, onToggleInterest, onCre
       <ImageContainer>
         <JobImage src={job.title_images?.[0]} alt="Job Post Image" />
         {job.metadata.source && <SourceTopLeft>{job.metadata.source}</SourceTopLeft>}
-        {dDay && <DueDateTopRight>{dDay}</DueDateTopRight>} {/* Display D-day */}
+        {dDay && <DueDateTopRight $isUrgent={dDay.isUrgent}>{dDay.text}</DueDateTopRight>} {/* Display D-day with urgency */}
       </ImageContainer>
       <TextAndButtonContainer>
         <ContentWrapper>
