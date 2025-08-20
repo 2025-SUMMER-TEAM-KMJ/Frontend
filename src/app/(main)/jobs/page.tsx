@@ -1,15 +1,15 @@
 'use client';
 
 import JobPostList from '@/components/domain/jobs/JobPostList';
-import Pagination from '@/components/domain/jobs/Pagination'; // Added Pagination import
+import Pagination from '@/components/domain/jobs/Pagination';
 import SearchBar from '@/components/domain/main/SearchBar';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { useAuth } from '@/hooks/useAuth';
-import { getJobPostings, addBookmark, removeBookmark, getBookmarkedJobPostings } from '@/lib/api/jobs';
+import { getJobPostings, addBookmark, removeBookmark } from '@/lib/api/jobs';
 import { createCoverLetter } from '@/lib/api/resumes';
 import { JobPosting, JobFilters, SortOption } from '@/types';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react'; // Removed useRef
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const JobsPageContainer = styled.div`
@@ -43,14 +43,15 @@ const Loading = styled.p`
 function JobsPageContent() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<JobPosting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<JobFilters>({ location: '전체', category: '전체', job: '전체' });
   const [sort, setSort] = useState<SortOption>('latest');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); // Added currentPage state
-  const [totalPages, setTotalPages] = useState(1); // Added totalPages state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchInitialData = useCallback(async (page: number) => {
     setIsLoading(true);
@@ -58,7 +59,7 @@ function JobsPageContent() {
     const offset = (page - 1) * limit;
     const jobsData = await getJobPostings(searchTerm, offset, limit);
     setJobs(jobsData.items);
-    setTotalPages(Math.ceil(jobsData.total / limit)); // Update totalPages
+    setTotalPages(Math.ceil(jobsData.total / limit));
     setIsLoading(false);
   }, [searchTerm]);
 
@@ -72,12 +73,9 @@ function JobsPageContent() {
 
   const handleSortChange = (value: SortOption) => setSort(value);
   const handleSearch = (term: string) => {
-    if (!isLoggedIn) {
-      router.push('/login');
-      return;
-    }
     setSearchTerm(term);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1);
+    router.push(`/jobs?q=${term}`);
   };
 
   const handlePageChange = (page: number) => {
@@ -96,7 +94,6 @@ function JobsPageContent() {
       } else {
         await addBookmark(job.id);
       }
-      // Update the job's bookmarked status in the state
       setJobs(prevJobs => prevJobs.map(j => 
         j.id === job.id ? { ...j, bookmarked: !j.bookmarked } : j
       ));
@@ -127,7 +124,7 @@ function JobsPageContent() {
       <PageHeader>
         <Title>채용 공고</Title>
         <SearchBarContainer>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={handleSearch} initialTerm={searchTerm} />
         </SearchBarContainer>
       </PageHeader>
 
@@ -160,6 +157,8 @@ function JobsPageContent() {
 
 export default function JobsPage() {
   return (
-    <JobsPageContent />
+    <Suspense fallback={<Loading>Loading...</Loading>}>
+      <JobsPageContent />
+    </Suspense>
   );
 }

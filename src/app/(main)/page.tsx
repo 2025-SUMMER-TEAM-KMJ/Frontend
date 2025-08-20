@@ -2,6 +2,7 @@
 
 import HeroSection from '@/components/domain/main/HeroSection';
 import SearchBar from '@/components/domain/main/SearchBar';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
 const HomePageContainer = styled.div`
@@ -18,16 +19,18 @@ const SearchBarContainer = styled.div`
   margin: 0;
 `;
 
-const handleSearch = (term: string) => {
+export default function HomePage() {
+  const router = useRouter();
 
+  const handleSearch = (term: string) => {
+    router.push(`/jobs?q=${term}`);
   };
 
-export default function HomePage() {
   return (
     <HomePageContainer>
       <HeroSection />
       <SearchBarContainer>
-                <SearchBar onSearch={handleSearch} />
+        <SearchBar onSearch={handleSearch} />
       </SearchBarContainer>
     </HomePageContainer>
   );

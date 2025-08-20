@@ -1,7 +1,7 @@
 'use client';
 
 import Button from '@/components/common/Button';
-import React from 'react';
+import React, { useEffect } from 'react';
 // import Input from '@/components/common/Input'; // Input 임포트 제거
 import styled from 'styled-components';
 
@@ -33,10 +33,15 @@ const StyledInput = styled.input`
 
 interface SearchBarProps {
   onSearch?: (term: string) => void;
+  initialTerm?: string;
 }
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
-  const [term, setTerm] = React.useState('');
+export default function SearchBar({ onSearch, initialTerm = '' }: SearchBarProps) {
+  const [term, setTerm] = React.useState(initialTerm);
+
+  useEffect(() => {
+    setTerm(initialTerm);
+  }, [initialTerm]);
 
   const handleSearch = () => {
     if (onSearch) {

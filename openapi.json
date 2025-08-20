@@ -200,20 +200,73 @@
         ]
       }
     },
-    "/auth/login": {
+    "/users/qnas": {
       "post": {
         "tags": [
-          "auth"
+          "users"
         ],
-        "summary": "Login Endpoint",
-        "operationId": "login_endpoint_auth_login_post",
+        "summary": "QnA 항목 추가",
+        "operationId": "add_qna_users_qnas_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/schemas__user__QnACreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/users/qnas/{qna_id}": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "QnA 항목 수정",
+        "operationId": "update_qna_users_qnas__qna_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
-            "name": "request",
-            "in": "query",
+            "name": "qna_id",
+            "in": "path",
             "required": true,
             "schema": {
-              "title": "Request"
+              "type": "string",
+              "format": "uuid",
+              "title": "Qna Id"
             }
           }
         ],
@@ -222,10 +275,97 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/schemas__user__QnAUpdate"
               }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "QnA 항목 삭제",
+        "operationId": "delete_qna_users_qnas__qna_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "qna_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Qna Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login Endpoint",
+        "operationId": "login_endpoint_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -259,14 +399,6 @@
         "summary": "Reissue Endpoint",
         "operationId": "reissue_endpoint_auth_reissue_post",
         "parameters": [
-          {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "title": "Request"
-            }
-          },
           {
             "name": "refresh_token",
             "in": "cookie",
@@ -317,14 +449,6 @@
         "operationId": "logout_endpoint_auth_logout_post",
         "parameters": [
           {
-            "name": "request",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "title": "Request"
-            }
-          },
-          {
             "name": "refresh_token",
             "in": "cookie",
             "required": false,
@@ -348,53 +472,6 @@
               "application/json": {
                 "schema": {
 
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/job-postings/{job_id}": {
-      "get": {
-        "tags": [
-          "jobs"
-        ],
-        "summary": "채용 공고 목록 조회 (로그인 하지 않아도 확인 가능)",
-        "operationId": "get_job_job_postings__job_id__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "job_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobPostingResponse"
                 }
               }
             }
@@ -564,102 +641,6 @@
         }
       }
     },
-    "/job-postings/{job_id}/bookmark": {
-      "post": {
-        "tags": [
-          "jobs"
-        ],
-        "summary": "해당 공고를 북마크 (로그인 필요)",
-        "operationId": "add_bookmark_job_postings__job_id__bookmark_post",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "job_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Add Bookmark Job Postings  Job Id  Bookmark Post"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "jobs"
-        ],
-        "summary": "해당 공고의 북마크 해제 (로그인 필요)",
-        "operationId": "remove_bookmark_job_postings__job_id__bookmark_delete",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "job_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Remove Bookmark Job Postings  Job Id  Bookmark Delete"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/job-postings/bookmarks": {
       "get": {
         "tags": [
@@ -708,6 +689,149 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/JobPostingListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/job-postings/{job_id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "채용 공고 목록 조회 (로그인 하지 않아도 확인 가능)",
+        "operationId": "get_job_job_postings__job_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobPostingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/job-postings/bookmark/{job_id}": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "해당 공고를 북마크 (로그인 필요)",
+        "operationId": "add_bookmark_job_postings_bookmark__job_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Add Bookmark Job Postings Bookmark  Job Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "해당 공고의 북마크 해제 (로그인 필요)",
+        "operationId": "remove_bookmark_job_postings_bookmark__job_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Remove Bookmark Job Postings Bookmark  Job Id  Delete"
                 }
               }
             }
@@ -1041,7 +1165,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/QnACreate"
+                "$ref": "#/components/schemas/schemas__cover_letter__QnACreate"
               }
             }
           }
@@ -1108,7 +1232,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/QnAUpdate"
+                "$ref": "#/components/schemas/schemas__cover_letter__QnAUpdate"
               }
             }
           }
@@ -1810,6 +1934,18 @@
           "detail": {
             "$ref": "#/components/schemas/JobPostingDetail"
           },
+          "due_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Time"
+          },
           "externalUrl": {
             "anyOf": [
               {
@@ -1930,66 +2066,6 @@
           "job_group"
         ],
         "title": "PreferredPosition"
-      },
-      "QnACreate": {
-        "properties": {
-          "question": {
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Question",
-            "description": "자기소개서 문항 질문"
-          },
-          "answer": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Answer"
-          }
-        },
-        "type": "object",
-        "required": [
-          "question"
-        ],
-        "title": "QnACreate",
-        "description": "자기소개서 개별 항목 생성 -\u003E AI로 생성 진행"
-      },
-      "QnAUpdate": {
-        "properties": {
-          "question": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Question"
-          },
-          "answer": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Answer"
-          }
-        },
-        "type": "object",
-        "required": [
-          "question"
-        ],
-        "title": "QnAUpdate",
-        "description": "자기소개서 개별 항목 수정 -\u003E 유저가 수정"
       },
       "SignUpRequest": {
         "properties": {
@@ -2468,7 +2544,117 @@
         ],
         "title": "QnA"
       },
+      "schemas__cover_letter__QnACreate": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Question",
+            "description": "자기소개서 문항 질문"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "QnACreate",
+        "description": "자기소개서 개별 항목 생성 -\u003E AI로 생성 진행"
+      },
+      "schemas__cover_letter__QnAUpdate": {
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "QnAUpdate",
+        "description": "자기소개서 개별 항목 수정 -\u003E 유저가 수정"
+      },
       "schemas__user__QnA": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "QnA"
+      },
+      "schemas__user__QnACreate": {
         "properties": {
           "title": {
             "type": "string",
@@ -2501,7 +2687,46 @@
         "required": [
           "title"
         ],
-        "title": "QnA"
+        "title": "QnACreate"
+      },
+      "schemas__user__QnAUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          }
+        },
+        "type": "object",
+        "title": "QnAUpdate"
       }
     },
     "securitySchemes": {
