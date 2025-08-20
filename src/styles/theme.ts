@@ -22,6 +22,11 @@ export const theme = {
   fonts: {
     main: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
   },
+  fontSizes: {
+    small: '14px',
+    medium: '16px',
+    large: '20px',
+  },
   breakpoints: {
     mobile: '480px',
     tablet: '768px',

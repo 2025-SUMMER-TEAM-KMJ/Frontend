@@ -7,6 +7,7 @@ import { JobPosting, Resume } from '@/types';
 import { getCoverLetters, createCoverLetter } from '@/lib/api/resumes';
 import ResumeCard from './ResumeCard';
 import Button from '@/components/common/Button';
+import GenerateResumeModal from './GenerateResumeModal'; // Import the new modal
 
 const ModalBackdrop = styled.div`
   position: fixed;
@@ -83,6 +84,7 @@ interface Props {
 export default function InterestedJobResumesModal({ job, onClose }: Props) {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showGenerateResumeModal, setShowGenerateResumeModal] = useState(false); // State for the new modal
   const router = useRouter();
 
   useEffect(() => {
@@ -95,40 +97,55 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
     fetchResumes();
   }, [job.id]);
 
-  const handleCreateResume = async () => {
+  const handleOpenGenerateResumeModal = () => {
+    setShowGenerateResumeModal(true);
+  };
+
+  const handleGenerateResumeSubmit = async (title: string, questions: string) => {
     try {
-      const newResume = await createCoverLetter({ title: `${job.company.name} ${job.detail.position?.job?.[0] || '지원'}`, type: 'job_posting', job_posting_id: job.id });
+      const qnas = questions.split('\n').filter(q => q.trim() !== '').map(q => ({ question: q.trim(), answer: '' }));
+      const newResume = await createCoverLetter({ title, type: 'job_posting', job_posting_id: job.id, qnas });
       router.push(`/resumes/job-based/${newResume.id}`);
-      onClose(); // 모달 닫기
+      onClose(); // Close the parent modal
     } catch (error) {
       alert(error instanceof Error ? error.message : '자소서 생성 실패');
     }
+    setShowGenerateResumeModal(false); // Close the generate resume modal
   };
 
   return (
     <ModalBackdrop onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <Title>`${job.detail.position?.job?.[0] || job.company.name}` 기반 자소서 목록</Title>
-          <CloseButton onClick={onClose}>×</CloseButton>
-        </ModalHeader>
-        <ContentContainer>
-          {isLoading ? (
-            <p>로딩 중...</p>
-          ) : resumes.length > 0 ? (
-            <ResumeList>
-              {resumes.map(resume => (
-                <ResumeCard key={resume.id} resume={resume} />
-              ))}
-            </ResumeList>
-          ) : (
-            <EmptyContainer>
-              <EmptyMessage>해당 공고로 작성된 자소서가 없습니다.</EmptyMessage>
-              <Button onClick={handleCreateResume}>이 공고로 자소서 생성하기</Button>
-            </EmptyContainer>
-          )}
-        </ContentContainer>
-      </ModalContent>
+      <>
+        <ModalContent onClick={(e) => e.stopPropagation()}>
+          <ModalHeader>
+            <Title>`${job.detail.position?.job?.[0] || job.company.name}` 기반 자소서 목록</Title>
+            <CloseButton onClick={onClose}>×</CloseButton>
+          </ModalHeader>
+          <ContentContainer>
+            {isLoading ? (
+              <p>로딩 중...</p>
+            ) : resumes.length > 0 ? (
+              <ResumeList>
+                {resumes.map(resume => (
+                  <ResumeCard key={resume.id} resume={resume} />
+                ))}
+              </ResumeList>
+            ) : (
+              <EmptyContainer>
+                <EmptyMessage>해당 공고로 작성된 자소서가 없습니다.</EmptyMessage>
+                <Button onClick={handleOpenGenerateResumeModal}>이 공고로 자소서 생성하기</Button>
+              </EmptyContainer>
+            )}
+          </ContentContainer>
+        </ModalContent>
+        {showGenerateResumeModal && (
+          <GenerateResumeModal
+            job={job}
+            onClose={() => setShowGenerateResumeModal(false)}
+            onSubmit={handleGenerateResumeSubmit}
+          />
+        )}
+      </>
     </ModalBackdrop>
   );
 }
