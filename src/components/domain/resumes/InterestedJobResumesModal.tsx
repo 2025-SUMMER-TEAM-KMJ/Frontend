@@ -40,6 +40,13 @@ const ModalHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.large};
 `;
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
 const Title = styled.h2`
   font-size: 24px;
   font-weight: bold;
@@ -59,7 +66,7 @@ const ContentContainer = styled.div`
 
 const ResumeList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: 1fr;
   gap: ${({ theme }) => theme.spacing.large};
 `;
 
@@ -119,8 +126,11 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
         <ModalContent onClick={(e) => e.stopPropagation()}>
           <ModalHeader>
             <Title>`${job.detail.position?.job?.[0] || job.company.name}` 기반 자소서 목록</Title>
-            <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton onClick={onClose}>×</CloseButton>
           </ModalHeader>
+          <ButtonWrapper>
+            <Button onClick={handleOpenGenerateResumeModal}>이 공고로 자소서 생성하기</Button>
+          </ButtonWrapper>
           <ContentContainer>
             {isLoading ? (
               <p>로딩 중...</p>
@@ -133,7 +143,6 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
             ) : (
               <EmptyContainer>
                 <EmptyMessage>해당 공고로 작성된 자소서가 없습니다.</EmptyMessage>
-                <Button onClick={handleOpenGenerateResumeModal}>이 공고로 자소서 생성하기</Button>
               </EmptyContainer>
             )}
           </ContentContainer>

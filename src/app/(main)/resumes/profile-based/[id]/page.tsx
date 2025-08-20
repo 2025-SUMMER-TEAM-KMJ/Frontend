@@ -10,15 +10,6 @@ import { Profile, QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-// Mock Data for profile-based improve skills
-const mockImproveSkills = [
-  { id: '6', name: 'KBS' },
-  { id: '7', name: 'MBN' },
-  { id: '8', name: '프로젝트 관리' },
-  { id: '9', name: '고객 데이터 분석' },
-  { id: '10', name: '커뮤니케이션' },
-];
-
 const AnalysisPageContainer = styled.div`
   width: 100%;
   max-width: 900px;
@@ -111,12 +102,12 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
           sections={[
             {
               subtitle: "프로필에서 강조된 나의 핵심 역량입니다.",
-              competencies: profile.competencies.map(c => ({ id: c, name: c })),
+              competencies: resume.strength.map(s => ({ id: s, name: s })),
               tagColor: "#eaf2ff", // Actual color value
             },
             {
               subtitle: "프로필에 충분히 드러나지 않은 역량입니다.",
-              competencies: mockImproveSkills,
+              competencies: resume.weakness.map(w => ({ id: w, name: w })),
               tagColor: "lightGray", // Actual color value (from theme)
             },
           ]}

@@ -3,28 +3,11 @@
 import AuthGuard from '@/components/auth/AuthGuard';
 import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
-import JobPostingInfoCard from '@/components/domain/resumes/JobPostingInfoCard';
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
-import { getCoverLetter, updateQnA, createQnA, deleteQnA } from '@/lib/api/resumes';
+import { createQnA, deleteQnA, getCoverLetter, updateQnA } from '@/lib/api/resumes';
 import { QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-// Mock Data for job-based skills
-const mockUsedSkills = [
-  { id: '1', name: 'SQL' },
-  { id: '2', name: 'MSSQL' },
-  { id: '3', name: '데이터 시각화' },
-  { id: '4', name: '문제 해결 능력' },
-  { id: '5', name: 'A/B 테스트' },
-];
-const mockImproveSkills = [
-  { id: '6', name: 'KBS' },
-  { id: '7', name: 'MBN' },
-  { id: '8', name: '프로젝트 관리' },
-  { id: '9', name: '고객 데이터 분석' },
-  { id: '10', name: '커뮤니케이션' },
-];
 
 const AnalysisPageContainer = styled.div`
   width: 100%;
@@ -116,12 +99,12 @@ function ResumeAnalysisPageContent({ params }: Props) {
           sections={[
             {
               subtitle: "자기소개서에서 강조된 나의 핵심 역량입니다.",
-              competencies: mockUsedSkills,
+              competencies: resume.strength.map(s => ({ id: s, name: s })),
               tagColor: "#eaf2ff", // Actual color value
             },
             {
               subtitle: "직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.",
-              competencies: mockImproveSkills,
+              competencies: resume.weakness.map(w => ({ id: w, name: w })),
               tagColor: "lightGray", // Actual color value (from theme)
             },
           ]}

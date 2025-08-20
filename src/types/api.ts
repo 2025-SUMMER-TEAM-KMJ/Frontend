@@ -44,6 +44,8 @@ export interface CoverLetterResponse {
   id: string;
   user_id: string;
   title: string;
+  strength: string[];
+  weakness: string[];
   type: "profile" | "job_posting";
   job_posting_id?: string | null;
   qnas: schemas__cover_letter__QnA[];
