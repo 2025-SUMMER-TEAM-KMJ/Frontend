@@ -1,6 +1,5 @@
 'use client';
 
-import Button from '@/components/common/Button';
 import { QnA } from '@/types';
 import styled from 'styled-components';
 import QnAItem from './QnAItem';
@@ -54,11 +53,6 @@ export default function ResumeQnA({ qnas, onAdd, onDelete, onEdit, isMultiple = 
       ) : (
         <NoContentMessage>아직 작성된 질문/답변이 없습니다.</NoContentMessage>
       )}
-      {
-        isMultiple ? <ButtonContainer>
-          <Button onClick={onAdd}>+ 질문/답변 추가</Button>
-        </ButtonContainer> : <></>
-      }
       
     </QnAContainer>
   );
