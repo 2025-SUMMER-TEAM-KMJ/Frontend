@@ -125,7 +125,7 @@ export default function InterestedJobResumesModal({ job, onClose }: Props) {
       <>
         <ModalContent onClick={(e) => e.stopPropagation()}>
           <ModalHeader>
-            <Title>`${job.detail.position?.job?.[0] || job.company.name}` 기반 자소서 목록</Title>
+            <Title>{job.company.name + ' 기반 자기소개서'}</Title>
           <CloseButton onClick={onClose}>×</CloseButton>
           </ModalHeader>
           <ButtonWrapper>
