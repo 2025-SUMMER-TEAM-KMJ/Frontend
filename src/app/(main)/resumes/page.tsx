@@ -51,7 +51,7 @@ const SectionHeaderWithButton = styled.div`
 
 const ItemGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: ${({ theme }) => theme.spacing.large};
 `;
 
