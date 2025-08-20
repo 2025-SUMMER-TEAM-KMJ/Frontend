@@ -5,7 +5,7 @@ import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
 import { getProfile } from '@/lib/api/profile';
-import { getCoverLetter, updateQnA, createQnA, deleteQnA } from '@/lib/api/resumes';
+import { createQnA, deleteQnA, getCoverLetter, updateQnA } from '@/lib/api/resumes';
 import { Profile, QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -104,12 +104,7 @@ function ProfileBasedResumeDetailPageContent({ params }: Props) {
               subtitle: "프로필에서 강조된 나의 핵심 역량입니다.",
               competencies: resume.strength.map(s => ({ id: s, name: s })),
               tagColor: "#eaf2ff", // Actual color value
-            },
-            {
-              subtitle: "프로필에 충분히 드러나지 않은 역량입니다.",
-              competencies: resume.weakness.map(w => ({ id: w, name: w })),
-              tagColor: "lightGray", // Actual color value (from theme)
-            },
+            }
           ]}
         />
 
