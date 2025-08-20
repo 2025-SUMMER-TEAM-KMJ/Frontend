@@ -45,7 +45,7 @@ export default function ResumeCard({ resume }: Props) {
     <Link href={resumePath}>
       <CardWrapper>
         <Title>{resume.title}</Title>
-        <SubInfo>최종 수정: {resume.updatedAt}</SubInfo>
+        <SubInfo>최종 수정: {new Date(resume.updated_at).toLocaleDateString()}</SubInfo>
       </CardWrapper>
     </Link>
   );
