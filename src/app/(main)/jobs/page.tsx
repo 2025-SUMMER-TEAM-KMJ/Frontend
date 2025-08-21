@@ -55,7 +55,7 @@ function JobsPageContent() {
 
   const fetchInitialData = useCallback(async (page: number) => {
     setIsLoading(true);
-    const limit = 20;
+    const limit = 9;
     const offset = (page - 1) * limit;
     const jobsData = await getJobPostings(searchTerm, offset, limit);
     setJobs(jobsData.items);

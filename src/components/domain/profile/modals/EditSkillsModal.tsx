@@ -1,8 +1,6 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Profile, Skill } from '@/types/profile';
+import { Profile } from '@/types';
 import Modal from '@/components/common/Modal';
 
 const Title = styled.h2`
@@ -77,27 +75,33 @@ const Button = styled.button`
   }
 `;
 
+interface Props {
+  profile: Profile;
+  onSave: (skills: string[]) => void;
+  onClose: () => void;
+}
+
 export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
-  const [skills, setSkills] = useState<Skill[]>(profile.skills || []); // Provide default empty array
+  const [skills, setSkills] = useState<string[]>(profile.competencies || []);
   const [newSkill, setNewSkill] = useState('');
 
   useEffect(() => {
-    setSkills(profile.skills || []); // Provide default empty array
-  }, [profile.skills]);
+    setSkills(profile.competencies || []);
+  }, [profile.competencies]);
 
   const handleAddSkill = () => {
-    if (newSkill.trim() && !skills.some(s => s.name === newSkill.trim())) {
-      setSkills([...skills, { id: Date.now().toString(), name: newSkill.trim() }]);
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+      setSkills([...skills, newSkill.trim()]);
       setNewSkill('');
     }
   };
 
-  const handleRemoveSkill = (id: string) => {
-    setSkills(skills.filter(skill => skill.id !== id));
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setSkills(skills.filter(skill => skill !== skillToRemove));
   };
 
   const handleSave = () => {
-    onSave(skills.map(s => s.name));
+    onSave(skills);
   };
 
   return (
@@ -118,9 +122,9 @@ export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
       </SkillInputContainer>
       <SkillListContainer>
         {skills.map(skill => (
-          <SkillTag key={skill.id}>
-            {skill.name}
-            <RemoveButton onClick={() => handleRemoveSkill(skill.id)}>x</RemoveButton>
+          <SkillTag key={skill}>
+            {skill}
+            <RemoveButton onClick={() => handleRemoveSkill(skill)}>x</RemoveButton>
           </SkillTag>
         ))}
       </SkillListContainer>
