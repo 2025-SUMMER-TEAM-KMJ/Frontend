@@ -6,6 +6,7 @@ import { FaPlus } from 'react-icons/fa';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
+import { updateProfile, addProfileQnA, updateProfileQnA, deleteProfileQnA } from '@/lib/api/profile'; // Import new functions // Import addProfileQnA
 
 const CardGrid = styled.div`
   display: grid;
@@ -143,10 +144,14 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
     if (!selectedCard || !profile) return;
 
     try {
-      const updatedQnas = profile.qnas.map(qna => qna.title === selectedCard.title ? selectedCard : qna);
-      await updateProfile({ qnas: updatedQnas });
+      const updatedQnAData = {
+        title: selectedCard.title,
+        content: selectedCard.content,
+        category: selectedCard.category,
+      };
+      const updatedProfile = await updateProfileQnA(selectedCard.id, updatedQnAData);
 
-      setStories(updatedQnas);
+      setStories(updatedProfile.qnas);
       handleCloseModal();
     } catch (error) {
       console.error('Failed to save story', error);
@@ -170,17 +175,33 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
     if (!selectedCard || !profile) return;
 
     try {
-      // Assuming there's an API to add a new QnA/MyStory
-      // For now, we'll just add it to the local state and then update the profile
-      const newStory = { ...selectedCard, id: `temp-${Date.now()}` }; // Mock ID
-      const updatedQnas = [...profile.qnas, newStory];
-      await updateProfile({ qnas: updatedQnas });
+      const newStoryData = {
+        title: selectedCard.title,
+        content: selectedCard.content,
+        category: selectedCard.category,
+      };
+      const updatedProfile = await addProfileQnA(newStoryData);
 
-      setStories(updatedQnas);
+      setStories(updatedProfile.qnas);
       handleCloseModal();
     } catch (error) {
       console.error('Failed to create story', error);
       alert('새로운 이야기 생성에 실패했습니다.');
+    }
+  };
+
+  const handleDeleteStory = async () => {
+    if (!selectedCard || !profile) return;
+
+    if (!confirm('정말로 이 이야기를 삭제하시겠습니까?')) return;
+
+    try {
+      const updatedProfile = await deleteProfileQnA(selectedCard.id);
+      setStories(updatedProfile.qnas);
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to delete story', error);
+      alert('스토리 삭제에 실패했습니다.');
     }
   };
 
@@ -225,6 +246,9 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
               onChange={(e) => handleTagChange(e.target.value)}
             />
             <ButtonContainer>
+              <Button variant="secondary" onClick={handleDeleteStory}>
+                삭제
+              </Button>
               <Button onClick={handleSave}>
                 저장
               </Button>
@@ -260,7 +284,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
             />
             <ButtonContainer>
               <Button onClick={handleCreateStory}>
-                생성
+                추가
               </Button>
             </ButtonContainer>
           </ModalContentWrapper>

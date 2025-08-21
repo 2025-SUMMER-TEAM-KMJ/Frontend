@@ -4,9 +4,10 @@ import AuthGuard from '@/components/auth/AuthGuard';
 import CompetencyAnalysis from '@/components/domain/resumes/CompetencyAnalysis';
 import EditQnADualModal from '@/components/domain/resumes/EditQnADualModal'; // New import
 import ResumeQnA from '@/components/domain/resumes/ResumeQnA';
-import { createQnA, deleteQnA, getCoverLetter, updateQnA } from '@/lib/api/resumes';
+import { createQnA, deleteQnA, getCoverLetter, updateCoverLetter, updateQnA } from '@/lib/api/resumes';
 import { QnA, Resume } from '@/types';
 import { useEffect, useState } from 'react';
+import { FaPencilAlt, FaSave } from 'react-icons/fa';
 import styled from 'styled-components';
 
 const AnalysisPageContainer = styled.div`
@@ -28,29 +29,66 @@ const ResumeHeader = styled.header`
   margin-bottom: ${({ theme }) => theme.spacing.large};
 `;
 
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
 const Title = styled.h1`
   font-size: 32px;
   font-weight: 800;
-  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const TitleInput = styled.input`
+  font-size: 32px;
+  font-weight: 800;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 0;
+  background-color: transparent;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary};
+`;
+
+const EditIcon = styled(FaPencilAlt)`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  cursor: pointer;
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const SaveIcon = styled(FaSave)`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  cursor: pointer;
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 16px;
   color: ${({ theme }) => theme.colors.textSecondary};
+  margin-top: ${({ theme }) => theme.spacing.small};
 `;
 
 interface Props {
   params: { id: string };
 }
 
-
 function ResumeAnalysisPageContent({ params }: Props) {
   const [resume, setResume] = useState<Resume | null>(null);
   const [editingQnA, setEditingQnA] = useState<QnA | null>(null); // Add editingQnA state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
 
   useEffect(() => {
     getCoverLetter(params.id).then(data => {
-      if (data) setResume(data);
+      if (data) {
+        setResume(data);
+        setEditedTitle(data.title);
+      }
     });
   }, [params.id]);
 
@@ -72,15 +110,24 @@ function ResumeAnalysisPageContent({ params }: Props) {
     setResume(updatedResume);
   };
 
-  const handleEditQnA = (qna: QnA) => { // Add handleEditQnA function
+  const handleEditQnA = (qna: QnA) => {
+    // Add handleEditQnA function
     setEditingQnA(qna);
   };
 
-  const handleSaveEditedQnA = async (qnaId: string, newQuestion: string, newAnswer: string) => { // Add handleSaveEditedQnA function
+  const handleSaveEditedQnA = async (qnaId: string, newQuestion: string, newAnswer: string) => {
+    // Add handleSaveEditedQnA function
     if (!resume) return;
     const updatedResume = await updateQnA(resume.id, qnaId, { question: newQuestion, answer: newAnswer });
     setResume(updatedResume);
     setEditingQnA(null); // Close modal
+  };
+
+  const handleSaveTitle = async () => {
+    if (!resume) return;
+    const updatedResume = await updateCoverLetter(resume.id, { title: editedTitle });
+    setResume(updatedResume);
+    setIsEditingTitle(false);
   };
 
   if (!resume) return <Loading>자기소개서 정보를 불러오는 중...</Loading>;
@@ -89,7 +136,24 @@ function ResumeAnalysisPageContent({ params }: Props) {
     <>
       <AnalysisPageContainer>
         <ResumeHeader>
-          <Title>{resume.title}</Title>
+          <TitleContainer>
+            {isEditingTitle ? (
+              <TitleInput
+                type="text"
+                value={editedTitle}
+                onChange={e => setEditedTitle(e.target.value)}
+                onBlur={handleSaveTitle}
+                onKeyPress={e => e.key === 'Enter' && handleSaveTitle()}
+              />
+            ) : (
+              <Title>{resume.title}</Title>
+            )}
+            {isEditingTitle ? (
+              <SaveIcon onClick={handleSaveTitle} />
+            ) : (
+              <EditIcon onClick={() => setIsEditingTitle(true)} />
+            )}
+          </TitleContainer>
           <Subtitle>최종 수정일: {new Date(resume.updated_at).toLocaleDateString()}</Subtitle>
         </ResumeHeader>
 
@@ -98,20 +162,20 @@ function ResumeAnalysisPageContent({ params }: Props) {
           title="AI 역량 분석"
           sections={[
             {
-              subtitle: "자기소개서에서 강조된 나의 핵심 역량입니다.",
+              subtitle: '자기소개서에서 강조된 나의 핵심 역량입니다.',
               competencies: resume.strength.map(s => ({ id: s, name: s })),
-              tagColor: "#eaf2ff", // Actual color value
+              tagColor: '#eaf2ff', // Actual color value
             },
             {
-              subtitle: "직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.",
+              subtitle: '직무와 관련하여 자기소개서에 충분히 드러나지 않은 역량입니다.',
               competencies: resume.weakness.map(w => ({ id: w, name: w })),
-              tagColor: "lightGray", // Actual color value (from theme)
+              tagColor: 'lightGray', // Actual color value (from theme)
             },
           ]}
         />
 
-        <ResumeQnA 
-          qnas={resume.qnas} 
+        <ResumeQnA
+          qnas={resume.qnas}
           onAdd={handleAddQnA}
           onDelete={handleDeleteQnA}
           onEdit={handleEditQnA} // Pass onEdit handler
@@ -132,5 +196,9 @@ function ResumeAnalysisPageContent({ params }: Props) {
 }
 
 export default function ResumeAnalysisPage({ params }: Props) {
-  return <AuthGuard><ResumeAnalysisPageContent params={params} /></AuthGuard>;
+  return (
+    <AuthGuard>
+      <ResumeAnalysisPageContent params={params} />
+    </AuthGuard>
+  );
 }

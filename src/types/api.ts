@@ -284,3 +284,15 @@ export interface schemas__user__QnA {
   content?: string | null;
   category?: string | null;
 }
+
+export interface schemas__user__QnACreate {
+  title: string;
+  content: string;
+  category: string;
+}
+
+export interface schemas__user__QnAUpdate {
+  title?: string | null;
+  content?: string | null;
+  category?: string | null;
+}
