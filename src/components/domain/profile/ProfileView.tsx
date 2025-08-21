@@ -1,9 +1,10 @@
 'use client';
 
 import { useAuthStore } from '@/store/authStore';
+import { UserUpdateRequest } from '@/types/api';
 import { Profile } from '@/types/profile';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import EditBriefModal from './modals/EditBriefModal';
 import EditCertificationsModal from './modals/EditCertificationsModal';
@@ -12,7 +13,6 @@ import EditProjectExperienceModal from './modals/EditProjectExperienceModal';
 import EditSkillsModal from './modals/EditSkillsModal';
 import EditWorkExperienceModal from './modals/EditWorkExperienceModal';
 import MyStoryCardView from './MyStoryCardView';
-import { UserUpdateRequest } from '@/types/api';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -196,6 +196,8 @@ interface Props {
   onAddStory: (story: schemas_user_QnACreate) => void;
   onUpdateStory: (storyId: string, story: schemas_user_QnAUpdate) => void;
   onDeleteStory: (storyId: string) => void;
+  onImageUpload: (imageFile: File) => void;
+  onImageDelete: () => void;
 }
 
 const ToggleButton = styled.button<{ active: boolean }>`
@@ -230,17 +232,73 @@ const NoContentMessage = styled.p`
   margin-top: 20px;
 `;
 
-export default function ProfileView({ profile, onSave, onAddStory, onUpdateStory, onDeleteStory }: Props) {
+const Button = styled.button`
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+
+  &.primary {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: white;
+  }
+
+  &.secondary {
+    background-color: ${({ theme }) => theme.colors.lightGray};
+    color: ${({ theme }) => theme.colors.text};
+  }
+
+  &.danger {
+    background-color: ${({ theme }) => theme.colors.error};
+    color: white;
+  }
+`;
+
+export default function ProfileView({ profile, onSave, onAddStory, onUpdateStory, onDeleteStory, onImageUpload, onImageDelete }: Props) {
   const { openBasicInfoModal, openEditModal, closeEditModal, editingSection } = useAuthStore();
   const [viewMode, setViewMode] = useState<'resume' | 'card'>('resume');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false); // Reset error when profile changes
+  }, [profile.profile_img_key]);
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      onImageUpload(file);
+    }
+  };
+
+  const imageUrl = profile.profile_img_key && !imageError
+    ? `https://storage.googleapis.com/kmj-develop/${profile.profile_img_key}`
+    : "/images/profile_placeholder.png";
 
   return (
     <ViewContainer>
       <ProfileHeader>
         <ProfileHeaderEditIcon onClick={openBasicInfoModal}>✏️</ProfileHeaderEditIcon>
-        <ProfileImage>
-          {/* 임시 이미지 또는 사용자 아바타 */}
-          <Image src={profile.profile_img_key ? `http://35.192.157.46:8765/users/profile-image` : "/images/profile_placeholder.png"} alt="프로필 이미지" width={120} height={120} />
+        <ProfileImage onClick={handleImageClick}>
+          <Image
+            src={imageUrl}
+            alt=" "
+            width={120}
+            height={120}
+            onError={() => setImageError(true)}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            accept="image/*"
+          />
         </ProfileImage>
         <ProfileInfo>
           <ProfileName>{profile.name}</ProfileName>

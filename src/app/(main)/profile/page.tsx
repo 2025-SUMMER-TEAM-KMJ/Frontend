@@ -1,19 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { addProfileQnA, deleteProfileImage, deleteProfileQnA, getProfile, updateProfile, updateProfileQnA, uploadProfileImage } from '@/lib/api/profile';
 import { useAuthStore } from '@/store/authStore';
-import { getProfile, updateProfile, addProfileQnA, updateProfileQnA, deleteProfileQnA } from '@/lib/api/profile';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
-import { Profile } from '@/types';
-import { UserUpdateRequest, schemas_user_QnACreate, schemas_user_QnAUpdate } from '@/types/api';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfileView from '@/components/domain/profile/ProfileView';
+import { Profile } from '@/types';
+import { UserUpdateRequest, schemas__user__QnACreate, schemas__user__QnAUpdate } from '@/types/api';
 
 import EditBasicInfoModal from '@/components/domain/profile/modals/EditBasicInfoModal';
-import Button from '@/components/common/Button';
 
 const ProfilePageContainer = styled(motion.div)`
   width: 100%;
@@ -53,18 +52,28 @@ function ProfilePageContent() {
     closeBasicInfoModal(); // Close basic info modal if open
   };
 
-  const handleAddStory = async (story: schemas_user_QnACreate) => {
+  const handleAddStory = async (story: schemas__user__QnACreate) => {
     await addProfileQnA(story);
     await fetchProfile();
   };
 
-  const handleUpdateStory = async (storyId: string, story: schemas_user_QnAUpdate) => {
+  const handleUpdateStory = async (storyId: string, story: schemas__user__QnAUpdate) => {
     await updateProfileQnA(storyId, story);
     await fetchProfile();
   };
 
   const handleDeleteStory = async (storyId: string) => {
     await deleteProfileQnA(storyId);
+    await fetchProfile();
+  };
+
+  const handleImageUpload = async (imageFile: File) => {
+    await uploadProfileImage(imageFile);
+    await fetchProfile();
+  };
+
+  const handleImageDelete = async () => {
+    await deleteProfileImage();
     await fetchProfile();
   };
 
@@ -85,6 +94,8 @@ function ProfilePageContent() {
           onAddStory={handleAddStory}
           onUpdateStory={handleUpdateStory}
           onDeleteStory={handleDeleteStory}
+          onImageUpload={handleImageUpload}
+          onImageDelete={handleImageDelete}
         />
       )}
       
