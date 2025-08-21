@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/store/authStore';
 import { reissueToken } from './auth';
 
-const API_BASE_URL = 'https://35.192.157.46:8765';
+const API_BASE_URL = 'https://34.173.199.135:8765';
 
 const getAuthToken = () => {
   return useAuthStore.getState().accessToken;
