@@ -1,7 +1,7 @@
 'use client';
 
 import Modal from '@/components/common/Modal';
-import { WorkExperience } from '@/types/profile';
+import { WorkExperience } from '@/types/api';
 import { ko } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -136,39 +136,51 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
   };
 
   const handleAddExperience = () => {
-    setWorkExperiences([...workExperiences, { id: Date.now().toString(), company: '', position: '', startDate: '', endDate: '', description: '' }]);
+    setWorkExperiences([...workExperiences, { company_name: '', job_group: '', job: '', start_date: '', end_date: '', description: '' }]);
   };
 
-  const handleDeleteExperience = (id: string) => {
-    setWorkExperiences(workExperiences.filter(exp => exp.id !== id));
+  const handleDeleteExperience = (index: number) => {
+    const newExperiences = [...workExperiences];
+    newExperiences.splice(index, 1);
+    setWorkExperiences(newExperiences);
   };
 
   const handleSave = () => {
-    onSave(workExperiences);
+    const experiencesToSave = workExperiences.map(exp => ({
+      ...exp,
+      end_date: exp.end_date === '' ? null : exp.end_date,
+    }));
+    onSave(experiencesToSave);
   };
 
   return (
     <Modal onClose={onClose} title="경력 수정">
       {workExperiences.map((exp, index) => (
-        <ExperienceItemContainer key={exp.id}>
+        <ExperienceItemContainer key={index}>
           <Label>회사명</Label>
           <Input
             type="text"
-            value={exp.company}
-            onChange={(e) => handleInputChange(index, 'company', e.target.value)}
+            value={exp.company_name}
+            onChange={(e) => handleInputChange(index, 'company_name', e.target.value)}
           />
-          <Label>직책</Label>
+          <Label>직군</Label>
           <Input
             type="text"
-            value={exp.position}
-            onChange={(e) => handleInputChange(index, 'position', e.target.value)}
+            value={exp.job_group}
+            onChange={(e) => handleInputChange(index, 'job_group', e.target.value)}
+          />
+          <Label>직무</Label>
+          <Input
+            type="text"
+            value={exp.job}
+            onChange={(e) => handleInputChange(index, 'job', e.target.value)}
           />
           <DateRangeContainer>
             <div>
               <Label>시작일</Label>
               <StyledDatePicker
-                selected={exp.startDate && !isNaN(new Date(exp.startDate).getTime()) ? new Date(exp.startDate) : null}
-                onChange={(date: Date) => handleInputChange(index, 'startDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                selected={exp.start_date && !isNaN(new Date(exp.start_date).getTime()) ? new Date(exp.start_date) : null}
+                onChange={(date: Date) => handleInputChange(index, 'start_date', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
                 dateFormat="yyyy-MM"
                 showMonthYearPicker
                 locale="ko"
@@ -177,8 +189,8 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
             <div>
               <Label>종료일</Label>
               <StyledDatePicker
-                selected={exp.endDate && exp.endDate !== '현재' && !isNaN(new Date(exp.endDate).getTime()) ? new Date(exp.endDate) : null}
-                onChange={(date: Date) => handleInputChange(index, 'endDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                selected={exp.end_date && exp.end_date !== '현재' && !isNaN(new Date(exp.end_date).getTime()) ? new Date(exp.end_date) : null}
+                onChange={(date: Date) => handleInputChange(index, 'end_date', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
                 dateFormat="yyyy-MM"
                 showMonthYearPicker
                 locale="ko"
@@ -191,7 +203,7 @@ export default function EditWorkExperienceModal({ profile, onSave, onClose }: Pr
             value={exp.description}
             onChange={(e) => handleInputChange(index, 'description', e.target.value)}
           />
-          <DeleteIcon onClick={() => handleDeleteExperience(exp.id)}><FaTimes /></DeleteIcon>
+          <DeleteIcon onClick={() => handleDeleteExperience(index)}><FaTimes /></DeleteIcon>
         </ExperienceItemContainer>
       ))}
       <CenteredButtonContainer>

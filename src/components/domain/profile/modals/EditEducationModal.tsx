@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Profile, Education } from '@/types/profile';
+import { Profile, Education } from '@/types/api';
 import Modal from '@/components/common/Modal';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -138,26 +138,32 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
   };
 
   const handleAddEducation = () => {
-    setEducation([...education, { id: Date.now().toString(), institution: '', major: '', startDate: '', endDate: '' }]);
+    setEducation([...education, { school_name: '', major: '', start_date: '', end_date: '' }]);
   };
 
-  const handleDeleteEducation = (id: string) => {
-    setEducation(education.filter(edu => edu.id !== id));
+  const handleDeleteEducation = (index: number) => {
+    const newEducation = [...education];
+    newEducation.splice(index, 1);
+    setEducation(newEducation);
   };
 
   const handleSave = () => {
-    onSave(education);
+    const educationToSave = education.map(edu => ({
+      ...edu,
+      end_date: edu.end_date === '' ? null : edu.end_date,
+    }));
+    onSave(educationToSave);
   };
 
   return (
     <Modal onClose={onClose} title="학력 수정">
       {education.map((edu, index) => (
-        <EducationItemContainer key={edu.id}>
+        <EducationItemContainer key={index}>
           <Label>학교명</Label>
           <Input
             type="text"
-            value={edu.institution}
-            onChange={(e) => handleInputChange(index, 'institution', e.target.value)}
+            value={edu.school_name}
+            onChange={(e) => handleInputChange(index, 'school_name', e.target.value)}
           />
           <Label>전공</Label>
           <Input
@@ -169,8 +175,8 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
             <div>
               <Label>시작일</Label>
               <StyledDatePicker
-                selected={edu.startDate && !isNaN(new Date(edu.startDate).getTime()) ? new Date(edu.startDate) : null}
-                onChange={(date: Date) => handleInputChange(index, 'startDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                selected={edu.start_date && !isNaN(new Date(edu.start_date).getTime()) ? new Date(edu.start_date) : null}
+                onChange={(date: Date) => handleInputChange(index, 'start_date', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
                 dateFormat="yyyy-MM"
                 showMonthYearPicker
                 locale="ko"
@@ -179,8 +185,8 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
             <div>
               <Label>종료일</Label>
               <StyledDatePicker
-                selected={edu.endDate && edu.endDate !== '현재' && !isNaN(new Date(edu.endDate).getTime()) ? new Date(edu.endDate) : null}
-                onChange={(date: Date) => handleInputChange(index, 'endDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                selected={edu.end_date && edu.end_date !== '현재' && !isNaN(new Date(edu.end_date).getTime()) ? new Date(edu.end_date) : null}
+                onChange={(date: Date) => handleInputChange(index, 'end_date', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
                 dateFormat="yyyy-MM"
                 showMonthYearPicker
                 locale="ko"
@@ -188,7 +194,7 @@ export default function EditEducationModal({ profile, onSave, onClose }: Props) 
               />
             </div>
           </DateRangeContainer>
-          <DeleteIcon onClick={() => handleDeleteEducation(edu.id)}><FaTimes /></DeleteIcon>
+          <DeleteIcon onClick={() => handleDeleteEducation(index)}><FaTimes /></DeleteIcon>
         </EducationItemContainer>
       ))}
       <CenteredButtonContainer>

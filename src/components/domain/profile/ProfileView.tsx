@@ -12,6 +12,7 @@ import EditProjectExperienceModal from './modals/EditProjectExperienceModal';
 import EditSkillsModal from './modals/EditSkillsModal';
 import EditWorkExperienceModal from './modals/EditWorkExperienceModal';
 import MyStoryCardView from './MyStoryCardView';
+import { UserUpdateRequest } from '@/types/api';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -129,8 +130,6 @@ const ProfileDetail = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-
-
 const Section = styled.section`
 `;
 
@@ -193,6 +192,10 @@ const ExperienceDescription = styled.p`
 
 interface Props {
   profile: Profile;
+  onSave: (data: Partial<UserUpdateRequest>) => void;
+  onAddStory: (story: schemas_user_QnACreate) => void;
+  onUpdateStory: (storyId: string, story: schemas_user_QnAUpdate) => void;
+  onDeleteStory: (storyId: string) => void;
 }
 
 const ToggleButton = styled.button<{ active: boolean }>`
@@ -227,7 +230,7 @@ const NoContentMessage = styled.p`
   margin-top: 20px;
 `;
 
-export default function ProfileView({ profile }: { profile: Profile }) {
+export default function ProfileView({ profile, onSave, onAddStory, onUpdateStory, onDeleteStory }: Props) {
   const { openBasicInfoModal, openEditModal, closeEditModal, editingSection } = useAuthStore();
   const [viewMode, setViewMode] = useState<'resume' | 'card'>('resume');
 
@@ -376,18 +379,19 @@ export default function ProfileView({ profile }: { profile: Profile }) {
             </RightColumn>
           </>
         ) : (
-          <MyStoryCardView />
+          <MyStoryCardView
+            profile={profile}
+            onAddStory={onAddStory}
+            onUpdateStory={onUpdateStory}
+            onDeleteStory={onDeleteStory}
+          />
         )}
       </ContentGrid>
 
       {editingSection === 'brief' && (
         <EditBriefModal
           profile={profile}
-          onSave={(updatedBrief) => {
-            // TODO: Save updated brief to backend
-            console.log('Updated brief:', updatedBrief);
-            closeEditModal();
-          }}
+          onSave={(updatedBrief) => onSave({ brief: updatedBrief })}
           onClose={closeEditModal}
         />
       )}
@@ -395,11 +399,7 @@ export default function ProfileView({ profile }: { profile: Profile }) {
       {editingSection === 'workExperience' && (
         <EditWorkExperienceModal
           profile={profile}
-          onSave={(updatedWorkExperiences) => {
-            // TODO: Save updated work experiences to backend
-            console.log('Updated work experiences:', updatedWorkExperiences);
-            closeEditModal();
-          }}
+          onSave={(updatedWorkExperiences) => onSave({ work_experience: updatedWorkExperiences })}
           onClose={closeEditModal}
         />
       )}
@@ -407,11 +407,7 @@ export default function ProfileView({ profile }: { profile: Profile }) {
       {editingSection === 'projectExperience' && (
         <EditProjectExperienceModal
           profile={profile}
-          onSave={(updatedProjectExperiences) => {
-            // TODO: Save updated project experiences to backend
-            console.log('Updated project experiences:', updatedProjectExperiences);
-            closeEditModal();
-          }}
+          onSave={(updatedProjectExperiences) => onSave({ experiences: updatedProjectExperiences })}
           onClose={closeEditModal}
         />
       )}
@@ -419,11 +415,7 @@ export default function ProfileView({ profile }: { profile: Profile }) {
       {editingSection === 'skills' && (
         <EditSkillsModal
           profile={profile}
-          onSave={(updatedSkills) => {
-            // TODO: Save updated skills to backend
-            console.log('Updated skills:', updatedSkills);
-            closeEditModal();
-          }}
+          onSave={(updatedSkills) => onSave({ competencies: updatedSkills })}
           onClose={closeEditModal}
         />
       )}
@@ -431,11 +423,7 @@ export default function ProfileView({ profile }: { profile: Profile }) {
       {editingSection === 'education' && (
         <EditEducationModal
           profile={profile}
-          onSave={(updatedEducation) => {
-            // TODO: Save updated education to backend
-            console.log('Updated education:', updatedEducation);
-            closeEditModal();
-          }}
+          onSave={(updatedEducation) => onSave({ educations: updatedEducation })}
           onClose={closeEditModal}
         />
       )}
@@ -443,11 +431,7 @@ export default function ProfileView({ profile }: { profile: Profile }) {
       {editingSection === 'certifications' && (
         <EditCertificationsModal
           profile={profile}
-          onSave={(updatedCertifications) => {
-            // TODO: Save updated certifications to backend
-            console.log('Updated certifications:', updatedCertifications);
-            closeEditModal();
-          }}
+          onSave={(updatedCertifications) => onSave({ certifications: updatedCertifications })}
           onClose={closeEditModal}
         />
       )}

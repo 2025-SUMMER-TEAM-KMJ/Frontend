@@ -97,7 +97,7 @@ export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
   };
 
   const handleSave = () => {
-    onSave(skills);
+    onSave(skills.map(s => s.name));
   };
 
   return (
@@ -124,8 +124,10 @@ export default function EditSkillsModal({ profile, onSave, onClose }: Props) {
           </SkillTag>
         ))}
       </SkillListContainer>
-      
-      
+      <ButtonContainer>
+        <Button className="primary" onClick={handleSave}>저장</Button>
+      </ButtonContainer>
     </Modal>
   );
 }
+

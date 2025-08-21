@@ -6,7 +6,8 @@ import { FaPlus } from 'react-icons/fa';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
-import { updateProfile, addProfileQnA, updateProfileQnA, deleteProfileQnA } from '@/lib/api/profile'; // Import new functions // Import addProfileQnA
+import { Profile, QnA } from '@/types';
+import { schemas_user_QnACreate, schemas_user_QnAUpdate } from '@/types/api';
 
 const CardGrid = styled.div`
   display: grid;
@@ -116,22 +117,22 @@ const tagOptions = [
   { value: '기타', label: '기타' },
 ];
 
-export default function MyStoryCardView({ profile }: { profile: UserResponse }) {
-  const [stories, setStories] = useState<MyStory[]>([]);
-  const [selectedCard, setSelectedCard] = useState<MyStory | null>(null);
-  const [isAddingNewStory, setIsAddingNewStory] = useState(false);
+interface MyStoryCardViewProps {
+  profile: Profile;
+  onAddStory: (story: schemas_user_QnACreate) => void;
+  onUpdateStory: (storyId: string, story: schemas_user_QnAUpdate) => void;
+  onDeleteStory: (storyId: string) => void;
+}
 
-  useEffect(() => {
-    if (profile && profile.qnas) {
-      setStories(profile.qnas);
-    }
-  }, [profile]);
+export default function MyStoryCardView({ profile, onAddStory, onUpdateStory, onDeleteStory }: MyStoryCardViewProps) {
+  const [selectedCard, setSelectedCard] = useState<QnA | null>(null);
+  const [isAddingNewStory, setIsAddingNewStory] = useState(false);
 
   const handleTagChange = (newTag: string) => {
     setSelectedCard(prev => prev ? { ...prev, category: newTag } : null);
   };
 
-  const handleCardClick = (card: MyStory) => {
+  const handleCardClick = (card: QnA) => {
     setSelectedCard(card);
   };
 
@@ -141,7 +142,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
   };
 
   const handleSave = async () => {
-    if (!selectedCard || !profile) return;
+    if (!selectedCard) return;
 
     try {
       const updatedQnAData = {
@@ -149,9 +150,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
         content: selectedCard.content,
         category: selectedCard.category,
       };
-      const updatedProfile = await updateProfileQnA(selectedCard.id, updatedQnAData);
-
-      setStories(updatedProfile.qnas);
+      await onUpdateStory(selectedCard.id, updatedQnAData);
       handleCloseModal();
     } catch (error) {
       console.error('Failed to save story', error);
@@ -172,7 +171,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
   };
 
   const handleCreateStory = async () => {
-    if (!selectedCard || !profile) return;
+    if (!selectedCard) return;
 
     try {
       const newStoryData = {
@@ -180,9 +179,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
         content: selectedCard.content,
         category: selectedCard.category,
       };
-      const updatedProfile = await addProfileQnA(newStoryData);
-
-      setStories(updatedProfile.qnas);
+      await onAddStory(newStoryData);
       handleCloseModal();
     } catch (error) {
       console.error('Failed to create story', error);
@@ -191,13 +188,12 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
   };
 
   const handleDeleteStory = async () => {
-    if (!selectedCard || !profile) return;
+    if (!selectedCard) return;
 
     if (!confirm('정말로 이 이야기를 삭제하시겠습니까?')) return;
 
     try {
-      const updatedProfile = await deleteProfileQnA(selectedCard.id);
-      setStories(updatedProfile.qnas);
+      await onDeleteStory(selectedCard.id);
       handleCloseModal();
     } catch (error) {
       console.error('Failed to delete story', error);
@@ -208,7 +204,7 @@ export default function MyStoryCardView({ profile }: { profile: UserResponse }) 
   return (
     <>
       <CardGrid>
-        {stories.map((story, index) => (
+        {profile.qnas.map((story, index) => (
           <Card key={index} onClick={() => handleCardClick(story)}>
             <TagDisplay>{story.category}</TagDisplay>
             <CardTitle>{story.title}</CardTitle>

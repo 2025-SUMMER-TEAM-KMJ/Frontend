@@ -1,7 +1,7 @@
 'use client';
 
 import Modal from '@/components/common/Modal';
-import { Certification } from '@/types/profile';
+import { Certification } from '@/types/api';
 import { ko } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -110,11 +110,13 @@ export default function EditCertificationsModal({ profile, onSave, onClose }: Pr
   };
 
   const handleAddCertification = () => {
-    setCertifications([...certifications, { id: Date.now().toString(), name: '', issuer: '', issueDate: '' }]);
+    setCertifications([...certifications, { name: '', agency: '', issue_date: '' }]);
   };
 
-  const handleDeleteCertification = (id: string) => {
-    setCertifications(certifications.filter(cert => cert.id !== id));
+  const handleDeleteCertification = (index: number) => {
+    const newCertifications = [...certifications];
+    newCertifications.splice(index, 1);
+    setCertifications(newCertifications);
   };
 
   const handleSave = () => {
@@ -124,7 +126,7 @@ export default function EditCertificationsModal({ profile, onSave, onClose }: Pr
   return (
     <Modal onClose={onClose} title="자격증 수정">
       {certifications.map((cert, index) => (
-        <CertificationItemContainer key={cert.id}>
+        <CertificationItemContainer key={index}>
           <Label>자격증명</Label>
           <Input
             type="text"
@@ -134,21 +136,19 @@ export default function EditCertificationsModal({ profile, onSave, onClose }: Pr
           <Label>발급기관</Label>
           <Input
             type="text"
-            value={cert.issuer}
-            onChange={(e) => handleInputChange(index, 'issuer', e.target.value)}
+            value={cert.agency}
+            onChange={(e) => handleInputChange(index, 'agency', e.target.value)}
           />
           <Label>취득일</Label>
           <StyledDatePicker
-            selected={cert.issueDate && !isNaN(new Date(cert.issueDate).getTime()) ? new Date(cert.issueDate) : null}
-            onChange={(date: Date) => handleInputChange(index, 'issueDate', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}` : '')}
-            dateFormat="yyyy-MM-dd"
-            showYearDropdown
-            showMonthDropdown
-            dropdownMode="select"
+            selected={cert.issue_date && !isNaN(new Date(cert.issue_date).getTime()) ? new Date(cert.issue_date) : null}
+            onChange={(date: Date) => handleInputChange(index, 'issue_date', date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+            dateFormat="yyyy-MM"
+            showMonthYearPicker
             locale="ko"
             placeholderText=""
           />
-          <Button className="danger" onClick={() => handleDeleteCertification(cert.id)}>삭제</Button>
+          <Button className="danger" onClick={() => handleDeleteCertification(index)}>삭제</Button>
         </CertificationItemContainer>
       ))}
       <AddButtonWrapper>

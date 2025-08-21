@@ -3,11 +3,11 @@
 import { default as CommonButton } from '@/components/common/Button';
 import CommonInput from '@/components/common/Input'; // Renamed to avoid conflict
 import Modal from '@/components/common/Modal';
-import { ProjectExperience } from '@/types/profile';
+import { Experience } from '@/types/api';
 import { ko } from 'date-fns/locale';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useFieldArray, useForm } from 'react-hook-form'; // Added useForm, useFieldArray
+import { useFieldArray, useForm, Controller } from 'react-hook-form'; // Added useForm, useFieldArray, Controller
 import { FaTimes } from 'react-icons/fa'; // Added for icons
 import styled from 'styled-components';
 
@@ -133,93 +133,111 @@ const Button = styled.button`
 `;
 
 interface EditProjectExperienceFormData {
-  projectExperiences: ProjectExperience[];
+  experiences: Experience[];
 }
 
 interface Props {
   profile: Profile;
-  onSave: (data: ProjectExperience[]) => void;
+  onSave: (data: Experience[]) => void;
   onClose: () => void;
 }
 
 export default function EditProjectExperienceModal({ profile, onSave, onClose }: Props) {
   const { register, control, handleSubmit, formState: { errors } } = useForm<EditProjectExperienceFormData>({
     defaultValues: {
-      projectExperiences: (profile.projectExperience || []).map(proj => ({
-        ...proj,
-        links: proj.links || [''], // Ensure links array is initialized
-      })),
+      experiences: profile.experiences || [],
     },
   });
 
-  const { fields: projectFields, append: appendProject, remove: removeProject } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
-    name: "projectExperiences",
+    name: "experiences",
   });
 
   const handleAddProject = () => {
-    appendProject({ id: Date.now().toString(), title: '', startDate: '', endDate: '', description: '', links: [''] });
+    append({ title: '', description: '', link: '', tech_stack: [], start_date: '', end_date: '' });
   };
 
   const handleDeleteProject = (index: number) => {
-    removeProject(index);
+    remove(index);
   };
 
   const onSubmit = (data: EditProjectExperienceFormData) => {
-    onSave(data.projectExperiences);
+    const experiencesToSave = data.experiences.map(exp => ({
+      ...exp,
+      end_date: exp.end_date === '' ? null : exp.end_date,
+      start_date: exp.start_date === '' ? null : exp.start_date,
+      link: exp.link === '' ? null : exp.link,
+    }));
+    onSave(experiencesToSave);
   };
 
   return (
     <Modal onClose={onClose} title="프로젝트 수정">
       <form onSubmit={handleSubmit(onSubmit)}> {/* Wrap with form */}
-        {projectFields.map((proj, projectIndex) => (
-          <ProjectItemContainer key={proj.id}>
+        {fields.map((field, index) => (
+          <ProjectItemContainer key={field.id}>
             <Label>프로젝트명</Label>
             <CommonInput // Use common Input
               type="text"
-              {...register(`projectExperiences.${projectIndex}.title`)}
+              {...register(`experiences.${index}.title`)}
             />
             <DateRangeContainer>
               <div>
                 <Label>시작일</Label>
-                <StyledDatePicker
-                  selected={proj.startDate && !isNaN(new Date(proj.startDate).getTime()) ? new Date(proj.startDate) : null}
-                  onChange={(date: Date) => {
-                    const formattedDate = date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '';
-                    control.setValue(`projectExperiences.${projectIndex}.startDate`, formattedDate);
-                  }}
-                  dateFormat="yyyy-MM"
-                  showMonthYearPicker
-                  locale="ko"
+                <Controller
+                  control={control}
+                  name={`experiences.${index}.start_date`}
+                  render={({ field: { onChange, value } }) => (
+                    <StyledDatePicker
+                      selected={value && !isNaN(new Date(value).getTime()) ? new Date(value) : null}
+                      onChange={(date: Date) => onChange(date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                      dateFormat="yyyy-MM"
+                      showMonthYearPicker
+                      locale="ko"
+                    />
+                  )}
                 />
               </div>
               <div>
                 <Label>종료일</Label>
-                <StyledDatePicker
-                  selected={proj.endDate && proj.endDate !== '현재' && !isNaN(new Date(proj.endDate).getTime()) ? new Date(proj.endDate) : null}
-                  onChange={(date: Date) => {
-                    const formattedDate = date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '';
-                    control.setValue(`projectExperiences.${projectIndex}.endDate`, formattedDate);
-                  }}
-                  dateFormat="yyyy-MM"
-                  showMonthYearPicker
-                  locale="ko"
-                  placeholderText="선택 또는 '현재' 입력"
+                <Controller
+                  control={control}
+                  name={`experiences.${index}.end_date`}
+                  render={({ field: { onChange, value } }) => (
+                    <StyledDatePicker
+                      selected={value && value !== '현재' && !isNaN(new Date(value).getTime()) ? new Date(value) : null}
+                      onChange={(date: Date) => onChange(date ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` : '')}
+                      dateFormat="yyyy-MM"
+                      showMonthYearPicker
+                      locale="ko"
+                      placeholderText="선택 또는 '현재' 입력"
+                    />
+                  )}
                 />
               </div>
             </DateRangeContainer>
             <Label>주요 역할 및 성과</Label>
             <TextArea
-              {...register(`projectExperiences.${projectIndex}.description`)}
+              {...register(`experiences.${index}.description`)}
             />
 
             {/* Links Section */}
             <Label>링크</Label>
-            <LinkFields projectIndex={projectIndex} control={control} /> {/* New component for links */}
+            <CommonInput
+              type="text"
+              {...register(`experiences.${index}.link`, {
+                pattern: {
+                  value: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
+                  message: "유효한 URL을 입력해주세요.",
+                },
+              })}
+              placeholder="프로젝트 링크 (URL)"
+            />
 
             <DeleteButton
               type="button"
-              onClick={() => handleDeleteProject(projectIndex)}
+              onClick={() => handleDeleteProject(index)}
             >
               <FaTimes />
             </DeleteButton>
@@ -240,38 +258,3 @@ export default function EditProjectExperienceModal({ profile, onSave, onClose }:
     </Modal>
   );
 }
-
-// New component for handling link fields
-interface LinkFieldsProps {
-  projectIndex: number;
-  control: any; // Use any for now, or import Control from react-hook-form
-}
-
-const LinkFields: React.FC<LinkFieldsProps> = ({ projectIndex, control }) => {
-  // We still use useFieldArray to manage the single link, but we'll ensure it's always one.
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: `projectExperiences.${projectIndex}.links`,
-  });
-
-  // Ensure there's always exactly one link field.
-  // If no link exists, add one. If more than one, remove extras.
-  if (fields.length === 0) {
-    append('');
-  } else if (fields.length > 1) {
-    // Remove all but the first one
-    for (let i = fields.length - 1; i > 0; i--) {
-      remove(i);
-    }
-  }
-
-  return (
-    <div style={{ position: 'relative', marginBottom: '8px' }}>
-      <CommonInput // Use common Input
-        {...control.register(`projectExperiences.${projectIndex}.links.0`)} // Always register the first (and only) link
-        placeholder="프로젝트 링크 (URL)"
-      />
-      {/* No remove button needed, user can clear the input */}
-    </div>
-  );
-};
