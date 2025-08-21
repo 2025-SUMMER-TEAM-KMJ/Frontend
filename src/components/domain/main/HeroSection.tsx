@@ -26,7 +26,7 @@ const Subtitle = styled.p`
 export default function HeroSection() {
   return (
     <HeroWrapper>
-      <Title>취업 준비를 위한 최고의 파트너</Title>
+      <Title>Chee-Up! 당신의 여정을 함께합니다.</Title>
       <Subtitle>AI 기반 맞춤형 자소서 생성 및 채용 정보 추천 서비스</Subtitle>
     </HeroWrapper>
   );

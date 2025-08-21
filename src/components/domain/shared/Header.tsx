@@ -2,10 +2,18 @@
 
 import Button from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
+
+const Logo = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  background: linear-gradient(45deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.info});
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+`;
 
 const HeaderWrapper = styled.header`
   position: fixed;
@@ -78,7 +86,7 @@ export default function Header() {
   return (
     <HeaderWrapper>
       <Link href="/">
-        <Image src="/images/logo.svg" alt="careergo 로고" width={100} height={32} />
+        <Logo>Chee-Up!</Logo>
       </Link>
       <Nav>
         <NavLink href="/jobs">채용공고</NavLink>
