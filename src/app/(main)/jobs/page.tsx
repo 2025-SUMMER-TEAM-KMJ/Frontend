@@ -50,22 +50,26 @@ function JobsPageContent() {
   const [sort, setSort] = useState<SortOption>('latest');
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchInitialData = useCallback(async (page: number) => {
+  const fetchInitialData = useCallback(async (page: number, term: string) => {
     setIsLoading(true);
     const limit = 9;
     const offset = (page - 1) * limit;
-    const jobsData = await getJobPostings(searchTerm, offset, limit);
+    const jobsData = await getJobPostings(term, offset, limit);
     setJobs(jobsData.items);
     setTotalPages(Math.ceil(jobsData.total / limit));
     setIsLoading(false);
-  }, [searchTerm]);
+  }, []);
 
   useEffect(() => {
-    fetchInitialData(currentPage);
-  }, [fetchInitialData, currentPage]);
+    const page = Number(searchParams.get('page')) || 1;
+    const term = searchParams.get('q') || '';
+    setCurrentPage(page);
+    setSearchTerm(term);
+    fetchInitialData(page, term);
+  }, [searchParams, fetchInitialData]);
 
   const handleFilterChange = (name: keyof JobFilters, value: string) => {
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -73,13 +77,16 @@ function JobsPageContent() {
 
   const handleSortChange = (value: SortOption) => setSort(value);
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1);
-    router.push(`/jobs?q=${term}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('q', term);
+    params.set('page', '1');
+    router.push(`/jobs?${params.toString()}`);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(page));
+    router.push(`/jobs?${params.toString()}`);
   };
 
   const handleToggleInterest = async (job: JobPosting) => {
