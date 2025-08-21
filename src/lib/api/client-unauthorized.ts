@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://35.192.157.46:8765';
+const API_BASE_URL = 'https://35.192.157.46:8765';
 
 const fetchWithoutAuth = async (url: string, options: RequestInit = {}) => {
   const headers: Record<string, string> = {
