@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { FaPlus } from 'react-icons/fa';
-import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
 import Dropdown from '@/components/common/Dropdown';
+import Modal from '@/components/common/Modal';
 import { Profile, QnA } from '@/types';
 import { schemas_user_QnACreate, schemas_user_QnAUpdate } from '@/types/api';
+import { useState } from 'react';
+import { FaPlus } from 'react-icons/fa';
+import styled from 'styled-components';
 
 const CardGrid = styled.div`
   display: grid;
@@ -242,11 +242,11 @@ export default function MyStoryCardView({ profile, onAddStory, onUpdateStory, on
               onChange={(e) => handleTagChange(e.target.value)}
             />
             <ButtonContainer>
-              <Button variant="secondary" onClick={handleDeleteStory}>
-                삭제
-              </Button>
               <Button onClick={handleSave}>
                 저장
+              </Button>
+              <Button onClick={handleDeleteStory}>
+                삭제
               </Button>
             </ButtonContainer>
           </ModalContentWrapper>
