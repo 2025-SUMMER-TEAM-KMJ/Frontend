@@ -114,7 +114,7 @@ const EditBasicInfoModal: React.FC<Props> = ({ profile, onSave, onClose }) => {
             </RemoveLinkButton>
           </div>
         ))}
-        <Button type="button" onClick={() => append({ value: "" })}>
+        <Button type="button" onClick={() => append("")}>
           + 링크 추가
         </Button>
         <ButtonContainer>
