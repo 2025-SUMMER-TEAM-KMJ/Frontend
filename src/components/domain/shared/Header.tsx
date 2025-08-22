@@ -2,6 +2,7 @@
 
 import Button from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
@@ -86,10 +87,10 @@ export default function Header() {
   return (
     <HeaderWrapper>
       <Link href="/">
-        <Logo>Chee-Up!</Logo>
+        <Image src="/images/logo.png" alt="careergo 로고" width={60} height={45} />
       </Link>
       <Nav>
-        <NavLink href="/jobs">채용공고</NavLink>
+        <NavLink href="/jobs">채용공고</NavLink>  
         <AuthNavLink href="/profile">프로필</AuthNavLink>
         <AuthNavLink href="/resumes">자소서 관리</AuthNavLink>
       </Nav>

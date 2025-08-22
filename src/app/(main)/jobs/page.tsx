@@ -5,9 +5,9 @@ import Pagination from '@/components/domain/jobs/Pagination';
 import SearchBar from '@/components/domain/main/SearchBar';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { useAuth } from '@/hooks/useAuth';
-import { getJobPostings, addBookmark, removeBookmark } from '@/lib/api/jobs';
+import { addBookmark, getJobPostings, removeBookmark } from '@/lib/api/jobs';
 import { createCoverLetter } from '@/lib/api/resumes';
-import { JobPosting, JobFilters, SortOption } from '@/types';
+import { JobFilters, JobPosting, SortOption } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -55,11 +55,11 @@ function JobsPageContent() {
 
   const fetchInitialData = useCallback(async (page: number, term: string) => {
     setIsLoading(true);
-    const limit = 9;
+    const limit = term ? 20 : 9;
     const offset = (page - 1) * limit;
     const jobsData = await getJobPostings(term, offset, limit);
     setJobs(jobsData.items);
-    setTotalPages(Math.ceil(jobsData.total / limit));
+    setTotalPages(term ? 1 : Math.ceil(jobsData.total / limit));
     setIsLoading(false);
   }, []);
 
@@ -84,7 +84,8 @@ function JobsPageContent() {
   };
 
   const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    console.log(page)
     params.set('page', String(page));
     router.push(`/jobs?${params.toString()}`);
   };
@@ -144,11 +145,13 @@ function JobsPageContent() {
             onToggleInterest={handleToggleInterest}
             onCreateResume={handleCreateResume}
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          {!searchTerm && totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </>
       )}
 
