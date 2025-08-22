@@ -1,15 +1,14 @@
 'use client';
 
 import JobPostList from '@/components/domain/jobs/JobPostList';
-import Pagination from '@/components/domain/jobs/Pagination';
 import SearchBar from '@/components/domain/main/SearchBar';
 import InterestedJobResumesModal from '@/components/domain/resumes/InterestedJobResumesModal';
 import { useAuth } from '@/hooks/useAuth';
 import { addBookmark, getJobPostings, removeBookmark } from '@/lib/api/jobs';
 import { createCoverLetter } from '@/lib/api/resumes';
-import { JobFilters, JobPosting, SortOption } from '@/types';
+import { JobPosting } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const JobsPageContainer = styled.div`
@@ -40,53 +39,79 @@ const Loading = styled.p`
   padding: 50px;
 `;
 
+const EndOfList = styled.p`
+  text-align: center;
+  padding: 40px;
+  color: ${({ theme }) => theme.colors.gray};
+`;
+
 function JobsPageContent() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [jobs, setJobs] = useState<JobPosting[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState<JobFilters>({ location: '전체', category: '전체', job: '전체' });
-  const [sort, setSort] = useState<SortOption>('latest');
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
-  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchInitialData = useCallback(async (page: number, term: string) => {
-    setIsLoading(true);
-    const limit = term ? 20 : 9;
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedJobForModal, setSelectedJobForModal] = useState<JobPosting | null>(null);
+
+  const observer = useRef<IntersectionObserver>();
+  const lastJobElementRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (isFetchingMore || isLoading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          setCurrentPage(prevPage => prevPage + 1);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [isFetchingMore, isLoading, hasNextPage]
+  );
+
+  const loadJobs = useCallback(async (page: number, term: string) => {
+    if (page === 1) setIsLoading(true);
+    else setIsFetchingMore(true);
+
+    const limit = 10;
     const offset = (page - 1) * limit;
-    const jobsData = await getJobPostings(term, offset, limit);
-    setJobs(jobsData.items);
-    setTotalPages(term ? 1 : Math.ceil(jobsData.total / limit));
-    setIsLoading(false);
+    try {
+      const jobsData = await getJobPostings(term, offset, limit);
+      setJobs(prevJobs => (page === 1 ? jobsData.items : [...prevJobs, ...jobsData.items]));
+      setHasNextPage((offset + jobsData.items.length) < jobsData.total);
+    } catch (error) {
+      console.error("Failed to load job postings:", error);
+      setHasNextPage(false); // Stop fetching on error
+    }
+
+    if (page === 1) setIsLoading(false);
+    else setIsFetchingMore(false);
   }, []);
 
   useEffect(() => {
-    const page = Number(searchParams.get('page')) || 1;
+    if (currentPage > 1) {
+      loadJobs(currentPage, searchTerm);
+    }
+  }, [currentPage, loadJobs, searchTerm]);
+
+  useEffect(() => {
     const term = searchParams.get('q') || '';
-    setCurrentPage(page);
     setSearchTerm(term);
-    fetchInitialData(page, term);
-  }, [searchParams, fetchInitialData]);
+    setCurrentPage(1);
+    loadJobs(1, term);
+  }, [searchParams, loadJobs]);
 
-  const handleFilterChange = (name: keyof JobFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSortChange = (value: SortOption) => setSort(value);
   const handleSearch = (term: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('q', term);
-    params.set('page', '1');
-    router.push(`/jobs?${params.toString()}`);
-  };
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
-    console.log(page)
-    params.set('page', String(page));
+    const params = new URLSearchParams();
+    if (term) {
+      params.set('q', term);
+    }
     router.push(`/jobs?${params.toString()}`);
   };
 
@@ -140,18 +165,23 @@ function JobsPageContent() {
         <Loading>채용 공고를 불러오는 중...</Loading>
       ) : (
         <>
-          <JobPostList
-            jobs={jobs}
-            onToggleInterest={handleToggleInterest}
-            onCreateResume={handleCreateResume}
-          />
-          {!searchTerm && totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
+          {jobs.length > 0 ? (
+            <JobPostList
+              jobs={jobs}
+              onToggleInterest={handleToggleInterest}
+              onCreateResume={handleCreateResume}
             />
+          ) : (
+            <EndOfList>검색된 공고가 없습니다.</EndOfList>
           )}
+
+          {isFetchingMore && <Loading>더 많은 공고를 불러오는 중...</Loading>}
+          
+          {!isFetchingMore && !hasNextPage && jobs.length > 0 && (
+            <EndOfList>마지막 공고입니다.</EndOfList>
+          )}
+
+          <div ref={lastJobElementRef} style={{ height: '1px' }} />
         </>
       )}
 
