@@ -79,7 +79,7 @@ function JobsPageContent() {
     if (page === 1) setIsLoading(true);
     else setIsFetchingMore(true);
 
-    const limit = 10;
+    const limit = 18;
     const offset = (page - 1) * limit;
     try {
       const jobsData = await getJobPostings(term, offset, limit);
